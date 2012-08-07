@@ -8,7 +8,6 @@ public class mod_texasjake95Core extends BaseMod{
 	public String getVersion() {
 		return "Version 1.0.0";
 	}
-//TODO Do Register version of EasyRecipes
 	@Override
 	public void load() {
 		RecipeHandler.getRecipes();
