@@ -1,0 +1,19 @@
+package texasjake95.Core;
+
+import net.minecraft.src.BaseMod;
+
+public class mod_texasjake95Core extends BaseMod{
+
+	@Override
+	public String getVersion() {
+		return "Version 1.0.0";
+	}
+//TODO Do Register version of EasyRecipes
+	@Override
+	public void load() {
+		RecipeHandler.getRecipes();
+		NameHandler.getNames();
+		RegisterHandler.Register();
+	}
+
+}
