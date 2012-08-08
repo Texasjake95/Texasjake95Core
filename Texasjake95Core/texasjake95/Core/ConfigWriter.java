@@ -224,13 +224,11 @@ private static int getItemID(int def)
 	}
 	return -1;
 }
+
 public static Configuration CreateConfig(String mod)
 {
 File newFile = GetFile(mod);
 ErrorCatcher(newFile, mod);
 return new Configuration(newFile);
 }
-
-
-
 }
