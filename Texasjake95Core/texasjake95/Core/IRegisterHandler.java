@@ -4,6 +4,4 @@ public interface IRegisterHandler {
 
 	public void Register();
 
-	public String getModName();
-
 }
