@@ -2,7 +2,8 @@ package texasjake95.Core;
 
 import net.minecraft.src.BaseMod;
 
-public class mod_texasjake95Core extends BaseMod{
+public class mod_texasjake95Core extends BaseMod
+{
 
 	@Override
 	public String getVersion() {
@@ -10,9 +11,17 @@ public class mod_texasjake95Core extends BaseMod{
 	}
 	@Override
 	public void load() {
-		RecipeHandler.getRecipes();
-		NameHandler.getNames();
-		RegisterHandler.Register();
+		
 	}
 
+	public String getPriorities()
+    {
+        return "before:*";
+    }
+	public void modsLoaded() {
+		RegisterHandler.Register();
+		NameHandler.getNames();
+		RecipeHandler.getRecipes();
+	}
+	
 }
