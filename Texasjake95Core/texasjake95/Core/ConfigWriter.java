@@ -3,6 +3,8 @@ package texasjake95.Core;
 import java.io.File;
 import java.io.IOException;
 
+import texasjake95.ZeldaOoT.Config;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Block;
 import net.minecraft.src.Item;
@@ -231,4 +233,14 @@ File newFile = GetFile(mod);
 ErrorCatcher(newFile, mod);
 return new Configuration(newFile);
 }
+public static boolean CoreConfig(String mod2)
+{String mod = "Texasjake95 Core";
+	File newFile = GetFile(mod);
+ErrorCatcher(newFile, mod);
+Configuration config = new Configuration(newFile);
+	config.load();
+	boolean MODINIT = BooleanConfig("Load " +mod2, config, true);
+	config.save();
+	return MODINIT;
+	}
 }

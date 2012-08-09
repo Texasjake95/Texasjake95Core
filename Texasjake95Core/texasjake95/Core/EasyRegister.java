@@ -11,7 +11,6 @@ import net.minecraft.src.forge.MinecraftForgeClient;
 import net.minecraft.src.forge.oredict.OreDictionary;
 
 public class EasyRegister {
-	
 	public static void RegisterOre(String string, ItemStack itemstack)
 	{
 		OreDictionary.registerOre(string, itemstack);

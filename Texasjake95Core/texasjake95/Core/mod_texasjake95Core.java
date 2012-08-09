@@ -22,6 +22,7 @@ public class mod_texasjake95Core extends BaseMod
 		RegisterHandler.Register();
 		NameHandler.getNames();
 		RecipeHandler.getRecipes();
+		
 	}
 	
 }
