@@ -1,5 +1,6 @@
 package texasjake95.Core;
 
+import texasjake95.Core.AddOns.AddonHandlerCore;
 import net.minecraft.src.BaseMod;
 
 public class mod_texasjake95Core extends BaseMod
@@ -22,7 +23,7 @@ public class mod_texasjake95Core extends BaseMod
 		RegisterHandler.Register();
 		NameHandler.getNames();
 		RecipeHandler.getRecipes();
-		
+		AddonHandlerCore.initAddons();
 	}
 	
 }
