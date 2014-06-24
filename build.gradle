@@ -1,0 +1,281 @@
+buildscript
+{
+	repositories
+	{
+		mavenCentral()
+		mavenLocal()
+		maven
+		{
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+		maven
+		{
+			name = "sonatype"
+			url = "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+		maven
+		{
+			name = "texasjake95Maven"
+			url = "https://github.com/Texasjake95/maven-repo/raw/master/"
+		}
+	}
+	dependencies
+	{
+		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+		classpath 'com.texasjake95:GradlePlugin:1.1-SNAPSHOT'
+	}
+}
+
+apply plugin: 'forge'
+apply plugin: 'texasjake95'
+
+repositories
+{
+	maven
+	{
+		name = "texasjake95Maven"
+		url = "https://github.com/Texasjake95/maven-repo/raw/master/"
+	}
+	maven
+	{
+		name =  "ChickenFileServer"
+		url =   "http://www.chickenbones.net/maven/"
+	}
+	maven
+	{
+		name = "forge"
+		url = "http://files.minecraftforge.net/maven"
+	}
+}
+
+//Get Jenkins/Travis Build Number
+ext.buildNumber = "dev"
+
+if(System.getenv().BUILD_NUMBER)
+	buildNumber = System.getenv().BUILD_NUMBER
+
+if(System.getenv().TRAVIS_BUILD_NUMBER)
+	buildNumber = System.getenv().TRAVIS_BUILD_NUMBER
+
+version = "$minecraft_version-$mod_version.$buildNumber"
+archivesBaseName = "TXCore"
+	
+
+minecraft {
+	version = "$minecraft_version-$forge_version"
+	if(file("../run").exists()) {
+	assetDir = "../run/assets"
+	} else {
+		assetDir = "eclipse/assets"
+	}
+	replace '${version}', "$mod_version.$buildNumber"
+}
+
+dependencies {
+	
+	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
+	
+	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"dev"
+	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"src"
+	
+	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"dev"
+	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"src"
+	
+	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"dev"
+	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"src"
+	
+//	compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
+	
+	//	compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+task devJar(type: Jar) {
+	classifier "dev"
+	from sourceSets.main.output
+	
+	from (sourceSets.main.java){ expand 'version':"$mod_version.$buildNumber" }
+}
+
+task apiJar(type: Jar) {
+	classifier "api"
+	from (sourceSets.main.output)
+	{ include 'com/texasjake95/*/api/**' }
+	from (sourceSets.main.java)
+	{
+		include 'com/texasjake95/*/api/**'
+		expand 'version':"$mod_version.$buildNumber"
+	}
+}
+
+artifacts {
+	archives devJar
+	archives apiJar
+}
+
+uploadArchives {
+	dependsOn 'reobf'
+	dependsOn 'build'
+	repositories {
+		
+		if(project.hasProperty("filesmaven"))
+		{
+			mavenDeployer {
+				logger.info("Pushing to Maven Remote")
+				repository(url: project.filesmaven)
+				pom {
+					groupId = project.group
+					version = project.version
+					artifactId = project.archivesBaseName
+					project {
+						name project.archivesBaseName
+						packaging 'jar'
+						description 'Library for Texasjake95\'s mods'
+						url 'https://github.com/Texasjake95/Texasjake95Core'
+						
+						scm {
+							url 'https://github.com/Texasjake95/Texasjake95Core'
+							connection 'scm:git:git://github.com/Texasjake95/Texasjake95Core.git'
+							developerConnection 'scm:git:git@github.com:Texasjake95/Texasjake95Core.git'
+						}
+						
+						issueManagement {
+							system 'github'
+							url 'https://github.com/Texasjake95/Texasjake95Core/issues'
+						}
+						
+						developers {
+							developer {
+								id 'Texasjake95'
+								name 'Texasjake95'
+								roles { role 'developer' }
+							}
+						}
+					}
+				}
+			}
+		}
+		else{
+			logger.info("Pushing to Maven Local")
+			mavenDeployer {
+				repository(url: project.repositories.mavenLocal().url)
+			}
+		}
+	}
+}
+
+
+
+
+
+
+def downloadFile(path,fileName)
+{
+	def f = new File(fileName)
+	if (!f.exists()) {
+		new URL(path).withInputStream{ i -> f.withOutputStream{ it << i }}
+	}
+}
+
+def find(depName) {
+	return project.configurations.compile.find { it.name.contains(depName) }
+}
+
+def handle(depName,node,list,classifer1,classifer2)
+{
+	if(depName && classifer1 && classifer2) {
+		def full1 = depName + "-" + classifer1
+		def full2 = depName + "-" + classifer2
+		def filePath = node.attribute('path')
+		if(filePath!= null && full1!= null)
+			if (file(filePath) == file(find(full1))) {
+				node.attributes().put("sourcepath",find(full2))
+			}
+		if(filePath!= null && full2 != null)
+			if (file(filePath) == file(find(full2))) {
+				list.add(node)
+			}
+	}
+}
+
+extractUserDev.dependsOn {
+    tasks.findAll { task -> task.name.endsWith("SetAT") }
+}
+
+task unzipNEI(type: Copy) {
+    def zipFile = file(find("NotEnoughItems-$minecraft_version-$nei_version-dev"))
+    def outputDir = file("${buildDir}/unpacked/NEI")
+    from zipTree(zipFile)
+    into outputDir
+}
+
+task neiAT(type: Copy){
+	dependsOn("unzipNEI")	
+	from "${buildDir}/unpacked/NEI/nei_at.cfg"
+	into "${buildDir}/ats/"
+}
+
+task neiSetAT(){
+	dependsOn("neiAT")	
+	project.minecraft.at(at("nei"));
+}
+
+def at(name)
+{
+	return "${buildDir}/ats/${name}_at.cfg"
+}
+
+processResources
+{
+	// replace stuff in mcmod.info, nothing else
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod/info'
+		// replace version and mcversion
+		expand 'version':"$mod_version.$buildNumber", 'mcversion':project.minecraft.version
+	}
+	from(sourceSets.main.java) { expand 'version':"$mod_version.$buildNumber" }
+	// copy everything else, thats not the mcmod.info
+	from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
+}
+
+jar {
+	manifest {
+		attributes 'FMLCorePlugin': 'com.texasjake95.core.asm'
+		attributes 'FMLCorePluginContainsFMLMod': 'true'
+	}
+}
+
+task setupModFolder(type: Copy){
+	dependsOn 'resetModFolder'
+	from find("CodeChickenCore-$minecraft_version-$ccc_version-dev")
+	from find("NotEnoughItems-$minecraft_version-$nei_version-dev")
+	from find("CodeChickenLib-$minecraft_version-$ccl_version-dev")
+	
+	into "$projectDir/mods/"
+}
+
+setupDecompWorkspace.dependsOn("setupModFolder")
+
+eclipse.classpath {
+	downloadSources=true
+	downloadJavadoc=true
+	file.withXml {
+		def node = it.asNode()
+		def toRemove = new ArrayList<Node>()
+		node.each {
+			handle("CodeChickenCore-$minecraft_version-$ccc_version",it,toRemove,"dev","src")
+			handle("NotEnoughItems-$minecraft_version-$nei_version",it,toRemove,"dev","src")
+			handle("CodeChickenLib-$minecraft_version-$ccl_version",it,toRemove,"dev","src")
+		}
+		toRemove.each
+		{ node.remove(it) }
+	}
+}
+
+task resetModFolder(type: Delete){
+	delete "$projectDir/mods/"	
+}
+
