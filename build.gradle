@@ -32,6 +32,7 @@ apply plugin: 'texasjake95'
 
 repositories
 {
+
 	maven
 	{
 		name = "texasjake95Maven"
@@ -48,6 +49,7 @@ repositories
 		url = "http://files.minecraftforge.net/maven"
 	}
 }
+
 
 //Get Jenkins/Travis Build Number
 ext.buildNumber = "dev"

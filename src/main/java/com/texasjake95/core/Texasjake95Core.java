@@ -21,6 +21,7 @@ import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraft.init.Blocks;
 
 import com.texasjake95.core.api.CoreInfo;
+import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
@@ -41,6 +42,7 @@ public class Texasjake95Core {
 	
 	public Texasjake95Core()
 	{
+		CoreConfig.getInstance();
 	}
 	
 	@EventHandler
@@ -66,6 +68,7 @@ public class Texasjake95Core {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		CoreConfig.getInstance().initProps();
 		Blocks.quartz_ore.setHarvestLevel("pickaxe", 3);
 		RecipeSorter.register("texasjake95:shapelessDamage", ShapelessDamageRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
 		proxy.registerEventHandlers();
