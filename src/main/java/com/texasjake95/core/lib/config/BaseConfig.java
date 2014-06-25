@@ -27,8 +27,9 @@ public abstract class BaseConfig {
 	}
 	
 	public abstract String modName();
-	
+
 	public void endProps()
 	{
+		
 	}
 }

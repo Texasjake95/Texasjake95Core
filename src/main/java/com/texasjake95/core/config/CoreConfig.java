@@ -32,8 +32,8 @@ public class CoreConfig extends BaseConfig {
 	{
 		super(new CoreConfigWriter(), false);
 	}
-	
 	@Override
+
 	public void endProps()
 	{
 		this.configw.endProps(this.config);
