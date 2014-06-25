@@ -2,7 +2,6 @@ package com.texasjake95.core.tile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
@@ -29,7 +28,7 @@ public class Quadrant {
 	private boolean valid;
 	private int check = 0;
 	private int row = 1, column = 1;
-	public static GameProfile gameProfile = new GameProfile(new UUID(125L, 145L), "[TXMOD]");
+	public static GameProfile gameProfile = new GameProfile("txPlayer", "[TXMOD]");
 	private HashMap<Integer, HashMap<Integer, BlockIntPair>> seedMap = Maps.newHashMap();
 	
 	public Quadrant(ForgeDirection direction1, ForgeDirection direction2, IBlockChecker checker)
@@ -138,7 +137,7 @@ public class Quadrant {
 						ItemStack stack = inv.getSeedInv().getStack(item);
 						if (stack != null)
 						{
-							ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, y - 1, trueZ, 1, 0, 0, 0);
+							ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world,trueX, y - 1, trueZ, 1, 0, 0, 0);
 							columnMap.remove(this.column);
 							if (columnMap.isEmpty())
 							{

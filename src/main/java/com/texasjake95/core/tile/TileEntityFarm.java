@@ -9,16 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import cpw.mods.fml.common.eventhandler.Event;
-
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.world.BlockEvent;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -425,20 +420,6 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	
 	public static ArrayList<ItemStack> getNormalDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
 	{
-		World temp = player.worldObj;
-		boolean replace = false;
-		if(player instanceof FakePlayer && ((FakePlayer)player).getUniqueID().equals(Quadrant.gameProfile.getId()))
-		{
-			player.setWorld(world);
-			replace = true;
-		}
-		Event event  = new BlockEvent.BreakEvent(x, y, z, world, block, meta, player);
-		if(replace)
-		{
-			player.setWorld(temp);
-		}
-		if(event.isCanceled())
-			return empty;
 		ArrayList<ItemStack> returnList = new ArrayList<ItemStack>();
 		ArrayList<ItemStack> dropsList = block.getDrops(world, x, y, z, meta, 0);
 		float dropChance = ForgeEventFactory.fireBlockHarvesting(dropsList, world, block, x, y, z, meta, 0, 1.0F, false, player);
@@ -453,6 +434,4 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 		world.setBlockToAir(x, y, z);
 		return returnList;
 	}
-	
-	private static final ArrayList<ItemStack> empty = Lists.newArrayList();
 }
