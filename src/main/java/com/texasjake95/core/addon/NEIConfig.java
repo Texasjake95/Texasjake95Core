@@ -1,7 +1,6 @@
 package com.texasjake95.core.addon;
 
-import codechicken.nei.api.API;
-import codechicken.nei.api.IConfigureNEI;
+import cpw.mods.fml.common.API;
 
 import com.texasjake95.core.api.CoreInfo;
 

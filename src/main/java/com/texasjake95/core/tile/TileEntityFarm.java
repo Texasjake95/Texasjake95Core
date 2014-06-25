@@ -427,17 +427,17 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	{
 		World temp = player.worldObj;
 		boolean replace = false;
-		if(player instanceof FakePlayer && ((FakePlayer)player).getUniqueID().equals(Quadrant.gameProfile.getId()))
+		if (player instanceof FakePlayer && ((FakePlayer) player).getUniqueID().equals(Quadrant.gameProfile.getId()))
 		{
 			player.setWorld(world);
 			replace = true;
 		}
-		Event event  = new BlockEvent.BreakEvent(x, y, z, world, block, meta, player);
-		if(replace)
+		Event event = new BlockEvent.BreakEvent(x, y, z, world, block, meta, player);
+		if (replace)
 		{
 			player.setWorld(temp);
 		}
-		if(event.isCanceled())
+		if (event.isCanceled())
 			return empty;
 		ArrayList<ItemStack> returnList = new ArrayList<ItemStack>();
 		ArrayList<ItemStack> dropsList = block.getDrops(world, x, y, z, meta, 0);
