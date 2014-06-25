@@ -8,11 +8,11 @@ import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
 
-import com.texasjake95.core.recipe.ShapelessDamageRecipe;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+
+import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 	
