@@ -137,7 +137,7 @@ public class Quadrant {
 						ItemStack stack = inv.getSeedInv().getStack(item);
 						if (stack != null)
 						{
-							ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world,trueX, y - 1, trueZ, 1, 0, 0, 0);
+							ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, y - 1, trueZ, 1, 0, 0, 0);
 							columnMap.remove(this.column);
 							if (columnMap.isEmpty())
 							{
