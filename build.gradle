@@ -71,6 +71,7 @@ minecraft {
 	} else {
 		assetDir = "eclipse/assets"
 	}
+	println assetDir
 	replace '${version}', "$mod_version.$buildNumber"
 }
 
@@ -78,6 +79,7 @@ dependencies {
 	
 	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
 	
+	/*
 	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"dev"
 	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"src"
 	
@@ -86,7 +88,7 @@ dependencies {
 	
 	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"dev"
 	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"src"
-	
+	*/
 //	compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
 	
 	//	compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
@@ -192,37 +194,40 @@ def handle(depName,node,list,classifer1,classifer2)
 		def full1 = depName + "-" + classifer1
 		def full2 = depName + "-" + classifer2
 		def filePath = node.attribute('path')
-		if(filePath!= null && full1!= null)
+		if(filePath && full1 && find(full1) && full2 && find(full2)) {
+		
 			if (file(filePath) == file(find(full1))) {
 				node.attributes().put("sourcepath",find(full2))
 			}
-		if(filePath!= null && full2 != null)
+			
 			if (file(filePath) == file(find(full2))) {
 				list.add(node)
 			}
+		}
 	}
 }
 
 extractUserDev.dependsOn {
     tasks.findAll { task -> task.name.endsWith("SetAT") }
 }
+if (find("NotEnoughItems-$minecraft_version-$nei_version-dev")){
+	task unzipNEI(type: Copy) {
+   		def zipFile = file(find("NotEnoughItems-$minecraft_version-$nei_version-dev"))
+    	def outputDir = file("${buildDir}/unpacked/NEI")
+    	from zipTree(zipFile)
+    	into outputDir
+	}
 
-task unzipNEI(type: Copy) {
-    def zipFile = file(find("NotEnoughItems-$minecraft_version-$nei_version-dev"))
-    def outputDir = file("${buildDir}/unpacked/NEI")
-    from zipTree(zipFile)
-    into outputDir
-}
+	task neiAT(type: Copy){
+		dependsOn("unzipNEI")	
+		from "${buildDir}/unpacked/NEI/nei_at.cfg"
+		into "${buildDir}/ats/"
+	}
 
-task neiAT(type: Copy){
-	dependsOn("unzipNEI")	
-	from "${buildDir}/unpacked/NEI/nei_at.cfg"
-	into "${buildDir}/ats/"
-}
-
-task neiSetAT(){
-	dependsOn("neiAT")	
-	project.minecraft.at(at("nei"));
+	task neiSetAT(){
+		dependsOn("neiAT")	
+		project.minecraft.at(at("nei"));
+	}
 }
 
 def at(name)
@@ -249,17 +254,19 @@ jar {
 		attributes 'FMLCorePluginContainsFMLMod': 'true'
 	}
 }
-
-task setupModFolder(type: Copy){
-	dependsOn 'resetModFolder'
-	from find("CodeChickenCore-$minecraft_version-$ccc_version-dev")
-	from find("NotEnoughItems-$minecraft_version-$nei_version-dev")
-	from find("CodeChickenLib-$minecraft_version-$ccl_version-dev")
+if( find("CodeChickenCore-$minecraft_version-$ccc_version-dev") && find("NotEnoughItems-$minecraft_version-$nei_version-dev")
+	&& find("CodeChickenLib-$minecraft_version-$ccl_version-dev")){
+	task setupModFolder(type: Copy){
+		dependsOn 'resetModFolder'
+		from find("CodeChickenCore-$minecraft_version-$ccc_version-dev")
+		from find("NotEnoughItems-$minecraft_version-$nei_version-dev")
+		from find("CodeChickenLib-$minecraft_version-$ccl_version-dev")
 	
-	into "$projectDir/mods/"
-}
+		into "$projectDir/mods/"
+	}
 
-setupDecompWorkspace.dependsOn("setupModFolder")
+	setupDecompWorkspace.dependsOn("setupModFolder")
+}
 
 eclipse.classpath {
 	downloadSources=true
