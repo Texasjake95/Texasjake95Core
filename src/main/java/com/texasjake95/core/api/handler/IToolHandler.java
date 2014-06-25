@@ -18,17 +18,17 @@ public interface IToolHandler {
 	 * If false it prevents Items from being switched to
 	 * 
 	 * @param stack
-	 * @return
+	 * @return can stack be switched to
 	 */
 	public boolean canAutoSwtichTo(ItemStack stack);
 	
 	/**
 	 * Allows a mod to determine is the tool can harvest a given block
 	 * 
-	 * @param blockID
+	 * @param block
 	 * @param blockMeta
 	 * @param stack
-	 * @return
+	 * @return can stack harvest the block
 	 */
 	public boolean canHarvest(Block block, int blockMeta, ItemStack stack);
 	
@@ -46,7 +46,7 @@ public interface IToolHandler {
 	 * damageable
 	 * 
 	 * @param stack
-	 * @return
+	 * @return is the item damageable
 	 */
 	public boolean isDamageable(ItemStack stack);
 }

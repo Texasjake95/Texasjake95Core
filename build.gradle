@@ -94,6 +94,11 @@ dependencies {
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+task javadocJar(type: Jar, dependsOn: "javadoc") {
+	classifier "javadoc"
+	from "${buildDir}/docs/javadoc"
+}
+
 task devJar(type: Jar) {
 	classifier "dev"
 	from sourceSets.main.output
@@ -115,9 +120,11 @@ task apiJar(type: Jar) {
 artifacts {
 	archives devJar
 	archives apiJar
+	archives javadocJar
+	
 }
 
-build.dependsOn devJar, apiJar
+build.dependsOn devJar, apiJar, javadocJar
 
 uploadArchives {
 	dependsOn 'reobf'
@@ -213,7 +220,7 @@ task unzipNEI(type: Copy) {
 task neiAT(type: Copy){
 	dependsOn("unzipNEI")	
 	from "${buildDir}/unpacked/NEI/nei_at.cfg"
-	into "${buildDir}/ats/"ss
+	into "${buildDir}/ats/"
 }
 
 task neiSetAT(){
