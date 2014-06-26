@@ -210,22 +210,25 @@ extractUserDev.dependsOn {
     tasks.findAll { task -> task.name.endsWith("SetAT") }
 }
 
-task unzipNEI(type: Copy) {
-    def zipFile = file(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"))
-    def outputDir = file("${buildDir}/unpacked/NEI")
-    from zipTree(zipFile)
-    into outputDir
-}
+if(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")){
+	
+	task unzipNEI(type: Copy) {
+	    def zipFile = file(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"))
+		def outputDir = file("${buildDir}/unpacked/NEI")
+	    from zipTree(zipFile)
+	    into outputDir
+	}
 
-task neiAT(type: Copy){
-	dependsOn("unzipNEI")	
-	from "${buildDir}/unpacked/NEI/nei_at.cfg"
-	into "${buildDir}/ats/"
-}
-
-task neiSetAT(){
-	dependsOn("neiAT")	
-	project.minecraft.at(findAT("nei"));
+	task neiAT(type: Copy){
+		dependsOn("unzipNEI")	
+		from "${buildDir}/unpacked/NEI/nei_at.cfg"
+		into "${buildDir}/ats/"
+	}
+	
+	task neiSetAT(){
+		dependsOn("neiAT")	
+		project.minecraft.at(findAT("nei"));
+	}
 }
 
 def findAT(name)
@@ -245,18 +248,22 @@ processResources
 	// copy everything else, thats not the mcmod.info
 	from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
-
-task setupModFolder(type: Copy){
-	dependsOn 'resetModFolder'
-	from find(project,"CodeChickenCore-$minecraft_version-$ccc_version-dev")
-	from find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")
-	from find(project,"CodeChickenLib-$minecraft_version-$ccl_version-dev")
+if(	find(project,"CodeChickenCore-$minecraft_version-$ccc_version-dev")
+	&& find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")
+	&& find(project,"CodeChickenLib-$minecraft_version-$ccl_version-dev")){
 	
-	into "$projectDir/mods/"
+	task setupModFolder(type: Copy){
+		dependsOn 'resetModFolder'
+		from find(project,"CodeChickenCore-$minecraft_version-$ccc_version-dev")
+		from find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")
+		from find(project,"CodeChickenLib-$minecraft_version-$ccl_version-dev")
+		
+		into "$projectDir/mods/"
+	}
+	
+	setupDecompWorkspace.dependsOn("setupModFolder")
 }
-
-setupDecompWorkspace.dependsOn("setupModFolder")
-
+	
 eclipse.classpath {
 	file.withXml {
 		def node = it.asNode()
