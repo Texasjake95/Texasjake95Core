@@ -24,19 +24,19 @@ buildscript
 	{
 		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
 		classpath 'com.texasjake95:GradlePlugin:1.1-SNAPSHOT'
+		classpath 'com.texasjake95:MinecraftGradlePlugin:1.0-SNAPSHOT'
 	}
 }
-
 apply plugin: 'forge'
 apply plugin: 'texasjake95'
-
+apply plugin: 'texasjake95-minecraft'
 repositories
 {
 	/*maven
-	{
-		name = "texasjake95Maven"
-		url = "https://github.com/Texasjake95/maven-repo/raw/master/"
-	}*/
+	 {
+	 name = "texasjake95Maven"
+	 url = "https://github.com/Texasjake95/maven-repo/raw/master/"
+	 }*/
 	maven
 	{
 		name =  "ChickenFileServer"
@@ -61,18 +61,18 @@ if(System.getenv().TRAVIS_BUILD_NUMBER)
 
 version = "$minecraft_version-$mod_version.$buildNumber"
 archivesBaseName = "TXCore"
-	
+
 
 minecraft {
 	version = "$minecraft_version-$forge_version"
 	if(file("../run").exists()) {
-	assetDir = "../run/assets"
+		assetDir = "../run/assets"
 	} else {
 		assetDir = "eclipse/assets"
 	}
-	replace '${version}', project.version
+	replace '${version}', "$mod_version.$buildNumber"
 }
-
+println tasks.sourceMainJava.class
 dependencies {
 	
 	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
@@ -94,37 +94,19 @@ dependencies {
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-task javadocJar(type: Jar, dependsOn: "javadoc") {
-	classifier "javadoc"
-	from "${buildDir}/docs/javadoc"
-}
+//task devJar(type: Jar) {
+//	classifier "dev"
+//	from sourceSets.main.output
+//	
+//	from (sourceSets.main.java){ expand 'version':"$mod_version.$buildNumber" }
+//}
 
-task devJar(type: Jar) {
-	classifier "dev"
-	from sourceSets.main.output
-	
-	from (sourceSets.main.java){ expand 'version':"$mod_version.$buildNumber" }
-}
+//artifacts {
+//	archives devJar
+//	
+//}
 
-task apiJar(type: Jar) {
-	classifier "api"
-	from (sourceSets.main.output)
-	{ include 'com/texasjake95/*/api/**' }
-	from (sourceSets.main.java)
-	{
-		include 'com/texasjake95/*/api/**'
-		expand 'version':"$mod_version.$buildNumber"
-	}
-}
-
-artifacts {
-	archives devJar
-	archives apiJar
-	archives javadocJar
-	
-}
-
-build.dependsOn devJar, apiJar, javadocJar
+//build.dependsOn devJar
 
 uploadArchives {
 	dependsOn 'reobf'
@@ -177,63 +159,8 @@ uploadArchives {
 	}
 }
 
-def downloadFile(path,fileName)
-{
-	def f = new File(fileName)
-	if (!f.exists()) {
-		new URL(path).withInputStream{ i -> f.withOutputStream{ it << i }}
-	}
-}
-
 def find(project, depName) {
 	return project.configurations.default.find { it.name.contains(depName) }
-}
-
-def handle(project, depName,node,list,classifer1,classifer2)
-{
-	if(depName && classifer1 && classifer2) {
-		def full1 = depName + "-" + classifer1
-		def full2 = depName + "-" + classifer2
-		def filePath = node.attribute('path')
-		if(filePath && full1)
-			if (file(filePath) == file(find(project,full1))) {
-				node.attributes().put("sourcepath",find(project,full2))
-			}
-		if(filePath && full2)
-			if (file(filePath) == file(find(project,full2))) {
-				list.add(node)
-			}
-	}
-}
-
-extractUserDev.dependsOn {
-    tasks.findAll { task -> task.name.endsWith("SetAT") }
-}
-
-if(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")){
-	
-	task unzipNEI(type: Copy) {
-	    def zipFile = file(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"))
-		def outputDir = file("${buildDir}/unpacked/NEI")
-	    from zipTree(zipFile)
-	    into outputDir
-	}
-
-	task neiAT(type: Copy){
-		dependsOn("unzipNEI")	
-		from "${buildDir}/unpacked/NEI/nei_at.cfg"
-		into "${buildDir}/ats/"
-	}
-	
-	task neiSetAT(){
-		dependsOn("neiAT")	
-		project.minecraft.at(findAT("nei"));
-	}
-}
-
-def findAT(name)
-{
-	return "${buildDir}/ats/${name}_at.cfg"
 }
 
 processResources
@@ -242,98 +169,19 @@ processResources
 	from(sourceSets.main.resources.srcDirs) {
 		include 'mcmod/info'
 		// replace version and mcversion
-		expand 'version': project.version, 'mcversion':project.minecraft.version
+		expand 'version': "$mod_version.$buildNumber", 'mcversion': "$minecraft_version"
 	}
-
+	
 	// copy everything else, thats not the mcmod.info
 	from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
-if(	find(project,"CodeChickenCore-$minecraft_version-$ccc_version-dev")
-	&& find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")
-	&& find(project,"CodeChickenLib-$minecraft_version-$ccl_version-dev")){
-	
-	task setupModFolder(type: Copy){
-		dependsOn 'resetModFolder'
-		from find(project,"CodeChickenCore-$minecraft_version-$ccc_version-dev")
-		from find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev")
-		from find(project,"CodeChickenLib-$minecraft_version-$ccl_version-dev")
-		
-		into "$projectDir/mods/"
-	}
-	
-	setupDecompWorkspace.dependsOn("setupModFolder")
-}
-	
-eclipse.classpath {
-	file.withXml {
-		def node = it.asNode()
-		def toRemove = new ArrayList<Node>()
-		node.each {
-			handle(project,"CodeChickenCore-$minecraft_version-$ccc_version",it,toRemove,"dev","src")
-			handle(project,"NotEnoughItems-$minecraft_version-$nei_version",it,toRemove,"dev","src")
-			handle(project,"CodeChickenLib-$minecraft_version-$ccl_version",it,toRemove,"dev","src")
-		}
-		toRemove.each
-		{ node.remove(it) }
-	}
-}
 
-runClient {
-	
-	if(project.hasProperty("mcUsername")) {
-		args "--username=${project.mcUsername}"
-	}
-	
-	if(project.hasProperty("mcPassword")) {
-		args "--password=${project.mcPassword}"
-	}
-	
-	args "--gameDir=" + getGameDir(project)
-	args "--assetsDir=" + getAssetsDir(project)
-}
+atSetup.addAT(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"),"nei_at.cfg",file("${buildDir}/unpacked/NEI/"))
 
-runServer
-{
-	args "--gameDir=" + getGameDir(project)
-	args "--assetsDir=" + getAssetsDir(project)
-}
+modSetup.addMod(find(project, "CodeChickenCore-$minecraft_version-$ccc_version-dev"))
+modSetup.addMod(find(project, "NotEnoughItems-$minecraft_version-$nei_version-dev"))
+modSetup.addMod(find(project, "CodeChickenLib-$minecraft_version-$ccl_version-dev"))
 
-debugClient {
-	
-	if(project.hasProperty("mcUsername")) {
-		args "--username=${project.mcUsername}"
-	}
-	
-	if(project.hasProperty("mcPassword")) {
-		args "--password=${project.mcPassword}"
-	}
-	
-	args "--gameDir=" + getGameDir(project)
-	args "--assetsDir=" + getAssetsDir(project)
-}
-
-debugServer
-{
-	args "--gameDir=" + getGameDir(project)
-	args "--assetsDir=" + getAssetsDir(project)
-}
-
-def getAssetsDir(project)
-{
-	if(project.hasProperty("mcAssetsDir"))
-	{ return "${project.mcAssetsDir}" }
-	else
-	{ return "${project.minecraft.assetDir}"}
-}
-
-def getGameDir(project)
-{
-	if(project.hasProperty("mcGameDir")) 
-	{ return "${project.mcGameDir}" }
-	else
-	{ return "${projectDir}" }
-}
-
-task resetModFolder(type: Delete){
-	delete "$projectDir/mods/"	
-}
+eclipseSetup.addEclipseSetup("CodeChickenCore-$minecraft_version-$ccc_version", "dev", "src")
+eclipseSetup.addEclipseSetup("CodeChickenLib-$minecraft_version-$ccl_version", "dev", "src")
+eclipseSetup.addEclipseSetup("NotEnoughItems-$minecraft_version-$nei_version", "dev", "src")
