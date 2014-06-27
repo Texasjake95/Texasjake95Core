@@ -1,0 +1,17 @@
+language: java
+jdk:
+- oraclejdk7
+
+before_install: bash scripts/preInstall.sh
+
+install: ./gradlew setupCIWorkspace
+
+script: ./gradlew build
+
+after_success: bash scripts/success.sh
+
+after_script: rm -rf maven-repo
+
+env:
+  global:
+    secure: d1McD0OpgDg4XET1+aqp10Z8VZ844No72QTLLhsrN/p2BFBtFeFBielljaB6f04RJZkRHCdLFN5nUAYdyYb/N105mlUMxs1RPfWjtw6fPebEWnF55y2ZIR6w9BAdjX/B5za+nZFkOMkh2NwHQDUxDd7evqa33xhHktjic0ru/zc=
