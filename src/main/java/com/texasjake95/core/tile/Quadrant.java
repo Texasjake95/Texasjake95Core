@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.common.collect.Maps;
-import com.mojang.authlib.GameProfile;
 
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.block.Block;
@@ -16,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.lib.helper.InventoryHelper;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
@@ -28,7 +27,6 @@ public class Quadrant {
 	private boolean valid;
 	private int check = 0;
 	private int row = 1, column = 1;
-	public static GameProfile gameProfile = new GameProfile("txPlayer", "[TXMOD]");
 	private HashMap<Integer, HashMap<Integer, BlockIntPair>> seedMap = Maps.newHashMap();
 	
 	public Quadrant(ForgeDirection direction1, ForgeDirection direction2, IBlockChecker checker)
@@ -132,7 +130,7 @@ public class Quadrant {
 					BlockIntPair pair = columnMap.get(this.column);
 					if (pair != null)
 					{
-						EntityPlayer player = FakePlayerFactory.get((WorldServer) world, Quadrant.gameProfile);
+						EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, y, trueZ).get();
 						ItemIntPair item = TileEntityFarm.getSeed(pair.getBlock(), pair.getMeta());
 						ItemStack stack = inv.getSeedInv().getStack(item);
 						if (stack != null)
@@ -156,9 +154,8 @@ public class Quadrant {
 			}
 			else if (TileEntityFarm.isFullGrown(block, meta, world, trueX, y, trueZ))
 			{
-				EntityPlayer player = FakePlayerFactory.get((WorldServer) world, Quadrant.gameProfile);
+				EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, y, trueZ).get();
 				ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, trueX, y, trueZ, block, meta);
-				// System.out.println("NEW BLOCK");
 				for (ItemStack stack : returnList)
 				{
 					if (TileEntityFarm.isSeed(stack))
@@ -220,23 +217,18 @@ public class Quadrant {
 		{
 			this.valid = false;
 			this.check = 0;
-			// System.out.println("Center: " + x + " " + y + " " + z);
-			// System.out.println("Side1");
 			if (!this.checkSide(world, x, y, z, this.direction1))
 				return;
-			// System.out.println("Side2");
 			if (!this.checkSide(world, x, y, z, this.direction2))
 				return;
 			int offsetX = this.getOffsetX(this.direction1);
 			int offsetY = this.getOffsetY(this.direction1);
 			int offsetZ = this.getOffsetZ(this.direction1);
-			// System.out.println("Side3");
 			if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.direction2))
 				return;
 			offsetX = this.getOffsetX(this.direction2);
 			offsetY = this.getOffsetY(this.direction2);
 			offsetZ = this.getOffsetZ(this.direction2);
-			// System.out.println("Side4");
 			if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.direction1))
 				return;
 			this.valid = true;

@@ -19,10 +19,13 @@
 *.ear
 
 ## Minecraft Related
-/asm
 /saves
 /logs
 /mods
 /config
 /crash-reports
 /resourcepacks
+option.txt
+
+## ChickenBones stuff
+/asm
