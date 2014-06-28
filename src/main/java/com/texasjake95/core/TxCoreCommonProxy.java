@@ -1,6 +1,7 @@
 package com.texasjake95.core;
 
 import java.lang.ref.WeakReference;
+import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
@@ -24,7 +25,7 @@ public class TxCoreCommonProxy {
 	
 	public static Block farm;
 	protected static WeakReference<EntityPlayer> player = new WeakReference<EntityPlayer>(null);
-	public static final GameProfile gameProfile = new GameProfile("txPlayer", "[TXMOD]");
+	public static final GameProfile gameProfile = new GameProfile(new UUID(156L, 783L), "[TXMOD]");
 	
 	/**
 	 * Register All Event Handlers
