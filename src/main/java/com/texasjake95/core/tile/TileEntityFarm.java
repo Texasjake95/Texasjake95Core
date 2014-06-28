@@ -24,12 +24,15 @@ import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.network.PacketHandler;
+import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
@@ -59,6 +62,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	private Quadrant NE = new Quadrant(ForgeDirection.NORTH, ForgeDirection.EAST, checker);
 	private Quadrant SW = new Quadrant(ForgeDirection.SOUTH, ForgeDirection.WEST, checker);
 	private Quadrant SE = new Quadrant(ForgeDirection.SOUTH, ForgeDirection.EAST, checker);
+	private int syncTicks = 0;;
 	static
 	{
 		registerSeed(Blocks.wheat, 7, Items.wheat_seeds, 0);
@@ -74,8 +78,13 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	@Override
 	public void updateEntity()
 	{
+		super.updateEntity();
 		if (!this.worldObj.isRemote)
 		{
+			if (this.syncTicks++ % 200 == 0)
+			{
+				PacketHandler.sendToAllAround(new MessageTileFarm(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
+			}
 			checkQuadrant(NW);
 			checkQuadrant(NE);
 			checkQuadrant(SW);
@@ -89,6 +98,11 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 			}
 			pushToChest();
 		}
+	}
+	
+	public Packet getDescriptionPacket()
+	{
+		return PacketHandler.getInstance().getPacketFrom(new MessageTileFarm(this));
 	}
 	
 	private boolean empty()
@@ -172,20 +186,28 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
 	{
-		super.writeToPacket(dos, byteBuf);
 		if (dos != null)
 		{
 			inv.writeToPacket(dos, byteBuf);
+			this.seedInv.writeToPacket(dos, byteBuf);
+			this.NE.writeToPacket(dos, byteBuf);
+			this.NW.writeToPacket(dos, byteBuf);
+			this.SE.writeToPacket(dos, byteBuf);
+			this.SW.writeToPacket(dos, byteBuf);
 		}
 	}
 	
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
 	{
-		super.readFromPacket(data, byteBuf);
 		if (data != null)
 		{
 			inv.readFromPacket(data, byteBuf);
+			this.seedInv.readFromPacket(data, byteBuf);
+			this.NE.readFromPacket(data, byteBuf);
+			this.NW.readFromPacket(data, byteBuf);
+			this.SE.readFromPacket(data, byteBuf);
+			this.SW.readFromPacket(data, byteBuf);
 		}
 	}
 	
@@ -204,7 +226,6 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	@Override
 	public ItemStack decrStackSize(int slot, int decr)
 	{
-		// TODO Auto-generated method stub
 		return inv.decrStackSize(slot, decr);
 	}
 	

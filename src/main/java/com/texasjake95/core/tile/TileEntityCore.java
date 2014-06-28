@@ -12,7 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileEntityCore extends TileEntity {
+public abstract class TileEntityCore extends TileEntity {
 	
 	protected ForgeDirection facing;
 	protected String customName;
@@ -104,14 +104,7 @@ public class TileEntityCore extends TileEntity {
 		}
 	}
 	
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
-	{
-		if (data != null)
-		{
-			this.facing = ForgeDirection.getOrientation(data.readByte());
-			this.owner = data.readUTF();
-		}
-	}
+	public abstract void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException;
 	
 	public boolean rotateBlock(ForgeDirection axis)
 	{
@@ -149,15 +142,5 @@ public class TileEntityCore extends TileEntity {
 		}
 	}
 	
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
-	{
-		if (dos != null)
-		{
-			dos.writeInt(this.xCoord);
-			dos.writeInt(this.yCoord);
-			dos.writeInt(this.zCoord);
-			dos.writeByte((byte) this.facing.ordinal());
-			dos.writeUTF(this.owner);
-		}
-	}
+	public abstract void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException;
 }

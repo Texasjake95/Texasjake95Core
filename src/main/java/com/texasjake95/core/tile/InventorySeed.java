@@ -1,11 +1,17 @@
 package com.texasjake95.core.tile;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
 import com.google.common.collect.Maps;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import net.minecraftforge.common.util.Constants;
@@ -17,9 +23,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.network.IPacketHandler;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
-public class InventorySeed {
+public class InventorySeed implements IPacketHandler {
 	
 	private int limit;
 	private HashMap<String, ItemStack> map = Maps.newHashMap();
@@ -138,6 +145,29 @@ public class InventorySeed {
 					}
 				}
 			}
+		}
+	}
+	
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
+	{
+		dos.writeInt(this.limit);
+		dos.writeInt(this.map.size());
+		for (Entry<String, ItemStack> entry : this.map.entrySet())
+		{
+			dos.writeUTF(entry.getKey());
+			ItemStack stack = entry.getValue();
+			ByteBufUtils.writeItemStack(byteBuf, stack);
+		}
+	}
+	
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
+	{
+		this.limit = data.readInt();
+		int size = data.readInt();
+		for (int i = 0; i < size; i++)
+		{
+			String key = data.readUTF();
+			map.put(key, ByteBufUtils.readItemStack(byteBuf));
 		}
 	}
 }

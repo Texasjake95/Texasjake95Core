@@ -1,5 +1,10 @@
 package com.texasjake95.core.tile;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,18 +21,19 @@ import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.network.IPacketHandler;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
-public class Quadrant {
+public class Quadrant implements IPacketHandler {
 	
 	private final ForgeDirection direction1;
 	private final ForgeDirection direction2;
 	private final IBlockChecker checker;
 	private boolean valid;
-	private int check = 0;
-	private int row = 1, column = 1;
-	private HashMap<Integer, HashMap<Integer, BlockIntPair>> seedMap = Maps.newHashMap();
+	private byte check = 0;
+	private byte row = 1, column = 1;
+	private HashMap<Byte, HashMap<Byte, BlockIntPair>> seedMap = Maps.newHashMap();
 	
 	public Quadrant(ForgeDirection direction1, ForgeDirection direction2, IBlockChecker checker)
 	{
@@ -99,17 +105,17 @@ public class Quadrant {
 	
 	public void load(NBTTagCompound compoundTag)
 	{
-		this.row = compoundTag.getInteger("row");
+		this.row = compoundTag.getByte("row");
 		if (this.row < 1 || 10 > this.row)
 		{
 			this.row = 1;
 		}
-		this.column = compoundTag.getInteger("column");
+		this.column = compoundTag.getByte("column");
 		if (this.column < 1 || 10 > this.column)
 		{
 			this.column = 1;
 		}
-		this.check = compoundTag.getInteger("check");
+		this.check = compoundTag.getByte("check");
 		this.valid = compoundTag.getBoolean("valid");
 	}
 	
@@ -124,7 +130,7 @@ public class Quadrant {
 			int meta = WorldProxy.getBlockMetadata(world, trueX, y, trueZ);
 			if (WorldProxy.isAirBlock(world, trueX, y, trueZ))
 			{
-				HashMap<Integer, BlockIntPair> columnMap = this.seedMap.get(this.row);
+				HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 				if (columnMap != null)
 				{
 					BlockIntPair pair = columnMap.get(this.column);
@@ -174,7 +180,7 @@ public class Quadrant {
 					}
 					else
 					{
-						HashMap<Integer, BlockIntPair> columnMap = this.seedMap.get(this.row);
+						HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 						if (columnMap == null)
 						{
 							columnMap = Maps.newHashMap();
@@ -204,9 +210,9 @@ public class Quadrant {
 	
 	public void save(NBTTagCompound compoundTag)
 	{
-		compoundTag.setInteger("row", this.row);
-		compoundTag.setInteger("column", this.column);
-		compoundTag.setInteger("check", this.check);
+		compoundTag.setByte("row", this.row);
+		compoundTag.setByte("column", this.column);
+		compoundTag.setByte("check", this.check);
 		compoundTag.setBoolean("valid", this.valid);
 	}
 	
@@ -233,5 +239,25 @@ public class Quadrant {
 				return;
 			this.valid = true;
 		}
+	}
+	
+	@Override
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
+	{
+		dos.writeBoolean(valid);
+		dos.writeByte(check);
+		dos.writeByte(row);
+		dos.writeByte(column);
+		
+	}
+	
+	@Override
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
+	{
+		this.valid = data.readBoolean();
+		this.check = data.readByte();
+		this.row = data.readByte();
+		this.column = data.readByte();
+
 	}
 }
