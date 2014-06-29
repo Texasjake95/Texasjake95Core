@@ -7,6 +7,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.Packet;
 
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.network.message.MessageTileFarm;
@@ -57,5 +58,10 @@ public class PacketHandler {
 	public static void sendToServer(IMessage message)
 	{
 		getInstance().sendToServer(message);
+	}
+	
+	public static Packet getPacketFrom(IMessage message)
+	{
+		return getInstance().getPacketFrom(message);
 	}
 }

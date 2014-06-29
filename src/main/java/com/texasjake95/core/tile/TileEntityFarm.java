@@ -102,7 +102,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	
 	public Packet getDescriptionPacket()
 	{
-		return PacketHandler.getInstance().getPacketFrom(new MessageTileFarm(this));
+		return PacketHandler.getPacketFrom(new MessageTileFarm(this));
 	}
 	
 	private boolean empty()

@@ -1,0 +1,21 @@
+[
+{
+  "modid": "Texasjake95Core",
+  "name": "Texasjake95 - Core",
+  "description": "Library for Texasjake95's mods",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors": [
+    "Texasjake95"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]

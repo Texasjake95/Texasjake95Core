@@ -31,7 +31,7 @@ import com.texasjake95.core.recipe.ShapelessDamageRecipe;
  * @author Texasjake95
  * 
  */
-@Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion)
+@Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion,guiFactory = "com.texasjake95.core.config.client.GuiConfigFactory")
 public class Texasjake95Core {
 	
 	@Instance(CoreInfo.modId)

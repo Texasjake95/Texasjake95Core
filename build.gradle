@@ -153,6 +153,8 @@ processResources
 	from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
 
+println find(project,"Texasjake95Commons-$commons_version").getClass()
+
 atSetup.addAT(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"),"nei_at.cfg",file("${buildDir}/unpacked/NEI/"))
 
 modSetup.addMod(find(project, "CodeChickenCore-$minecraft_version-$ccc_version-dev"))
