@@ -1,4 +1,4 @@
-package com.texasjake95.core.tile;
+package com.texasjake95.core.tile.farm;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.tile.TileEntityFarm;
 
 public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider {
 	

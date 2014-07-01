@@ -1,4 +1,4 @@
-package com.texasjake95.core.tile;
+package com.texasjake95.core.lib.pair;
 
 import net.minecraft.block.Block;
 

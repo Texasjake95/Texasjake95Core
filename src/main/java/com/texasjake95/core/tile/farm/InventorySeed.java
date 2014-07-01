@@ -1,4 +1,4 @@
-package com.texasjake95.core.tile;
+package com.texasjake95.core.tile.farm;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.network.IPacketHandler;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 

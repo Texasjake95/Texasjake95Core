@@ -31,11 +31,18 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.network.PacketHandler;
 import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.tile.farm.IGrowthChecker;
+import com.texasjake95.core.tile.farm.IHarvester;
+import com.texasjake95.core.tile.farm.ISeedProvider;
+import com.texasjake95.core.tile.farm.InventorySeed;
+import com.texasjake95.core.tile.farm.QuadrantFarm;
+import com.texasjake95.core.tile.farm.VanillaChecker;
 
 public class TileEntityFarm extends TileEntityCore implements IInventory {
 	
@@ -48,20 +55,10 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	private static HashSet<ISeedProvider> seedSet = Sets.newHashSet();
 	private static HashMap<Item, HashSet<Integer>> seeds = Maps.newHashMap();
 	private static VanillaChecker vanillaChecker = new VanillaChecker();
-	private static final IBlockChecker checker = new IBlockChecker() {
-		
-		@Override
-		public boolean isValidBlock(Block block, int meta)
-		{
-			if (block == Blocks.fence || block == Blocks.fence_gate || Blocks.nether_brick_fence == block)
-				return true;
-			return false;
-		}
-	};
-	private Quadrant NW = new Quadrant(ForgeDirection.NORTH, ForgeDirection.WEST, checker);
-	private Quadrant NE = new Quadrant(ForgeDirection.NORTH, ForgeDirection.EAST, checker);
-	private Quadrant SW = new Quadrant(ForgeDirection.SOUTH, ForgeDirection.WEST, checker);
-	private Quadrant SE = new Quadrant(ForgeDirection.SOUTH, ForgeDirection.EAST, checker);
+	private QuadrantFarm NW = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.WEST, ForgeDirection.NORTH);
+	private QuadrantFarm NE = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.EAST, ForgeDirection.NORTH);
+	private QuadrantFarm SW = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.WEST, ForgeDirection.SOUTH);
+	private QuadrantFarm SE = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.EAST, ForgeDirection.SOUTH);
 	private int syncTicks = 0;;
 	static
 	{
@@ -173,12 +170,12 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 		return inv;
 	}
 	
-	private void runQuadrant(Quadrant quad)
+	private void runQuadrant(QuadrantFarm quad)
 	{
 		quad.run(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this);
 	}
 	
-	private void checkQuadrant(Quadrant quad)
+	private void checkQuadrant(QuadrantFarm quad)
 	{
 		quad.validate(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 	}

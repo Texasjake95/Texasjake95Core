@@ -1,0 +1,207 @@
+package com.texasjake95.core.tile.farm;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.google.common.collect.Maps;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+
+import com.texasjake95.core.Texasjake95Core;
+import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.lib.pair.BlockIntPair;
+import com.texasjake95.core.lib.pair.ItemIntPair;
+import com.texasjake95.core.proxy.item.ItemStackProxy;
+import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.tile.Quadrant;
+import com.texasjake95.core.tile.TileEntityFarm;
+
+public class QuadrantFarm extends Quadrant<TileEntityFarm> {
+	
+	public QuadrantFarm(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
+	{
+		super(eastWest, upDown, northSouth);
+	}
+	
+	private HashMap<Byte, HashMap<Byte, BlockIntPair>> seedMap = Maps.newHashMap();
+	
+	@Override
+	protected void handleBlock(World world, int trueX, int trueY, int trueZ, TileEntityFarm inv)
+	{
+		Block block = WorldProxy.getBlock(world, trueX, trueY, trueZ);
+		int meta = WorldProxy.getBlockMetadata(world, trueX, trueY, trueZ);
+		if (WorldProxy.isAirBlock(world, trueX, trueY, trueZ))
+		{
+			HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
+			if (columnMap != null)
+			{
+				BlockIntPair pair = columnMap.get(this.column);
+				if (pair != null)
+				{
+					EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, trueY, trueZ).get();
+					ItemIntPair item = TileEntityFarm.getSeed(pair.getBlock(), pair.getMeta());
+					ItemStack stack = inv.getSeedInv().getStack(item);
+					if (stack != null)
+					{
+						ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, trueY - 1, trueZ, 1, 0, 0, 0);
+						columnMap.remove(this.column);
+						if (columnMap.isEmpty())
+						{
+							this.seedMap.remove(this.row);
+						}
+						else
+						{
+							this.seedMap.put(this.row, columnMap);
+						}
+					}
+					else
+					{
+					}
+				}
+			}
+		}
+		else if (TileEntityFarm.isFullGrown(block, meta, world, trueX, trueY, trueZ))
+		{
+			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, trueY, trueZ).get();
+			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, trueX, trueY, trueZ, block, meta);
+			for (ItemStack stack : returnList)
+			{
+				if (TileEntityFarm.isSeed(stack))
+				{
+					inv.getSeedInv().addItemStack(stack);
+				}
+				InventoryHelper.addToInventory(inv, stack);
+			}
+			ItemIntPair pair = TileEntityFarm.getSeed(block, meta);
+			if (pair != null)
+			{
+				ItemStack stack = inv.getSeedInv().getStack(pair);
+				if (stack != null)
+				{
+					ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, trueY - 1, trueZ, 1, 0, 0, 0);
+				}
+				else
+				{
+					HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
+					if (columnMap == null)
+					{
+						columnMap = Maps.newHashMap();
+					}
+					columnMap.put(this.column, new BlockIntPair(block, meta));
+				}
+			}
+		}
+	}
+	
+	@Override
+	protected void incrementLoc()
+	{
+		if (this.row >= 9 && this.column >= 9)
+		{
+			this.row = 1;
+			this.column = 1;
+			return;
+		}
+		if (this.row >= 9)
+		{
+			this.row = 1;
+			this.column += 1;
+		}
+		else
+		{
+			this.row += 1;
+			return;
+		}
+	}
+	
+	@Override
+	protected boolean _validate(World world, int x, int y, int z)
+	{
+		if (!this.checkSide(world, x, y, z, this.northSouth))
+			return false;
+		if (!this.checkSide(world, x, y, z, this.eastWest))
+			return false;
+		int offsetX = this.getOffsetX(this.northSouth);
+		int offsetY = this.getOffsetY(this.northSouth);
+		int offsetZ = this.getOffsetZ(this.northSouth);
+		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.eastWest))
+			return false;
+		offsetX = this.getOffsetX(this.eastWest);
+		offsetY = this.getOffsetY(this.eastWest);
+		offsetZ = this.getOffsetZ(this.eastWest);
+		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.northSouth))
+			return false;
+		return true;
+	}
+	
+	private int getOffsetX(ForgeDirection d)
+	{
+		int x = d.offsetX * 10;
+		return x;
+	}
+	
+	private int getOffsetY(ForgeDirection d)
+	{
+		int y = d.offsetY * 10;
+		return y;
+	}
+	
+	private int getOffsetZ(ForgeDirection d)
+	{
+		int z = d.offsetZ * 10;
+		return z;
+	}
+	
+	private boolean checkSide(World world, int x, int y, int z, ForgeDirection d)
+	{
+		int offsetX = d.offsetX;
+		int offsetY = d.offsetY;
+		int offsetZ = d.offsetZ;
+		for (int i = 0; i < 10; i++)
+		{
+			Block block = WorldProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
+			int meta = WorldProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
+			if (isValidBlock(block, meta))
+			{
+				offsetX += d.offsetX;
+				offsetY += d.offsetY;
+				offsetZ += d.offsetZ;
+				continue;
+			}
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	private boolean isValidBlock(Block block, int meta)
+	{
+		if (block == Blocks.fence || block == Blocks.fence_gate || Blocks.nether_brick_fence == block)
+			return true;
+		return false;
+	}
+
+	@Override
+	protected void loadLoc(NBTTagCompound compoundTag)
+	{
+		this.row = compoundTag.getByte("row");
+		if (this.row < 1 || 10 > this.row)
+		{
+			this.row = 1;
+		}
+		this.column = compoundTag.getByte("column");
+		if (this.column < 1 || 10 > this.column)
+		{
+			this.column = 1;
+		}
+		this.height = compoundTag.getByte("height");		
+	}
+}
