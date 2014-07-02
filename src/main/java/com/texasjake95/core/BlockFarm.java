@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
@@ -25,6 +26,7 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.tile.TileEntityFarm;
+import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class BlockFarm extends Block implements ITileEntityProvider {
 	
@@ -38,11 +40,17 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 		this.setHardness(.5F);
 		this.setBlockName("txfarm");
 		this.setHarvestLevel("axe", 0);
+		this.setCreativeTab(CreativeTabs.tabBlock);
 	}
 	
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta)
 	{
+		switch (meta)
+		{
+			case 1:
+				return new TileEntityQuarry();
+		}
 		return new TileEntityFarm();
 	}
 	
@@ -66,9 +74,10 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 	
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
-		TileEntityFarm farm = (TileEntityFarm) world.getTileEntity(x, y, z);
-		if (farm != null)
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityFarm)
 		{
+			TileEntityFarm farm = (TileEntityFarm) tile;
 			for (int slot = 0; slot < farm.getSizeInventory(); ++slot)
 			{
 				ItemStack itemstack = farm.getStackInSlot(slot);
@@ -98,6 +107,37 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 			}
 			farm.getSeedInv().dropItemStacks(world, x, y, z, rand);
 			world.func_147453_f(x, y, z, block);
+		}
+		if (tile instanceof TileEntityQuarry)
+		{
+			TileEntityQuarry quarry = (TileEntityQuarry) tile;
+			for (int slot = 0; slot < quarry.getSizeInventory(); ++slot)
+			{
+				ItemStack itemstack = quarry.getStackInSlot(slot);
+				if (itemstack != null)
+				{
+					float xChange = this.rand.nextFloat() * 0.8F + 0.1F;
+					float yChange = this.rand.nextFloat() * 0.8F + 0.1F;
+					EntityItem entityitem;
+					for (float zChange = this.rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
+					{
+						int dropSize = this.rand.nextInt(21) + 10;
+						if (dropSize > itemstack.stackSize)
+						{
+							dropSize = itemstack.stackSize;
+						}
+						itemstack.stackSize -= dropSize;
+						entityitem = new EntityItem(world, (double) ((float) x + xChange), (double) ((float) y + yChange), (double) ((float) z + zChange), new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
+						entityitem.motionX = (double) ((float) this.rand.nextGaussian() * 0.05F);
+						entityitem.motionY = (double) ((float) this.rand.nextGaussian() * 0.05F + 0.2F);
+						entityitem.motionZ = (double) ((float) this.rand.nextGaussian() * 0.05F);
+						if (itemstack.hasTagCompound())
+						{
+							entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
+						}
+					}
+				}
+			}
 		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
@@ -148,5 +188,13 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 				break;
 		}
 		return true;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_)
+	{
+		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
+		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
 	}
 }

@@ -66,17 +66,15 @@ minecraft {
 dependencies {
 	
 	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
-	
 	/*
-	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"dev"
-	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"src"
-	
-	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"dev"
-	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"src"
-	
+	 compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"dev"
+	 compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"src"
+	 compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"dev"
+	 compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"src"
+	 */
 	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"dev"
 	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"src"
-	*/
+	
 	//compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
 	
 	//compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"

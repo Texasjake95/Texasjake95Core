@@ -18,12 +18,12 @@ import com.texasjake95.core.tile.TileEntityFarm;
 public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider {
 	
 	@Override
-	public ArrayList<ItemStack> getDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
+	public ArrayList<ItemStack> getDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta, MachineType type)
 	{
 		ArrayList<ItemStack> returnList = Lists.newArrayList();
 		if (block == Blocks.cactus || block == Blocks.reeds)
 		{
-			for (int i = 2; i >= 1; i--)
+			for (int i = 2; i >= (type == MachineType.FARM ? 1 : 0); i--)
 			{
 				if (WorldProxy.isAirBlock(world, x, y + i, z))
 				{

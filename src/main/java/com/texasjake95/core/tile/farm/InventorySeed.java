@@ -12,6 +12,7 @@ import java.util.Random;
 import com.google.common.collect.Maps;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import net.minecraftforge.common.util.Constants;
@@ -149,7 +150,7 @@ public class InventorySeed implements IPacketHandler {
 		}
 	}
 	
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		dos.writeInt(this.limit);
 		dos.writeInt(this.map.size());
@@ -161,7 +162,7 @@ public class InventorySeed implements IPacketHandler {
 		}
 	}
 	
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		this.limit = data.readInt();
 		int size = data.readInt();

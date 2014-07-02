@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
 
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -45,12 +47,12 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	
 	public void load(NBTTagCompound compoundTag)
 	{
-		loadLoc(compoundTag);
+		loadExtra(compoundTag);
 		this.check = compoundTag.getByte("check");
 		this.valid = compoundTag.getBoolean("valid");
 	}
 	
-	protected abstract void loadLoc(NBTTagCompound compoundTag);
+	protected abstract void loadExtra(NBTTagCompound compoundTag);
 	
 	public void run(World world, int x, int y, int z, T tile)
 	{
@@ -76,7 +78,10 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		compoundTag.setByte("height", this.height);
 		compoundTag.setByte("check", this.check);
 		compoundTag.setBoolean("valid", this.valid);
+		saveExtra(compoundTag);
 	}
+	
+	protected abstract void saveExtra(NBTTagCompound compoundTag);
 	
 	public void validate(World world, int x, int y, int z)
 	{
@@ -93,7 +98,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	protected abstract boolean _validate(World world, int x, int y, int z);
 	
 	@Override
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		dos.writeBoolean(valid);
 		dos.writeByte(check);
@@ -103,7 +108,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf,Class<? extends IMessage> clazz) throws IOException
 	{
 		this.valid = data.readBoolean();
 		this.check = data.readByte();

@@ -34,11 +34,11 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	private HashMap<Byte, HashMap<Byte, BlockIntPair>> seedMap = Maps.newHashMap();
 	
 	@Override
-	protected void handleBlock(World world, int trueX, int trueY, int trueZ, TileEntityFarm inv)
+	protected void handleBlock(World world, int x, int y, int z, TileEntityFarm tile)
 	{
-		Block block = WorldProxy.getBlock(world, trueX, trueY, trueZ);
-		int meta = WorldProxy.getBlockMetadata(world, trueX, trueY, trueZ);
-		if (WorldProxy.isAirBlock(world, trueX, trueY, trueZ))
+		Block block = WorldProxy.getBlock(world, x, y, z);
+		int meta = WorldProxy.getBlockMetadata(world, x, y, z);
+		if (WorldProxy.isAirBlock(world, x, y, z))
 		{
 			HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 			if (columnMap != null)
@@ -46,12 +46,12 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 				BlockIntPair pair = columnMap.get(this.column);
 				if (pair != null)
 				{
-					EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, trueY, trueZ).get();
+					EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
 					ItemIntPair item = TileEntityFarm.getSeed(pair.getBlock(), pair.getMeta());
-					ItemStack stack = inv.getSeedInv().getStack(item);
+					ItemStack stack = tile.getSeedInv().getStack(item);
 					if (stack != null)
 					{
-						ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, trueY - 1, trueZ, 1, 0, 0, 0);
+						ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
 						columnMap.remove(this.column);
 						if (columnMap.isEmpty())
 						{
@@ -68,25 +68,25 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 				}
 			}
 		}
-		else if (TileEntityFarm.isFullGrown(block, meta, world, trueX, trueY, trueZ))
+		else if (TileEntityFarm.isFullGrown(block, meta, world, x, y, z))
 		{
-			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, trueX, trueY, trueZ).get();
-			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, trueX, trueY, trueZ, block, meta);
+			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
+			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, x, y, z, block, meta);
 			for (ItemStack stack : returnList)
 			{
 				if (TileEntityFarm.isSeed(stack))
 				{
-					inv.getSeedInv().addItemStack(stack);
+					tile.getSeedInv().addItemStack(stack);
 				}
-				InventoryHelper.addToInventory(inv, stack);
+				InventoryHelper.addToInventory(tile, stack);
 			}
 			ItemIntPair pair = TileEntityFarm.getSeed(block, meta);
 			if (pair != null)
 			{
-				ItemStack stack = inv.getSeedInv().getStack(pair);
+				ItemStack stack = tile.getSeedInv().getStack(pair);
 				if (stack != null)
 				{
-					ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, trueX, trueY - 1, trueZ, 1, 0, 0, 0);
+					ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
 				}
 				else
 				{
@@ -190,7 +190,7 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	}
 
 	@Override
-	protected void loadLoc(NBTTagCompound compoundTag)
+	protected void loadExtra(NBTTagCompound compoundTag)
 	{
 		this.row = compoundTag.getByte("row");
 		if (this.row < 1 || 10 > this.row)
@@ -203,5 +203,12 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			this.column = 1;
 		}
 		this.height = compoundTag.getByte("height");		
+	}
+
+	@Override
+	protected void saveExtra(NBTTagCompound compoundTag)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -20,6 +20,7 @@ import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.items.CoreItems;
 import com.texasjake95.core.tile.TileEntityFarm;
+import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class TxCoreCommonProxy {
 	
@@ -36,8 +37,9 @@ public class TxCoreCommonProxy {
 	
 	public void initItemsAndBlocks()
 	{
-		GameRegistry.registerBlock((farm = new BlockFarm()), "FarmBlock");
+		GameRegistry.registerBlock((farm = new BlockFarm()), ItemBlockMachine.class, "FarmBlock");
 		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
+		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
 		CoreItems.initItems();
 	}
 	

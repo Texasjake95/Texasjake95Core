@@ -12,6 +12,8 @@ import java.util.HashSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 
@@ -31,14 +33,16 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.lib.network.PacketHandler;
 import com.texasjake95.core.lib.pair.ItemIntPair;
-import com.texasjake95.core.network.PacketHandler;
+import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.farm.IGrowthChecker;
 import com.texasjake95.core.tile.farm.IHarvester;
+import com.texasjake95.core.tile.farm.IHarvester.MachineType;
 import com.texasjake95.core.tile.farm.ISeedProvider;
 import com.texasjake95.core.tile.farm.InventorySeed;
 import com.texasjake95.core.tile.farm.QuadrantFarm;
@@ -55,10 +59,10 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	private static HashSet<ISeedProvider> seedSet = Sets.newHashSet();
 	private static HashMap<Item, HashSet<Integer>> seeds = Maps.newHashMap();
 	private static VanillaChecker vanillaChecker = new VanillaChecker();
-	private QuadrantFarm NW = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.WEST, ForgeDirection.NORTH);
-	private QuadrantFarm NE = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.EAST, ForgeDirection.NORTH);
-	private QuadrantFarm SW = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.WEST, ForgeDirection.SOUTH);
-	private QuadrantFarm SE = new QuadrantFarm(ForgeDirection.UP, ForgeDirection.EAST, ForgeDirection.SOUTH);
+	private QuadrantFarm NW = new QuadrantFarm(ForgeDirection.WEST, ForgeDirection.UP, ForgeDirection.NORTH);
+	private QuadrantFarm NE = new QuadrantFarm(ForgeDirection.EAST, ForgeDirection.UP, ForgeDirection.NORTH);
+	private QuadrantFarm SW = new QuadrantFarm(ForgeDirection.WEST, ForgeDirection.UP, ForgeDirection.SOUTH);
+	private QuadrantFarm SE = new QuadrantFarm(ForgeDirection.EAST, ForgeDirection.UP, ForgeDirection.SOUTH);
 	private int syncTicks = 0;;
 	static
 	{
@@ -80,7 +84,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 		{
 			if (this.syncTicks++ % 200 == 0)
 			{
-				PacketHandler.sendToAllAround(new MessageTileFarm(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
+				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileFarm(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
 			}
 			checkQuadrant(NW);
 			checkQuadrant(NE);
@@ -99,7 +103,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	
 	public Packet getDescriptionPacket()
 	{
-		return PacketHandler.getPacketFrom(new MessageTileFarm(this));
+		return CorePacketHandler.INSTANCE.getPacketFrom(new MessageTileFarm(this));
 	}
 	
 	private boolean empty()
@@ -181,30 +185,30 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		if (dos != null)
 		{
 			inv.writeToPacket(dos, byteBuf);
-			this.seedInv.writeToPacket(dos, byteBuf);
-			this.NE.writeToPacket(dos, byteBuf);
-			this.NW.writeToPacket(dos, byteBuf);
-			this.SE.writeToPacket(dos, byteBuf);
-			this.SW.writeToPacket(dos, byteBuf);
+			this.seedInv.writeToPacket(dos, byteBuf, clazz);
+			this.NE.writeToPacket(dos, byteBuf, clazz);
+			this.NW.writeToPacket(dos, byteBuf, clazz);
+			this.SE.writeToPacket(dos, byteBuf, clazz);
+			this.SW.writeToPacket(dos, byteBuf, clazz);
 		}
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		if (data != null)
 		{
 			inv.readFromPacket(data, byteBuf);
-			this.seedInv.readFromPacket(data, byteBuf);
-			this.NE.readFromPacket(data, byteBuf);
-			this.NW.readFromPacket(data, byteBuf);
-			this.SE.readFromPacket(data, byteBuf);
-			this.SW.readFromPacket(data, byteBuf);
+			this.seedInv.readFromPacket(data, byteBuf, clazz);
+			this.NE.readFromPacket(data, byteBuf, clazz);
+			this.NW.readFromPacket(data, byteBuf, clazz);
+			this.SE.readFromPacket(data, byteBuf, clazz);
+			this.SW.readFromPacket(data, byteBuf, clazz);
 		}
 	}
 	
@@ -319,9 +323,8 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbtTagCompound)
+	public void load(NBTTagCompound nbtTagCompound)
 	{
-		super.readFromNBT(nbtTagCompound);
 		this.inv.readFromNBT(nbtTagCompound.getCompoundTag("inv"));
 		this.seedInv.load(nbtTagCompound.getCompoundTag("seedInv"));
 		this.NE.load(nbtTagCompound.getCompoundTag("NE"));
@@ -331,9 +334,8 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound nbtTagCompound)
+	public void save(NBTTagCompound nbtTagCompound)
 	{
-		super.writeToNBT(nbtTagCompound);
 		NBTTagCompound data = new NBTTagCompound();
 		this.inv.writeToNBT(data);
 		nbtTagCompound.setTag("inv", data);
@@ -428,7 +430,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 		IHarvester harvest = harvestRegistry.get(block);
 		if (harvest != null)
 		{
-			return harvest.getDrops(player, world, x, y, z, block, meta);
+			return harvest.getDrops(player, world, x, y, z, block, meta, MachineType.FARM);
 		}
 		else
 		{

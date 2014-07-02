@@ -67,7 +67,7 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 		buf.writeBytes(owner.getBytes());
 		try
 		{
-			this.tile.writeToPacket(new ByteBufOutputStream(buf), buf);
+			this.tile.writeToPacket(new ByteBufOutputStream(buf), buf, this.getClass());
 		}
 		catch (IOException e)
 		{
@@ -86,7 +86,7 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 			((TileEntityCore) tileEntity).setOwnerName(message.owner);
 			try
 			{
-				((TileEntityCore) tileEntity).readFromPacket(new ByteBufInputStream(message.byteBuf), message.byteBuf);
+				((TileEntityCore) tileEntity).readFromPacket(new ByteBufInputStream(message.byteBuf), message.byteBuf, message.getClass());
 			}
 			catch (IOException e)
 			{

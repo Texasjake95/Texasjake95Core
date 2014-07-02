@@ -1,18 +1,14 @@
 package com.texasjake95.core.tile;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-
-import java.io.IOException;
-
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public abstract class TileEntityCore extends TileEntity {
+import com.texasjake95.core.network.IPacketHandler;
+
+public abstract class TileEntityCore extends TileEntity implements IPacketHandler {
 	
 	protected ForgeDirection facing;
 	protected String customName;
@@ -102,9 +98,9 @@ public abstract class TileEntityCore extends TileEntity {
 		{
 			this.owner = nbtTagCompound.getString("owner");
 		}
+		load(nbtTagCompound);
 	}
 	
-	public abstract void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf) throws IOException;
 	
 	public boolean rotateBlock(ForgeDirection axis)
 	{
@@ -140,7 +136,11 @@ public abstract class TileEntityCore extends TileEntity {
 		{
 			nbtTagCompound.setString("customName", this.customName);
 		}
+		save(nbtTagCompound);
 	}
 	
-	public abstract void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf) throws IOException;
+	protected abstract void save(NBTTagCompound nbtTagCompound);
+	
+	protected abstract void load(NBTTagCompound nbtTagCompound);
+	
 }
