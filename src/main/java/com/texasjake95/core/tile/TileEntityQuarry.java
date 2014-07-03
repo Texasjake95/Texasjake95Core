@@ -93,7 +93,7 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 					this.forceChunks(this.chunkTicket);
 				}
 			}
-			this.validateAndRunQuads(!this.empty());
+			this.validateAndRunQuads(this.empty());
 			this.pushToChest();
 			if (!this.quadAreValid())
 			{

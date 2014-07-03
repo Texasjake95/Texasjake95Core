@@ -30,7 +30,6 @@ import net.minecraft.world.World;
 import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileFarm;
-import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.tile.farm.IGrowthChecker;
 import com.texasjake95.core.tile.farm.IHarvester;
@@ -195,24 +194,6 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 	{
 		super.load(nbtTagCompound);
 		this.seedInv.load(nbtTagCompound.getCompoundTag("seedInv"));
-	}
-	
-	public void printInv()
-	{
-		for (int invSlot = 0; invSlot < IInventoryProxy.getSizeInventory(this); invSlot++)
-		{
-			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
-			if (stack == null)
-			{
-				System.out.println(invSlot + "= null");
-			}
-			else
-			{
-				System.out.println(invSlot + "= " + stack.getItem().getUnlocalizedName() + ":" + stack.getItemDamage() + ":" + stack.stackSize);
-			}
-		}
-		System.out.println("Seeds");
-		this.seedInv.printItems();
 	}
 	
 	@Override
