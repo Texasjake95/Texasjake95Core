@@ -7,6 +7,8 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent;
+import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
+import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
@@ -14,14 +16,17 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.registry.GameRegistry.Type;
 
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 
 import com.texasjake95.core.api.CoreInfo;
+import com.texasjake95.core.chunkloading.ChunkloadCallback;
 import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.lib.handler.EventRegister;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
@@ -77,12 +82,21 @@ public class Texasjake95Core {
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();
 		EventRegister.registerForgeEventHandler(new Handler());
-		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new ChunkloadCallback());
 	}
 	
 	@EventHandler
 	public void serverAboutToStart(FMLServerAboutToStartEvent event)
 	{
+	}
+	
+	@EventHandler
+	public void fixMapping(FMLMissingMappingsEvent event)
+	{
+		for (MissingMapping mapping : event.get())
+		{
+			if (mapping.name.equals(CoreInfo.modId + ":FarmBlock"))
+				MappingHelper.remapBlock(mapping, TxCoreCommonProxy.machine);
+		}
 	}
 	
 	@EventHandler

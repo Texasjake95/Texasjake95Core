@@ -56,6 +56,11 @@ public class ItemToolBase extends ItemTool {
 	private final String prefix;
 	protected boolean isSword = false;
 	
+	public boolean isSword()
+	{
+		return this.isSword;
+	}
+	
 	public ItemToolBase(float damageMod, ToolMaterial toolMaterial, Set<Block> blocksEffectiveAgainst, String texturePrefix, String... types)
 	{
 		super(damageMod, toolMaterial, blocksEffectiveAgainst);

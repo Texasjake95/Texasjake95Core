@@ -9,11 +9,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.ChunkCoordIntPair;
 
 import com.texasjake95.core.Texasjake95Core;
+import com.texasjake95.core.api.CoreInfo;
+import com.texasjake95.core.chunkloading.IChunkLoader;
+import com.texasjake95.core.chunkloading.TicketHelper;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileQuarry;
 import com.texasjake95.core.tile.quarry.QuadrantQuarry;
 
-public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQuarry> {
+public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQuarry> implements IChunkLoader {
 	
 	private Ticket chunkTicket;
 	
@@ -31,9 +34,7 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 		}
 		if (this.chunkTicket != null)
 		{
-			this.chunkTicket.getModData().setInteger("quarryX", this.xCoord);
-			this.chunkTicket.getModData().setInteger("quarryY", this.yCoord);
-			this.chunkTicket.getModData().setInteger("quarryZ", this.zCoord);
+			TicketHelper.populateTicket(chunkTicket, this);
 			for (ChunkCoordIntPair chunk : this.chunkTicket.getChunkList())
 			{
 				ForgeChunkManager.unforceChunk(this.chunkTicket, chunk);
@@ -101,5 +102,11 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 				this.chunkTicket = null;
 			}
 		}
+	}
+	
+	@Override
+	public String getMod()
+	{
+		return CoreInfo.modId;
 	}
 }

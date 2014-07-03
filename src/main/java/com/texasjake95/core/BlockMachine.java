@@ -28,13 +28,13 @@ import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
-public class BlockFarm extends Block implements ITileEntityProvider {
+public class BlockMachine extends Block implements ITileEntityProvider {
 	
 	private IIcon side;
 	private IIcon top;
 	private final Random rand = new Random();
 	
-	public BlockFarm()
+	public BlockMachine()
 	{
 		super(Material.wood);
 		this.setHardness(.5F);

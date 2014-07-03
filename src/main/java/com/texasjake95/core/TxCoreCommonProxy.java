@@ -24,7 +24,7 @@ import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class TxCoreCommonProxy {
 	
-	public static Block farm;
+	public static Block machine;
 	protected static WeakReference<EntityPlayer> player = new WeakReference<EntityPlayer>(null);
 	public static final GameProfile gameProfile = new GameProfile(new UUID(156L, 783L), "[TXMOD]");
 	
@@ -74,7 +74,7 @@ public class TxCoreCommonProxy {
 	
 	public void initItemsAndBlocks()
 	{
-		GameRegistry.registerBlock((farm = new BlockFarm()), ItemBlockMachine.class, "FarmBlock");
+		GameRegistry.registerBlock((machine = new BlockMachine()), ItemBlockMachine.class, "Machines");
 		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
 		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
 		CoreItems.initItems();
@@ -90,7 +90,7 @@ public class TxCoreCommonProxy {
 	@SuppressWarnings("unchecked")
 	public void registerRecipes()
 	{
-		IRecipe recipe = new ShapedOreRecipe(new ItemStack(farm), new Object[] { "SLS", "FHF", "SLS", 'S', "cobblestone", 'F', Blocks.fence, 'L', "logWood", 'H', Blocks.hopper });
+		IRecipe recipe = new ShapedOreRecipe(new ItemStack(machine), new Object[] { "SLS", "FHF", "SLS", 'S', "cobblestone", 'F', Blocks.fence, 'L', "logWood", 'H', Blocks.hopper });
 		CraftingManager.getInstance().getRecipeList().add(recipe);
 	}
 }
