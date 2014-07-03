@@ -11,8 +11,12 @@ public class MappingHelper {
 	public static void remapBlock(MissingMapping mapping, Block block)
 	{
 		if (mapping.type == Type.BLOCK)
+		{
 			mapping.remap(block);
+		}
 		else
+		{
 			mapping.remap(Item.getItemFromBlock(block));
+		}
 	}
 }

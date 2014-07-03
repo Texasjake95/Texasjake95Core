@@ -1,8 +1,11 @@
 package com.texasjake95.core.tile;
 
-import net.minecraftforge.common.ForgeChunkManager;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.network.Packet;
@@ -26,30 +29,16 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 		this.addQuad(new QuadrantQuarry(ForgeDirection.EAST, ForgeDirection.DOWN, ForgeDirection.NORTH));
 	}
 	
-	public void forceChunks(Ticket ticket)
+	@Override
+	public List<ChunkCoordIntPair> getChunks()
 	{
-		if (this.chunkTicket == null)
-		{
-			this.chunkTicket = ticket;
-		}
-		if (this.chunkTicket != null)
-		{
-			TicketHelper.populateTicket(chunkTicket, this);
-			for (ChunkCoordIntPair chunk : this.chunkTicket.getChunkList())
-			{
-				ForgeChunkManager.unforceChunk(this.chunkTicket, chunk);
-			}
-			ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
-			ForgeChunkManager.forceChunk(this.chunkTicket, chunk);
-			for (QuadrantQuarry quad : this.getQuadCount())
-			{
-				ChunkCoordIntPair workingChunk = quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord);
-				if (!chunk.equals(workingChunk))
-				{
-					ForgeChunkManager.forceChunk(this.chunkTicket, workingChunk);
-				}
-			}
-		}
+		ArrayList<ChunkCoordIntPair> chunks = Lists.newArrayList();
+		ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
+		chunks.add(chunk);
+		for (QuadrantQuarry quad : this.getQuadCount())
+			if (chunk.equals(quad))
+				chunks.add(quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord));
+		return chunks;
 	}
 	
 	@Override
@@ -65,10 +54,34 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 	}
 	
 	@Override
+	public String getModID()
+	{
+		return CoreInfo.modId;
+	}
+	
+	@Override
+	public Object getModObject()
+	{
+		return Texasjake95Core.INSTANCE;
+	}
+	
+	@Override
+	public Ticket getTicket()
+	{
+		return this.chunkTicket;
+	}
+	
+	@Override
 	public void invalidate()
 	{
-		ForgeChunkManager.releaseTicket(this.chunkTicket);
+		TicketHelper.releaseTicket(this);
 		super.invalidate();
+	}
+	
+	@Override
+	public void setTicket(Ticket ticket)
+	{
+		this.chunkTicket = ticket;
 	}
 	
 	@Override
@@ -79,34 +92,24 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 		{
 			if (this.chunkTicket == null && this.quadAreValid())
 			{
-				this.chunkTicket = ForgeChunkManager.requestTicket(Texasjake95Core.INSTANCE, this.worldObj, Type.NORMAL);
-				if (this.chunkTicket != null)
-				{
-					this.forceChunks(this.chunkTicket);
-				}
+				TicketHelper.updateChunks(this);
 			}
-			if (this.syncTicks++ % 200 == 0)
+			if (++this.syncTicks % 200 == 0)
 			{
 				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileQuarry(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
-				this.syncTicks = 1;
-				if (this.chunkTicket != null && this.quadAreValid())
+				this.syncTicks = 0;
+				if (this.quadAreValid())
 				{
-					this.forceChunks(this.chunkTicket);
+					TicketHelper.updateChunks(this);
 				}
 			}
 			this.validateAndRunQuads(this.empty());
 			this.pushToChest();
 			if (!this.quadAreValid())
 			{
-				ForgeChunkManager.releaseTicket(this.chunkTicket);
+				TicketHelper.releaseTicket(this);
 				this.chunkTicket = null;
 			}
 		}
-	}
-	
-	@Override
-	public String getMod()
-	{
-		return CoreInfo.modId;
 	}
 }

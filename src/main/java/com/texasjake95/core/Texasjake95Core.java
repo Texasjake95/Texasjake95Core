@@ -16,17 +16,14 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.registry.GameRegistry.Type;
 
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 
 import com.texasjake95.core.api.CoreInfo;
-import com.texasjake95.core.chunkloading.ChunkloadCallback;
+import com.texasjake95.core.chunkloading.TicketHelper;
 import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.lib.handler.EventRegister;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
@@ -58,6 +55,18 @@ public class Texasjake95Core {
 	}
 	
 	@EventHandler
+	public void fixMapping(FMLMissingMappingsEvent event)
+	{
+		for (MissingMapping mapping : event.get())
+		{
+			if (mapping.name.equals(CoreInfo.modId + ":FarmBlock"))
+			{
+				MappingHelper.remapBlock(mapping, TxCoreCommonProxy.machine);
+			}
+		}
+	}
+	
+	@EventHandler
 	public void imc(IMCEvent event)
 	{
 	}
@@ -82,21 +91,12 @@ public class Texasjake95Core {
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();
 		EventRegister.registerForgeEventHandler(new Handler());
+		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
 	}
 	
 	@EventHandler
 	public void serverAboutToStart(FMLServerAboutToStartEvent event)
 	{
-	}
-	
-	@EventHandler
-	public void fixMapping(FMLMissingMappingsEvent event)
-	{
-		for (MissingMapping mapping : event.get())
-		{
-			if (mapping.name.equals(CoreInfo.modId + ":FarmBlock"))
-				MappingHelper.remapBlock(mapping, TxCoreCommonProxy.machine);
-		}
 	}
 	
 	@EventHandler

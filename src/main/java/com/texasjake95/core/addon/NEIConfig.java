@@ -3,21 +3,29 @@ package com.texasjake95.core.addon;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.api.ItemFilter;
-import codechicken.nei.api.ItemFilter.ItemFilterProvider;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-
-import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.texasjake95.core.TxCoreCommonProxy;
 import com.texasjake95.core.api.CoreInfo;
-import com.texasjake95.core.items.CoreItems;
 import com.texasjake95.core.items.ItemToolBase;
 
 public class NEIConfig implements IConfigureNEI {
+	
+	@Override
+	public String getName()
+	{
+		return "Texasjake95-Core NEI Config";
+	}
+	
+	@Override
+	public String getVersion()
+	{
+		return CoreInfo.modVersion;
+	}
 	
 	@Override
 	public void loadConfig()
@@ -80,17 +88,5 @@ public class NEIConfig implements IConfigureNEI {
 				return false;
 			}
 		});
-	}
-	
-	@Override
-	public String getName()
-	{
-		return "Texasjake95-Core NEI Config";
-	}
-	
-	@Override
-	public String getVersion()
-	{
-		return CoreInfo.modVersion;
 	}
 }

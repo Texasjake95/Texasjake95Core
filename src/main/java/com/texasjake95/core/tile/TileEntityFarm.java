@@ -221,10 +221,10 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 		super.updateEntity();
 		if (!this.worldObj.isRemote)
 		{
-			if (this.syncTicks++ % 200 == 0)
+			if (++this.syncTicks % 200 == 0)
 			{
 				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileFarm(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
-				this.syncTicks = 1;
+				this.syncTicks = 0;
 			}
 			this.validateAndRunQuads(this.empty());
 			this.pushToChest();

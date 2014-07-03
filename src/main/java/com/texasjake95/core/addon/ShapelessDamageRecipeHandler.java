@@ -16,25 +16,26 @@ import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 	
-	public int[][] stackorder = new int[][] { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { 0, 2 }, { 1, 2 }, { 2, 0 }, { 2, 1 }, { 2, 2 } };
-	
 	public class CachedShapelessDamageRecipe extends CachedRecipe {
+		
+		public ArrayList<PositionedStack> ingredients;
+		public PositionedStack result;
 		
 		public CachedShapelessDamageRecipe()
 		{
-			ingredients = new ArrayList<PositionedStack>();
+			this.ingredients = new ArrayList<PositionedStack>();
 		}
 		
 		public CachedShapelessDamageRecipe(ItemStack output)
 		{
 			this();
-			setResult(output);
+			this.setResult(output);
 		}
 		
-		public CachedShapelessDamageRecipe(ShapelessDamageRecipe recipe)
+		public CachedShapelessDamageRecipe(List<?> input, ItemStack output)
 		{
-			this(recipe.getRecipeOutput());
-			setIngredients(recipe);
+			this(output);
+			this.setIngredients(input);
 		}
 		
 		public CachedShapelessDamageRecipe(Object[] input, ItemStack output)
@@ -42,76 +43,59 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 			this(Arrays.asList(input), output);
 		}
 		
-		public CachedShapelessDamageRecipe(List<?> input, ItemStack output)
+		public CachedShapelessDamageRecipe(ShapelessDamageRecipe recipe)
 		{
-			this(output);
-			setIngredients(input);
+			this(recipe.getRecipeOutput());
+			this.setIngredients(recipe);
+		}
+		
+		@Override
+		public List<PositionedStack> getIngredients()
+		{
+			return this.getCycledIngredients(ShapelessDamageRecipeHandler.this.cycleticks / 20, this.ingredients);
+		}
+		
+		@Override
+		public PositionedStack getResult()
+		{
+			return this.result;
 		}
 		
 		public void setIngredients(List<?> items)
 		{
-			ingredients.clear();
+			this.ingredients.clear();
 			for (int ingred = 0; ingred < items.size(); ingred++)
 			{
-				PositionedStack stack = new PositionedStack(items.get(ingred), 25 + stackorder[ingred][0] * 18, 6 + stackorder[ingred][1] * 18);
+				PositionedStack stack = new PositionedStack(items.get(ingred), 25 + ShapelessDamageRecipeHandler.this.stackorder[ingred][0] * 18, 6 + ShapelessDamageRecipeHandler.this.stackorder[ingred][1] * 18);
 				stack.setMaxSize(1);
-				ingredients.add(stack);
+				this.ingredients.add(stack);
 			}
 		}
 		
 		public void setIngredients(ShapelessDamageRecipe recipe)
 		{
 			ArrayList<ItemStack> items = recipe.recipeItems;
-			setIngredients(items);
+			this.setIngredients(items);
 		}
 		
 		public void setResult(ItemStack output)
 		{
-			result = new PositionedStack(output, 119, 24);
+			this.result = new PositionedStack(output, 119, 24);
 		}
-		
-		@Override
-		public List<PositionedStack> getIngredients()
-		{
-			return getCycledIngredients(cycleticks / 20, ingredients);
-		}
-		
-		@Override
-		public PositionedStack getResult()
-		{
-			return result;
-		}
-		
-		public ArrayList<PositionedStack> ingredients;
-		public PositionedStack result;
 	}
 	
+	public int[][] stackorder = new int[][] { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { 0, 2 }, { 1, 2 }, { 2, 0 }, { 2, 1 }, { 2, 2 } };
+	
+	@Override
 	public String getRecipeName()
 	{
 		return "Shapeless Dmg Recipe";
 	}
 	
 	@Override
-	public void loadCraftingRecipes(String outputId, Object... results)
+	public boolean isRecipe2x2(int recipe)
 	{
-		if (outputId.equals("crafting") && getClass() == ShapelessDamageRecipeHandler.class)
-		{
-			@SuppressWarnings("unchecked")
-			List<IRecipe> allrecipes = CraftingManager.getInstance().getRecipeList();
-			for (IRecipe irecipe : allrecipes)
-			{
-				CachedShapelessDamageRecipe recipe = null;
-				if (irecipe instanceof ShapelessDamageRecipe)
-					recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
-				if (recipe == null)
-					continue;
-				arecipes.add(recipe);
-			}
-		}
-		else
-		{
-			super.loadCraftingRecipes(outputId, results);
-		}
+		return this.getIngredientStacks(recipe).size() <= 4;
 	}
 	
 	@Override
@@ -125,11 +109,42 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 			{
 				CachedShapelessDamageRecipe recipe = null;
 				if (irecipe instanceof ShapelessDamageRecipe)
+				{
 					recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
+				}
 				if (recipe == null)
+				{
 					continue;
-				arecipes.add(recipe);
+				}
+				this.arecipes.add(recipe);
 			}
+		}
+	}
+	
+	@Override
+	public void loadCraftingRecipes(String outputId, Object... results)
+	{
+		if (outputId.equals("crafting") && this.getClass() == ShapelessDamageRecipeHandler.class)
+		{
+			@SuppressWarnings("unchecked")
+			List<IRecipe> allrecipes = CraftingManager.getInstance().getRecipeList();
+			for (IRecipe irecipe : allrecipes)
+			{
+				CachedShapelessDamageRecipe recipe = null;
+				if (irecipe instanceof ShapelessDamageRecipe)
+				{
+					recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
+				}
+				if (recipe == null)
+				{
+					continue;
+				}
+				this.arecipes.add(recipe);
+			}
+		}
+		else
+		{
+			super.loadCraftingRecipes(outputId, results);
 		}
 	}
 	
@@ -142,20 +157,18 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 		{
 			CachedShapelessDamageRecipe recipe = null;
 			if (irecipe instanceof ShapelessDamageRecipe)
+			{
 				recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
+			}
 			if (recipe == null)
+			{
 				continue;
+			}
 			if (recipe.contains(recipe.ingredients, ingredient))
 			{
 				recipe.setIngredientPermutation(recipe.ingredients, ingredient);
-				arecipes.add(recipe);
+				this.arecipes.add(recipe);
 			}
 		}
-	}
-	
-	@Override
-	public boolean isRecipe2x2(int recipe)
-	{
-		return getIngredientStacks(recipe).size() <= 4;
 	}
 }

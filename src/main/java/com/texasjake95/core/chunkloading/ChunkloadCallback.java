@@ -26,11 +26,18 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 	{
 		for (Ticket ticket : tickets)
 		{
-			int quarryX = ticket.getModData().getInteger("loaderX");
-			int quarryY = ticket.getModData().getInteger("loaderY");
-			int quarryZ = ticket.getModData().getInteger("loaderyZ");
-			IChunkLoader loader = (IChunkLoader) world.getTileEntity(quarryX, quarryY, quarryZ);
-			loader.forceChunks(ticket);
+			int loaderX = ticket.getModData().getInteger("loaderX");
+			int loaderY = ticket.getModData().getInteger("loaderY");
+			int loaderZ = ticket.getModData().getInteger("loaderZ");
+			TileEntity tile = world.getTileEntity(loaderX, loaderY, loaderZ);
+			if (tile instanceof IChunkLoader)
+			{
+				IChunkLoader loader = (IChunkLoader) tile;
+				if (this.modID.equals(loader.getModID()))
+				{
+					loader.setTicket(ticket);
+				}
+			}
 		}
 	}
 	
@@ -40,14 +47,17 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 		List<Ticket> validTickets = Lists.newArrayList();
 		for (Ticket ticket : tickets)
 		{
-			int quarryX = ticket.getModData().getInteger("loaderX");
-			int quarryY = ticket.getModData().getInteger("loaderY");
-			int quarryZ = ticket.getModData().getInteger("loaderZ");
-			TileEntity tile = WorldProxy.getTileEntity(world, quarryX, quarryY, quarryZ);
+			int loaderX = ticket.getModData().getInteger("loaderX");
+			int loaderY = ticket.getModData().getInteger("loaderY");
+			int loaderZ = ticket.getModData().getInteger("loaderZ");
+			TileEntity tile = WorldProxy.getTileEntity(world, loaderX, loaderY, loaderZ);
 			if (tile instanceof IChunkLoader)
 			{
-				if (maxTicketCount > validTickets.size())
+				IChunkLoader loader = (IChunkLoader) tile;
+				if (maxTicketCount > validTickets.size() && this.modID.equals(loader.getModID()))
+				{
 					validTickets.add(ticket);
+				}
 			}
 		}
 		return validTickets;
