@@ -8,6 +8,9 @@ import java.io.IOException;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.block.Block;
@@ -19,11 +22,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.helper.InventoryHelper;
-import com.texasjake95.core.lib.network.PacketHandler;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileQuarry;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
@@ -35,6 +39,7 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	private InventoryBase inv = new InventoryBase(10);
 	private int syncTicks;
 	private QuadrantQuarry quad = new QuadrantQuarry(ForgeDirection.EAST, ForgeDirection.DOWN, ForgeDirection.NORTH);
+	private Ticket chunkTicket;
 	
 	@Override
 	public void updateEntity()
@@ -42,9 +47,18 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 		super.updateEntity();
 		if (!this.worldObj.isRemote)
 		{
+			if (chunkTicket == null && quad.isValid())
+			{
+				chunkTicket = ForgeChunkManager.requestTicket(Texasjake95Core.INSTANCE, this.worldObj, Type.NORMAL);
+				if (chunkTicket != null)
+					this.forceChunks(chunkTicket);
+			}
 			if (this.syncTicks++ % 200 == 0)
 			{
 				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileQuarry(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
+				this.syncTicks = 1;
+				if (chunkTicket != null && quad.isValid())
+					this.forceChunks(chunkTicket);
 			}
 			if (quad != null)
 			{
@@ -55,7 +69,19 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 				}
 			}
 			this.pushToChest();
+			if (!quad.isValid())
+			{
+				ForgeChunkManager.releaseTicket(this.chunkTicket);
+				this.chunkTicket = null;
+			}
 		}
+	}
+	
+	@Override
+	public void invalidate()
+	{
+		ForgeChunkManager.releaseTicket(chunkTicket);
+		super.invalidate();
 	}
 	
 	public Packet getDescriptionPacket()
@@ -132,17 +158,17 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf,Class<? extends IMessage> clazz) throws IOException
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		this.inv.readFromPacket(data, byteBuf);
-		this.quad.readFromPacket(data, byteBuf,clazz);
+		this.quad.readFromPacket(data, byteBuf, clazz);
 	}
 	
 	@Override
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf,Class<? extends IMessage> clazz) throws IOException
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		this.inv.writeToPacket(dos, byteBuf);
-		this.quad.writeToPacket(dos, byteBuf,clazz);
+		this.quad.writeToPacket(dos, byteBuf, clazz);
 	}
 	
 	@Override
@@ -230,6 +256,29 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	protected void load(NBTTagCompound nbtTagCompound)
 	{
 		this.inv.readFromNBT(nbtTagCompound.getCompoundTag("inv"));
-		this.inv.readFromNBT(nbtTagCompound.getCompoundTag("quad"));
+		this.quad.load(nbtTagCompound.getCompoundTag("quad"));
+	}
+	
+	public void forceChunks(Ticket ticket)
+	{
+		if (chunkTicket == null)
+		{
+			chunkTicket = ticket;
+		}
+		if (chunkTicket != null)
+		{
+			chunkTicket.getModData().setInteger("quarryX", xCoord);
+			chunkTicket.getModData().setInteger("quarryY", yCoord);
+			chunkTicket.getModData().setInteger("quarryZ", zCoord);
+			for (ChunkCoordIntPair chunk : chunkTicket.getChunkList())
+			{
+				ForgeChunkManager.unforceChunk(chunkTicket, chunk);
+			}
+			ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
+			ForgeChunkManager.forceChunk(chunkTicket, chunk);
+			ChunkCoordIntPair workingChunk = this.quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord);
+			if (!chunk.equals(workingChunk))
+				ForgeChunkManager.forceChunk(chunkTicket, workingChunk);
+		}
 	}
 }

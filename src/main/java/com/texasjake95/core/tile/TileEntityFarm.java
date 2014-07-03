@@ -33,7 +33,6 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.helper.InventoryHelper;
-import com.texasjake95.core.lib.network.PacketHandler;
 import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileFarm;
@@ -85,6 +84,7 @@ public class TileEntityFarm extends TileEntityCore implements IInventory {
 			if (this.syncTicks++ % 200 == 0)
 			{
 				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileFarm(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
+				this.syncTicks = 1;
 			}
 			checkQuadrant(NW);
 			checkQuadrant(NE);

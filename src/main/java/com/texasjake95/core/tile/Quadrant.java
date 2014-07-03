@@ -108,7 +108,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf,Class<? extends IMessage> clazz) throws IOException
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		this.valid = data.readBoolean();
 		this.check = data.readByte();

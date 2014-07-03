@@ -20,15 +20,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S25PacketBlockBreakAnim;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.lib.helper.InventoryHelper;
-import com.texasjake95.core.lib.network.PacketHandler;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageBlockRenderUpdate;
 import com.texasjake95.core.proxy.world.WorldProxy;
@@ -41,6 +40,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	boolean resetHeight = false;
 	boolean increase = false;
 	private float breakIndex = 0;
+	private boolean isDone = false;
 	
 	public QuadrantQuarry(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
 	{
@@ -54,6 +54,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		dos.writeBoolean(increase);
 		dos.writeBoolean(resetHeight);
 		dos.writeFloat(breakIndex);
+		dos.writeBoolean(isDone);
 	}
 	
 	@Override
@@ -63,18 +64,19 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		this.increase = data.readBoolean();
 		this.resetHeight = data.readBoolean();
 		this.breakIndex = data.readFloat();
+		this.isDone = data.readBoolean();
 	}
 	
 	@Override
 	protected void loadExtra(NBTTagCompound compoundTag)
 	{
 		this.row = compoundTag.getByte("row");
-		if (this.row < 1 || 10 > this.row)
+		if (this.row < 1 || 10 < this.row)
 		{
 			this.row = 1;
 		}
 		this.column = compoundTag.getByte("column");
-		if (this.column < 1 || 10 > this.column)
+		if (this.column < 1 || 10 < this.column)
 		{
 			this.column = 1;
 		}
@@ -82,6 +84,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		this.breakIndex = compoundTag.getFloat("breakIndex");
 		this.resetHeight = compoundTag.getBoolean("resetHeight");
 		this.increase = compoundTag.getBoolean("increase");
+		this.isDone = compoundTag.getBoolean("isDone");
 	}
 	
 	@Override
@@ -94,8 +97,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			this.increase = false;
 			if (this.row >= 9 && this.column >= 9)
 			{
-				this.row = 1;
-				this.column = 1;
+				this.isDone = true;
 				return;
 			}
 			if (this.row >= 9)
@@ -140,7 +142,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		if (breakIndex >= hardness)
 		{
 			breakIndex = 0;
-			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, 0), world.provider.dimensionId, x, y, z, 10D);
+			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, 10), world.provider.dimensionId, x, y, z, 10D);
 			this.increase = true;
 			int meta = WorldProxy.getBlockMetadata(world, x, y, z);
 			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
@@ -173,7 +175,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	@Override
 	protected boolean _validate(World world, int x, int y, int z)
 	{
-		return true;
+		return !this.isDone;
 	}
 	
 	@Override
@@ -182,5 +184,11 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		compoundTag.setBoolean("resetHeight", resetHeight);
 		compoundTag.setBoolean("increase", increase);
 		compoundTag.setFloat("breakIndex", breakIndex);
+		compoundTag.setBoolean("isDone", this.isDone);
+	}
+	
+	public ChunkCoordIntPair getCurrentChunkCoordIntPair(int x, int z)
+	{
+		return new ChunkCoordIntPair((x + row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4);
 	}
 }

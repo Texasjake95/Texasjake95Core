@@ -188,27 +188,25 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			return true;
 		return false;
 	}
-
+	
 	@Override
 	protected void loadExtra(NBTTagCompound compoundTag)
 	{
 		this.row = compoundTag.getByte("row");
-		if (this.row < 1 || 10 > this.row)
+		if (this.row < 1 || 10 < this.row)
 		{
 			this.row = 1;
 		}
 		this.column = compoundTag.getByte("column");
-		if (this.column < 1 || 10 > this.column)
+		if (this.column < 1 || 10 < this.column)
 		{
 			this.column = 1;
 		}
-		this.height = compoundTag.getByte("height");		
+		this.height = compoundTag.getByte("height");
 	}
-
+	
 	@Override
 	protected void saveExtra(NBTTagCompound compoundTag)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -15,6 +15,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
@@ -22,6 +23,7 @@ import net.minecraft.init.Blocks;
 
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.config.CoreConfig;
+import com.texasjake95.core.lib.handler.EventRegister;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
@@ -31,7 +33,7 @@ import com.texasjake95.core.recipe.ShapelessDamageRecipe;
  * @author Texasjake95
  * 
  */
-@Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion,guiFactory = "com.texasjake95.core.config.client.GuiConfigFactory")
+@Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion, guiFactory = "com.texasjake95.core.config.client.GuiConfigFactory")
 public class Texasjake95Core {
 	
 	@Instance(CoreInfo.modId)
@@ -74,6 +76,8 @@ public class Texasjake95Core {
 		proxy.registerEventHandlers();
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();
+		EventRegister.registerForgeEventHandler(new Handler());
+		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new ChunkloadCallback());
 	}
 	
 	@EventHandler
