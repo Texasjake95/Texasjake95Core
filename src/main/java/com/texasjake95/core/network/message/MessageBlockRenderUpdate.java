@@ -27,13 +27,6 @@ public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<Messa
 	}
 	
 	@Override
-	public IMessage onMessage(MessageBlockRenderUpdate message, MessageContext ctx)
-	{
-		Minecraft.getMinecraft().theWorld.destroyBlockInWorldPartially(message.blockID, message.x, message.y, message.z, message.progress);
-		return null;
-	}
-	
-	@Override
 	public void fromBytes(ByteBuf buf)
 	{
 		this.blockID = buf.readInt();
@@ -41,6 +34,13 @@ public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<Messa
 		this.y = buf.readInt();
 		this.z = buf.readInt();
 		this.progress = buf.readInt();
+	}
+	
+	@Override
+	public IMessage onMessage(MessageBlockRenderUpdate message, MessageContext ctx)
+	{
+		Minecraft.getMinecraft().theWorld.destroyBlockInWorldPartially(message.blockID, message.x, message.y, message.z, message.progress);
+		return null;
 	}
 	
 	@Override

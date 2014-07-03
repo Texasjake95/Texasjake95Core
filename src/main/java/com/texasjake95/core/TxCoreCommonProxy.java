@@ -28,28 +28,6 @@ public class TxCoreCommonProxy {
 	protected static WeakReference<EntityPlayer> player = new WeakReference<EntityPlayer>(null);
 	public static final GameProfile gameProfile = new GameProfile(new UUID(156L, 783L), "[TXMOD]");
 	
-	/**
-	 * Register All Event Handlers
-	 */
-	public void registerEventHandlers()
-	{
-	}
-	
-	public void initItemsAndBlocks()
-	{
-		GameRegistry.registerBlock((farm = new BlockFarm()), ItemBlockMachine.class, "FarmBlock");
-		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
-		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
-		CoreItems.initItems();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void registerRecipes()
-	{
-		IRecipe recipe = new ShapedOreRecipe(new ItemStack(farm), new Object[] { "SLS", "FHF", "SLS", 'S', "cobblestone", 'F', Blocks.fence, 'L', "logWood", 'H', Blocks.hopper });
-		CraftingManager.getInstance().getRecipeList().add(recipe);
-	}
-	
 	private WeakReference<EntityPlayer> createNewPlayer(WorldServer world)
 	{
 		EntityPlayer player = FakePlayerFactory.get(world, gameProfile);
@@ -69,7 +47,7 @@ public class TxCoreCommonProxy {
 	{
 		if (player.get() == null)
 		{
-			player = createNewPlayer(world);
+			player = this.createNewPlayer(world);
 		}
 		else
 		{
@@ -82,7 +60,7 @@ public class TxCoreCommonProxy {
 	{
 		if (player.get() == null)
 		{
-			player = createNewPlayer(world, x, y, z);
+			player = this.createNewPlayer(world, x, y, z);
 		}
 		else
 		{
@@ -92,5 +70,27 @@ public class TxCoreCommonProxy {
 			player.get().posZ = z;
 		}
 		return player;
+	}
+	
+	public void initItemsAndBlocks()
+	{
+		GameRegistry.registerBlock((farm = new BlockFarm()), ItemBlockMachine.class, "FarmBlock");
+		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
+		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
+		CoreItems.initItems();
+	}
+	
+	/**
+	 * Register All Event Handlers
+	 */
+	public void registerEventHandlers()
+	{
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void registerRecipes()
+	{
+		IRecipe recipe = new ShapedOreRecipe(new ItemStack(farm), new Object[] { "SLS", "FHF", "SLS", 'S', "cobblestone", 'F', Blocks.fence, 'L', "logWood", 'H', Blocks.hopper });
+		CraftingManager.getInstance().getRecipeList().add(recipe);
 	}
 }

@@ -27,6 +27,12 @@ public class MultiItemMap {
 	public static Item[] Shovel = new Item[] { Items.wooden_shovel, Items.stone_shovel, Items.iron_shovel, Items.golden_shovel, Items.diamond_shovel };
 	public static Item[] Sword = new Item[] { Items.wooden_sword, Items.stone_sword, Items.iron_sword, Items.golden_sword, Items.diamond_sword };
 	
+	@SuppressWarnings("unchecked")
+	private static void addShapelessDamage(ItemStack itemStack, Object... items)
+	{
+		CraftingManager.getInstance().getRecipeList().add(new ShapelessDamageRecipe(itemStack, items));
+	}
+	
 	public static void initItemMaps()
 	{
 		ArrayList<Item> pA = new ArrayList<Item>();
@@ -132,11 +138,5 @@ public class MultiItemMap {
 			addShapelessDamage(new ItemStack(SSwA[a]), new Object[] { new ItemStack(Sword[a]), new ItemStack(SA[a]) });
 			addShapelessDamage(new ItemStack(SwA[a]), new Object[] { new ItemStack(Sword[a]), new ItemStack(Axe[a]) });
 		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static void addShapelessDamage(ItemStack itemStack, Object... items)
-	{
-		CraftingManager.getInstance().getRecipeList().add(new ShapelessDamageRecipe(itemStack, items));
 	}
 }

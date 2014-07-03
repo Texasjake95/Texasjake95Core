@@ -1,7 +1,5 @@
 package com.texasjake95.core.config;
 
-import java.io.File;
-
 import com.texasjake95.core.lib.config.ConfigWriter;
 
 public class CoreConfigWriter extends ConfigWriter {

@@ -82,6 +82,8 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 		return this.getBlock() == block && this.getBlockMeta() == meta;
 	}
 	
+	protected abstract void load(NBTTagCompound nbtTagCompound);
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
@@ -98,15 +100,16 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 		{
 			this.owner = nbtTagCompound.getString("owner");
 		}
-		load(nbtTagCompound);
+		this.load(nbtTagCompound);
 	}
-	
 	
 	public boolean rotateBlock(ForgeDirection axis)
 	{
 		this.setFacing(this.getNextRotation());
 		return true;
 	}
+	
+	protected abstract void save(NBTTagCompound nbtTagCompound);
 	
 	public void setCustomName(String name)
 	{
@@ -136,11 +139,6 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 		{
 			nbtTagCompound.setString("customName", this.customName);
 		}
-		save(nbtTagCompound);
+		this.save(nbtTagCompound);
 	}
-	
-	protected abstract void save(NBTTagCompound nbtTagCompound);
-	
-	protected abstract void load(NBTTagCompound nbtTagCompound);
-	
 }

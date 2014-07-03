@@ -26,12 +26,72 @@ import com.texasjake95.core.tile.TileEntityFarm;
 
 public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	
+	private HashMap<Byte, HashMap<Byte, BlockIntPair>> seedMap = Maps.newHashMap();
+	
 	public QuadrantFarm(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
 	{
 		super(eastWest, upDown, northSouth);
 	}
 	
-	private HashMap<Byte, HashMap<Byte, BlockIntPair>> seedMap = Maps.newHashMap();
+	@Override
+	protected boolean _validate(World world, int x, int y, int z)
+	{
+		if (!this.checkSide(world, x, y, z, this.northSouth))
+			return false;
+		if (!this.checkSide(world, x, y, z, this.eastWest))
+			return false;
+		int offsetX = this.getOffsetX(this.northSouth);
+		int offsetY = this.getOffsetY(this.northSouth);
+		int offsetZ = this.getOffsetZ(this.northSouth);
+		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.eastWest))
+			return false;
+		offsetX = this.getOffsetX(this.eastWest);
+		offsetY = this.getOffsetY(this.eastWest);
+		offsetZ = this.getOffsetZ(this.eastWest);
+		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.northSouth))
+			return false;
+		return true;
+	}
+	
+	private boolean checkSide(World world, int x, int y, int z, ForgeDirection d)
+	{
+		int offsetX = d.offsetX;
+		int offsetY = d.offsetY;
+		int offsetZ = d.offsetZ;
+		for (int i = 0; i < 10; i++)
+		{
+			Block block = WorldProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
+			int meta = WorldProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
+			if (this.isValidBlock(block, meta))
+			{
+				offsetX += d.offsetX;
+				offsetY += d.offsetY;
+				offsetZ += d.offsetZ;
+				continue;
+			}
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	private int getOffsetX(ForgeDirection d)
+	{
+		int x = d.offsetX * 10;
+		return x;
+	}
+	
+	private int getOffsetY(ForgeDirection d)
+	{
+		int y = d.offsetY * 10;
+		return y;
+	}
+	
+	private int getOffsetZ(ForgeDirection d)
+	{
+		int z = d.offsetZ * 10;
+		return z;
+	}
 	
 	@Override
 	protected void handleBlock(World world, int x, int y, int z, TileEntityFarm tile)
@@ -120,66 +180,6 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			this.row += 1;
 			return;
 		}
-	}
-	
-	@Override
-	protected boolean _validate(World world, int x, int y, int z)
-	{
-		if (!this.checkSide(world, x, y, z, this.northSouth))
-			return false;
-		if (!this.checkSide(world, x, y, z, this.eastWest))
-			return false;
-		int offsetX = this.getOffsetX(this.northSouth);
-		int offsetY = this.getOffsetY(this.northSouth);
-		int offsetZ = this.getOffsetZ(this.northSouth);
-		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.eastWest))
-			return false;
-		offsetX = this.getOffsetX(this.eastWest);
-		offsetY = this.getOffsetY(this.eastWest);
-		offsetZ = this.getOffsetZ(this.eastWest);
-		if (!this.checkSide(world, x + offsetX, y + offsetY, z + offsetZ, this.northSouth))
-			return false;
-		return true;
-	}
-	
-	private int getOffsetX(ForgeDirection d)
-	{
-		int x = d.offsetX * 10;
-		return x;
-	}
-	
-	private int getOffsetY(ForgeDirection d)
-	{
-		int y = d.offsetY * 10;
-		return y;
-	}
-	
-	private int getOffsetZ(ForgeDirection d)
-	{
-		int z = d.offsetZ * 10;
-		return z;
-	}
-	
-	private boolean checkSide(World world, int x, int y, int z, ForgeDirection d)
-	{
-		int offsetX = d.offsetX;
-		int offsetY = d.offsetY;
-		int offsetZ = d.offsetZ;
-		for (int i = 0; i < 10; i++)
-		{
-			Block block = WorldProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
-			int meta = WorldProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
-			if (isValidBlock(block, meta))
-			{
-				offsetX += d.offsetX;
-				offsetY += d.offsetY;
-				offsetZ += d.offsetZ;
-				continue;
-			}
-			else
-				return false;
-		}
-		return true;
 	}
 	
 	private boolean isValidBlock(Block block, int meta)

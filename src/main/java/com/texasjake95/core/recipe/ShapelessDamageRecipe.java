@@ -36,14 +36,12 @@ public class ShapelessDamageRecipe implements IRecipe {
 			else
 			{
 				if (!(input instanceof Block))
-				{
 					throw new RuntimeException("Invalid shapeless damage recipe!");
-				}
 				inputFinal.add(new ItemStack((Block) input));
 			}
 		}
-		recipeItems.addAll(inputFinal);
-		recipeOutput = par1ItemStack;
+		this.recipeItems.addAll(inputFinal);
+		this.recipeOutput = par1ItemStack;
 	}
 	
 	/**
@@ -92,9 +90,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 						}
 					}
 					if (!validIngredient)
-					{
 						return null;
-					}
 				}
 			}
 		}
@@ -141,9 +137,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 						}
 					}
 					if (!validIngredient)
-					{
 						return false;
-					}
 				}
 			}
 		}

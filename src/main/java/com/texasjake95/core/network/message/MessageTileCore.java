@@ -55,27 +55,6 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buf)
-	{
-		buf.writeInt(x);
-		buf.writeInt(y);
-		buf.writeInt(z);
-		buf.writeByte(orientation);
-		buf.writeInt(customName.length());
-		buf.writeBytes(customName.getBytes());
-		buf.writeInt(owner.length());
-		buf.writeBytes(owner.getBytes());
-		try
-		{
-			this.tile.writeToPacket(new ByteBufOutputStream(buf), buf, this.getClass());
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
 	public IMessage onMessage(T message, MessageContext ctx)
 	{
 		TileEntity tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(message.x, message.y, message.z);
@@ -94,5 +73,26 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void toBytes(ByteBuf buf)
+	{
+		buf.writeInt(this.x);
+		buf.writeInt(this.y);
+		buf.writeInt(this.z);
+		buf.writeByte(this.orientation);
+		buf.writeInt(this.customName.length());
+		buf.writeBytes(this.customName.getBytes());
+		buf.writeInt(this.owner.length());
+		buf.writeBytes(this.owner.getBytes());
+		try
+		{
+			this.tile.writeToPacket(new ByteBufOutputStream(buf), buf, this.getClass());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

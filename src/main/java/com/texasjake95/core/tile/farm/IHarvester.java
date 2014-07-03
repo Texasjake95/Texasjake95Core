@@ -9,11 +9,11 @@ import net.minecraft.world.World;
 
 public interface IHarvester {
 	
-	ArrayList<ItemStack> getDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta, MachineType type);
-	
 	public static enum MachineType
 	{
 		FARM,
 		QUARRY;
 	}
+	
+	ArrayList<ItemStack> getDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta, MachineType type);
 }

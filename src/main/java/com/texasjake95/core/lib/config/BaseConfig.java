@@ -5,6 +5,12 @@ import net.minecraftforge.common.config.Property;
 
 public abstract class BaseConfig {
 	
+	public static Property setComment(Property prop, String comment)
+	{
+		prop.comment = comment;
+		return prop;
+	}
+	
 	// public ConfigFile config;
 	public Configuration forgeConfig;
 	public ConfigWriter configw;
@@ -37,12 +43,8 @@ public abstract class BaseConfig {
 	public final void save()
 	{
 		if (this.forgeConfig.hasChanged())
-			forgeConfig.save();
-	}
-	
-	public static Property setComment(Property prop, String comment)
-	{
-		prop.comment = comment;
-		return prop;
+		{
+			this.forgeConfig.save();
+		}
 	}
 }

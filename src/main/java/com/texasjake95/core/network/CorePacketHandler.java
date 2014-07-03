@@ -20,8 +20,8 @@ public class CorePacketHandler extends PacketHandler {
 	@Override
 	protected void registerMessages()
 	{
-		registerMessage(MessageTileFarm.class, MessageTileFarm.class, 0, Side.CLIENT);
-		registerMessage(MessageTileQuarry.class, MessageTileQuarry.class, 1, Side.CLIENT);
-		registerMessage(MessageBlockRenderUpdate.class, MessageBlockRenderUpdate.class, 2, Side.CLIENT);
+		this.registerMessage(MessageTileFarm.class, MessageTileFarm.class, 0, Side.CLIENT);
+		this.registerMessage(MessageTileQuarry.class, MessageTileQuarry.class, 1, Side.CLIENT);
+		this.registerMessage(MessageBlockRenderUpdate.class, MessageBlockRenderUpdate.class, 2, Side.CLIENT);
 	}
 }

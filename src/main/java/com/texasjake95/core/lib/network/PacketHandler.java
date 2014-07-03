@@ -16,49 +16,49 @@ public abstract class PacketHandler {
 	
 	protected PacketHandler(String channelName)
 	{
-		channel = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
+		this.channel = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
 		this.registerMessages();
 	}
 	
-	protected abstract void registerMessages();
+	public Packet getPacketFrom(IMessage message)
+	{
+		return this.channel.getPacketFrom(message);
+	}
 	
 	protected <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, int discriminator, Side side)
 	{
 		this.channel.registerMessage(messageHandler, requestMessageType, discriminator, side);
 	}
 	
+	protected abstract void registerMessages();
+	
 	public void sendTo(IMessage message, EntityPlayerMP player)
 	{
-		channel.sendTo(message, player);
+		this.channel.sendTo(message, player);
 	}
 	
 	public void sendToAll(IMessage message)
 	{
-		channel.sendToAll(message);
+		this.channel.sendToAll(message);
 	}
 	
 	public void sendToAllAround(IMessage message, int dimension, double x, double y, double z, double range)
 	{
-		sendToAllAround(message, new TargetPoint(dimension, x, y, z, range));
+		this.sendToAllAround(message, new TargetPoint(dimension, x, y, z, range));
 	}
 	
 	public void sendToAllAround(IMessage message, TargetPoint point)
 	{
-		channel.sendToAllAround(message, point);
+		this.channel.sendToAllAround(message, point);
 	}
 	
 	public void sendToDimension(IMessage message, int dimensionId)
 	{
-		channel.sendToDimension(message, dimensionId);
+		this.channel.sendToDimension(message, dimensionId);
 	}
 	
 	public void sendToServer(IMessage message)
 	{
-		channel.sendToServer(message);
-	}
-	
-	public Packet getPacketFrom(IMessage message)
-	{
-		return channel.getPacketFrom(message);
+		this.channel.sendToServer(message);
 	}
 }

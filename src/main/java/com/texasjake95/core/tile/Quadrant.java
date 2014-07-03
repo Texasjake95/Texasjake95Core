@@ -40,6 +40,12 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		this.upDown = upDown;
 	}
 	
+	protected abstract boolean _validate(World world, int x, int y, int z);
+	
+	protected abstract void handleBlock(World world, int x, int y, int z, T tile);
+	
+	protected abstract void incrementLoc();
+	
 	public boolean isValid()
 	{
 		return this.valid;
@@ -47,12 +53,22 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	
 	public void load(NBTTagCompound compoundTag)
 	{
-		loadExtra(compoundTag);
+		this.loadExtra(compoundTag);
 		this.check = compoundTag.getByte("check");
 		this.valid = compoundTag.getBoolean("valid");
 	}
 	
 	protected abstract void loadExtra(NBTTagCompound compoundTag);
+	
+	@Override
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	{
+		this.valid = data.readBoolean();
+		this.check = data.readByte();
+		this.row = data.readByte();
+		this.column = data.readByte();
+		this.height = data.readByte();
+	}
 	
 	public void run(World world, int x, int y, int z, T tile)
 	{
@@ -62,14 +78,10 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 			int offsetY = this.height * this.upDown.offsetY;
 			int offsetZ = this.column * this.northSouth.offsetZ;
 			int trueX = x + offsetX, trueY = y + offsetY, trueZ = z + offsetZ;
-			handleBlock(world, trueX, trueY, trueZ, tile);
-			incrementLoc();
+			this.handleBlock(world, trueX, trueY, trueZ, tile);
+			this.incrementLoc();
 		}
 	}
-	
-	protected abstract void incrementLoc();
-	
-	protected abstract void handleBlock(World world, int x, int y, int z, T tile);
 	
 	public void save(NBTTagCompound compoundTag)
 	{
@@ -78,7 +90,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		compoundTag.setByte("height", this.height);
 		compoundTag.setByte("check", this.check);
 		compoundTag.setBoolean("valid", this.valid);
-		saveExtra(compoundTag);
+		this.saveExtra(compoundTag);
 	}
 	
 	protected abstract void saveExtra(NBTTagCompound compoundTag);
@@ -90,30 +102,20 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		{
 			this.valid = false;
 			this.check = 0;
-			if (_validate(world, x, y, z))
+			if (this._validate(world, x, y, z))
+			{
 				this.valid = true;
+			}
 		}
 	}
-	
-	protected abstract boolean _validate(World world, int x, int y, int z);
 	
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
-		dos.writeBoolean(valid);
-		dos.writeByte(check);
-		dos.writeByte(row);
-		dos.writeByte(column);
+		dos.writeBoolean(this.valid);
+		dos.writeByte(this.check);
+		dos.writeByte(this.row);
+		dos.writeByte(this.column);
 		dos.writeByte(this.height);
-	}
-	
-	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
-	{
-		this.valid = data.readBoolean();
-		this.check = data.readByte();
-		this.row = data.readByte();
-		this.column = data.readByte();
-		this.height = data.readByte();
 	}
 }

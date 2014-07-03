@@ -29,7 +29,7 @@ public abstract class ConfigWriter {
 			e.printStackTrace();
 		}
 		// this.config.load();
-		forgeConfig.load();
+		this.forgeConfig.load();
 	}
 	
 	// public ConfigFile config()
@@ -55,12 +55,12 @@ public abstract class ConfigWriter {
 		config.save();
 	}
 	
-	public abstract String modID();
-	
-	public abstract String modName();
-	
 	public Configuration forgeConfig()
 	{
 		return this.forgeConfig;
 	}
+	
+	public abstract String modID();
+	
+	public abstract String modName();
 }

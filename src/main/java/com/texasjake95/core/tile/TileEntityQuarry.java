@@ -42,51 +42,14 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	private Ticket chunkTicket;
 	
 	@Override
-	public void updateEntity()
+	public void closeInventory()
 	{
-		super.updateEntity();
-		if (!this.worldObj.isRemote)
-		{
-			if (chunkTicket == null && quad.isValid())
-			{
-				chunkTicket = ForgeChunkManager.requestTicket(Texasjake95Core.INSTANCE, this.worldObj, Type.NORMAL);
-				if (chunkTicket != null)
-					this.forceChunks(chunkTicket);
-			}
-			if (this.syncTicks++ % 200 == 0)
-			{
-				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileQuarry(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
-				this.syncTicks = 1;
-				if (chunkTicket != null && quad.isValid())
-					this.forceChunks(chunkTicket);
-			}
-			if (quad != null)
-			{
-				quad.validate(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-				if (this.empty())
-				{
-					quad.run(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this);
-				}
-			}
-			this.pushToChest();
-			if (!quad.isValid())
-			{
-				ForgeChunkManager.releaseTicket(this.chunkTicket);
-				this.chunkTicket = null;
-			}
-		}
 	}
 	
 	@Override
-	public void invalidate()
+	public ItemStack decrStackSize(int slot, int decr)
 	{
-		ForgeChunkManager.releaseTicket(chunkTicket);
-		super.invalidate();
-	}
-	
-	public Packet getDescriptionPacket()
-	{
-		return CorePacketHandler.INSTANCE.getPacketFrom(new MessageTileQuarry(this));
+		return this.inv.decrStackSize(slot, decr);
 	}
 	
 	private boolean empty()
@@ -100,38 +63,28 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 		return true;
 	}
 	
-	private void pushToChest()
+	public void forceChunks(Ticket ticket)
 	{
-		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
+		if (this.chunkTicket == null)
 		{
-			TileEntity tile = WorldProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
-			if (tile instanceof TileEntityChest)
-			{
-				Block chest = WorldProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
-				IInventory temp = getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
-				pushToInv(temp);
-			}
-			else if (tile instanceof IInventory)
-			{
-				IInventory temp = (IInventory) tile;
-				pushToInv(temp);
-			}
+			this.chunkTicket = ticket;
 		}
-	}
-	
-	private void pushToInv(IInventory inv)
-	{
-		for (int invSlot = 0; invSlot < IInventoryProxy.getSizeInventory(this); invSlot++)
+		if (this.chunkTicket != null)
 		{
-			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
-			if (stack == null)
-				continue;
-			if (stack.stackSize == 0)
+			this.chunkTicket.getModData().setInteger("quarryX", this.xCoord);
+			this.chunkTicket.getModData().setInteger("quarryY", this.yCoord);
+			this.chunkTicket.getModData().setInteger("quarryZ", this.zCoord);
+			for (ChunkCoordIntPair chunk : this.chunkTicket.getChunkList())
 			{
-				IInventoryProxy.setInventorySlotContents(this, invSlot, null);
-				continue;
+				ForgeChunkManager.unforceChunk(this.chunkTicket, chunk);
 			}
-			InventoryHelper.addToInventory(inv, stack);
+			ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
+			ForgeChunkManager.forceChunk(this.chunkTicket, chunk);
+			ChunkCoordIntPair workingChunk = this.quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord);
+			if (!chunk.equals(workingChunk))
+			{
+				ForgeChunkManager.forceChunk(this.chunkTicket, workingChunk);
+			}
 		}
 	}
 	
@@ -158,47 +111,9 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	public Packet getDescriptionPacket()
 	{
-		this.inv.readFromPacket(data, byteBuf);
-		this.quad.readFromPacket(data, byteBuf, clazz);
-	}
-	
-	@Override
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
-	{
-		this.inv.writeToPacket(dos, byteBuf);
-		this.quad.writeToPacket(dos, byteBuf, clazz);
-	}
-	
-	@Override
-	public int getSizeInventory()
-	{
-		return inv.getSizeInventory();
-	}
-	
-	@Override
-	public ItemStack getStackInSlot(int slot)
-	{
-		return inv.getStackInSlot(slot);
-	}
-	
-	@Override
-	public ItemStack decrStackSize(int slot, int decr)
-	{
-		return inv.decrStackSize(slot, decr);
-	}
-	
-	@Override
-	public ItemStack getStackInSlotOnClosing(int slot)
-	{
-		return inv.getStackInSlotOnClosing(slot);
-	}
-	
-	@Override
-	public void setInventorySlotContents(int slot, ItemStack stack)
-	{
-		inv.setInventorySlotContents(slot, stack);
+		return CorePacketHandler.INSTANCE.getPacketFrom(new MessageTileQuarry(this));
 	}
 	
 	@Override
@@ -208,15 +123,46 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
+	public int getInventoryStackLimit()
+	{
+		return this.inv.getInventoryStackLimit();
+	}
+	
+	@Override
+	public int getSizeInventory()
+	{
+		return this.inv.getSizeInventory();
+	}
+	
+	@Override
+	public ItemStack getStackInSlot(int slot)
+	{
+		return this.inv.getStackInSlot(slot);
+	}
+	
+	@Override
+	public ItemStack getStackInSlotOnClosing(int slot)
+	{
+		return this.inv.getStackInSlotOnClosing(slot);
+	}
+	
+	@Override
 	public boolean hasCustomInventoryName()
 	{
 		return false;
 	}
 	
 	@Override
-	public int getInventoryStackLimit()
+	public void invalidate()
 	{
-		return inv.getInventoryStackLimit();
+		ForgeChunkManager.releaseTicket(this.chunkTicket);
+		super.invalidate();
+	}
+	
+	@Override
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
+	{
+		return true;
 	}
 	
 	@Override
@@ -226,19 +172,59 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
+	protected void load(NBTTagCompound nbtTagCompound)
+	{
+		this.inv.readFromNBT(nbtTagCompound.getCompoundTag("inv"));
+		this.quad.load(nbtTagCompound.getCompoundTag("quad"));
+	}
+	
+	@Override
 	public void openInventory()
 	{
 	}
 	
-	@Override
-	public void closeInventory()
+	private void pushToChest()
 	{
+		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
+		{
+			TileEntity tile = WorldProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+			if (tile instanceof TileEntityChest)
+			{
+				Block chest = WorldProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+				IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
+				this.pushToInv(temp);
+			}
+			else if (tile instanceof IInventory)
+			{
+				IInventory temp = (IInventory) tile;
+				this.pushToInv(temp);
+			}
+		}
+	}
+	
+	private void pushToInv(IInventory inv)
+	{
+		for (int invSlot = 0; invSlot < IInventoryProxy.getSizeInventory(this); invSlot++)
+		{
+			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
+			if (stack == null)
+			{
+				continue;
+			}
+			if (stack.stackSize == 0)
+			{
+				IInventoryProxy.setInventorySlotContents(this, invSlot, null);
+				continue;
+			}
+			InventoryHelper.addToInventory(inv, stack);
+		}
 	}
 	
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack stack)
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
-		return true;
+		this.inv.readFromPacket(data, byteBuf);
+		this.quad.readFromPacket(data, byteBuf, clazz);
 	}
 	
 	@Override
@@ -253,32 +239,55 @@ public class TileEntityQuarry extends TileEntityCore implements IInventory {
 	}
 	
 	@Override
-	protected void load(NBTTagCompound nbtTagCompound)
+	public void setInventorySlotContents(int slot, ItemStack stack)
 	{
-		this.inv.readFromNBT(nbtTagCompound.getCompoundTag("inv"));
-		this.quad.load(nbtTagCompound.getCompoundTag("quad"));
+		this.inv.setInventorySlotContents(slot, stack);
 	}
 	
-	public void forceChunks(Ticket ticket)
+	@Override
+	public void updateEntity()
 	{
-		if (chunkTicket == null)
+		super.updateEntity();
+		if (!this.worldObj.isRemote)
 		{
-			chunkTicket = ticket;
-		}
-		if (chunkTicket != null)
-		{
-			chunkTicket.getModData().setInteger("quarryX", xCoord);
-			chunkTicket.getModData().setInteger("quarryY", yCoord);
-			chunkTicket.getModData().setInteger("quarryZ", zCoord);
-			for (ChunkCoordIntPair chunk : chunkTicket.getChunkList())
+			if (this.chunkTicket == null && this.quad.isValid())
 			{
-				ForgeChunkManager.unforceChunk(chunkTicket, chunk);
+				this.chunkTicket = ForgeChunkManager.requestTicket(Texasjake95Core.INSTANCE, this.worldObj, Type.NORMAL);
+				if (this.chunkTicket != null)
+				{
+					this.forceChunks(this.chunkTicket);
+				}
 			}
-			ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
-			ForgeChunkManager.forceChunk(chunkTicket, chunk);
-			ChunkCoordIntPair workingChunk = this.quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord);
-			if (!chunk.equals(workingChunk))
-				ForgeChunkManager.forceChunk(chunkTicket, workingChunk);
+			if (this.syncTicks++ % 200 == 0)
+			{
+				CorePacketHandler.INSTANCE.sendToAllAround(new MessageTileQuarry(this), this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30);
+				this.syncTicks = 1;
+				if (this.chunkTicket != null && this.quad.isValid())
+				{
+					this.forceChunks(this.chunkTicket);
+				}
+			}
+			if (this.quad != null)
+			{
+				this.quad.validate(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+				if (this.empty())
+				{
+					this.quad.run(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this);
+				}
+			}
+			this.pushToChest();
+			if (!this.quad.isValid())
+			{
+				ForgeChunkManager.releaseTicket(this.chunkTicket);
+				this.chunkTicket = null;
+			}
 		}
+	}
+	
+	@Override
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	{
+		this.inv.writeToPacket(dos, byteBuf);
+		this.quad.writeToPacket(dos, byteBuf, clazz);
 	}
 }

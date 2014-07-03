@@ -58,6 +58,37 @@ public class InventorySeed implements IPacketHandler {
 		this.map.put(key, tempStack);
 	}
 	
+	public void dropItemStacks(World world, int x, int y, int z, Random rand)
+	{
+		for (Entry<String, ItemStack> entry : this.map.entrySet())
+		{
+			ItemStack itemstack = entry.getValue();
+			if (itemstack != null)
+			{
+				float xChange = rand.nextFloat() * 0.8F + 0.1F;
+				float yChange = rand.nextFloat() * 0.8F + 0.1F;
+				EntityItem entityitem;
+				for (float zChange = rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
+				{
+					int dropSize = rand.nextInt(21) + 10;
+					if (dropSize > itemstack.stackSize)
+					{
+						dropSize = itemstack.stackSize;
+					}
+					itemstack.stackSize -= dropSize;
+					entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
+					entityitem.motionX = (float) rand.nextGaussian() * 0.05F;
+					entityitem.motionY = (float) rand.nextGaussian() * 0.05F + 0.2F;
+					entityitem.motionZ = (float) rand.nextGaussian() * 0.05F;
+					if (itemstack.hasTagCompound())
+					{
+						entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
+					}
+				}
+			}
+		}
+	}
+	
 	public ItemStack getStack(Item seed, int meta)
 	{
 		return this.map.get(this.key(seed, meta));
@@ -107,6 +138,18 @@ public class InventorySeed implements IPacketHandler {
 		}
 	}
 	
+	@Override
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	{
+		this.limit = data.readInt();
+		int size = data.readInt();
+		for (int i = 0; i < size; i++)
+		{
+			String key = data.readUTF();
+			this.map.put(key, ByteBufUtils.readItemStack(byteBuf));
+		}
+	}
+	
 	public void save(NBTTagCompound data)
 	{
 		NBTTagList items = new NBTTagList();
@@ -119,37 +162,7 @@ public class InventorySeed implements IPacketHandler {
 		data.setTag("items", items);
 	}
 	
-	public void dropItemStacks(World world, int x, int y, int z, Random rand)
-	{
-		for (Entry<String, ItemStack> entry : this.map.entrySet())
-		{
-			ItemStack itemstack = entry.getValue();
-			if (itemstack != null)
-			{
-				float xChange = rand.nextFloat() * 0.8F + 0.1F;
-				float yChange = rand.nextFloat() * 0.8F + 0.1F;
-				EntityItem entityitem;
-				for (float zChange = rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
-				{
-					int dropSize = rand.nextInt(21) + 10;
-					if (dropSize > itemstack.stackSize)
-					{
-						dropSize = itemstack.stackSize;
-					}
-					itemstack.stackSize -= dropSize;
-					entityitem = new EntityItem(world, (double) ((float) x + xChange), (double) ((float) y + yChange), (double) ((float) z + zChange), new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
-					entityitem.motionX = (double) ((float) rand.nextGaussian() * 0.05F);
-					entityitem.motionY = (double) ((float) rand.nextGaussian() * 0.05F + 0.2F);
-					entityitem.motionZ = (double) ((float) rand.nextGaussian() * 0.05F);
-					if (itemstack.hasTagCompound())
-					{
-						entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
-					}
-				}
-			}
-		}
-	}
-	
+	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		dos.writeInt(this.limit);
@@ -159,17 +172,6 @@ public class InventorySeed implements IPacketHandler {
 			dos.writeUTF(entry.getKey());
 			ItemStack stack = entry.getValue();
 			ByteBufUtils.writeItemStack(byteBuf, stack);
-		}
-	}
-	
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
-	{
-		this.limit = data.readInt();
-		int size = data.readInt();
-		for (int i = 0; i < size; i++)
-		{
-			String key = data.readUTF();
-			map.put(key, ByteBufUtils.readItemStack(byteBuf));
 		}
 	}
 }

@@ -44,16 +44,6 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta)
-	{
-		switch (meta)
-		{
-			case 1:
-				return new TileEntityQuarry();
-		}
-		return new TileEntityFarm();
-	}
-	
 	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List list, Entity entity)
 	{
@@ -62,16 +52,7 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
 	
-	public int quantityDropped(Random rand)
-	{
-		return 1;
-	}
-	
-	public Item getItemDropped(int p_149650_1_, Random rand, int p_149650_3_)
-	{
-		return Item.getItemFromBlock(this);
-	}
-	
+	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
 		TileEntity tile = world.getTileEntity(x, y, z);
@@ -94,10 +75,10 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 							dropSize = itemstack.stackSize;
 						}
 						itemstack.stackSize -= dropSize;
-						entityitem = new EntityItem(world, (double) ((float) x + xChange), (double) ((float) y + yChange), (double) ((float) z + zChange), new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
-						entityitem.motionX = (double) ((float) this.rand.nextGaussian() * 0.05F);
-						entityitem.motionY = (double) ((float) this.rand.nextGaussian() * 0.05F + 0.2F);
-						entityitem.motionZ = (double) ((float) this.rand.nextGaussian() * 0.05F);
+						entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
+						entityitem.motionX = (float) this.rand.nextGaussian() * 0.05F;
+						entityitem.motionY = (float) this.rand.nextGaussian() * 0.05F + 0.2F;
+						entityitem.motionZ = (float) this.rand.nextGaussian() * 0.05F;
 						if (itemstack.hasTagCompound())
 						{
 							entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
@@ -105,7 +86,7 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 					}
 				}
 			}
-			farm.getSeedInv().dropItemStacks(world, x, y, z, rand);
+			farm.getSeedInv().dropItemStacks(world, x, y, z, this.rand);
 			world.func_147453_f(x, y, z, block);
 		}
 		if (tile instanceof TileEntityQuarry)
@@ -127,10 +108,10 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 							dropSize = itemstack.stackSize;
 						}
 						itemstack.stackSize -= dropSize;
-						entityitem = new EntityItem(world, (double) ((float) x + xChange), (double) ((float) y + yChange), (double) ((float) z + zChange), new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
-						entityitem.motionX = (double) ((float) this.rand.nextGaussian() * 0.05F);
-						entityitem.motionY = (double) ((float) this.rand.nextGaussian() * 0.05F + 0.2F);
-						entityitem.motionZ = (double) ((float) this.rand.nextGaussian() * 0.05F);
+						entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
+						entityitem.motionX = (float) this.rand.nextGaussian() * 0.05F;
+						entityitem.motionY = (float) this.rand.nextGaussian() * 0.05F + 0.2F;
+						entityitem.motionZ = (float) this.rand.nextGaussian() * 0.05F;
 						if (itemstack.hasTagCompound())
 						{
 							entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
@@ -142,6 +123,18 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
+	@Override
+	public TileEntity createNewTileEntity(World world, int meta)
+	{
+		switch (meta)
+		{
+			case 1:
+				return new TileEntityQuarry();
+		}
+		return new TileEntityFarm();
+	}
+	
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta)
 	{
@@ -159,13 +152,22 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 		return this.side;
 	}
 	
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iIconRegister)
+	@Override
+	public Item getItemDropped(int p_149650_1_, Random rand, int p_149650_3_)
 	{
-		this.side = iIconRegister.registerIcon(CoreInfo.modId + ":farm_side");
-		this.top = iIconRegister.registerIcon(CoreInfo.modId + ":farm_top");
+		return Item.getItemFromBlock(this);
 	}
 	
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_)
+	{
+		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
+		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
+	}
+	
+	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side)
 	{
 		switch (side)
@@ -190,11 +192,17 @@ public class BlockFarm extends Block implements ITileEntityProvider {
 		return true;
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_)
+	@Override
+	public int quantityDropped(Random rand)
 	{
-		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
-		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
+		return 1;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerBlockIcons(IIconRegister iIconRegister)
+	{
+		this.side = iIconRegister.registerIcon(CoreInfo.modId + ":farm_side");
+		this.top = iIconRegister.registerIcon(CoreInfo.modId + ":farm_top");
 	}
 }

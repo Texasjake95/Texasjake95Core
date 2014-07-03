@@ -12,6 +12,16 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntityBorder extends TileEntityCore {
 	
+	@Override
+	protected void load(NBTTagCompound nbtTagCompound)
+	{
+	}
+	
+	@Override
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	{
+		// TODO Auto-generated method stub
+	}
 	
 	@Override
 	protected void save(NBTTagCompound nbtTagCompound)
@@ -19,21 +29,8 @@ public class TileEntityBorder extends TileEntityCore {
 	}
 	
 	@Override
-	protected void load(NBTTagCompound nbtTagCompound)
-	{
-	}
-
-	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

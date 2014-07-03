@@ -48,43 +48,67 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	}
 	
 	@Override
-	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	protected boolean _validate(World world, int x, int y, int z)
 	{
-		super.writeToPacket(dos, byteBuf, clazz);
-		dos.writeBoolean(increase);
-		dos.writeBoolean(resetHeight);
-		dos.writeFloat(breakIndex);
-		dos.writeBoolean(isDone);
+		return !this.isDone;
+	}
+	
+	public ChunkCoordIntPair getCurrentChunkCoordIntPair(int x, int z)
+	{
+		return new ChunkCoordIntPair((x + this.row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4);
 	}
 	
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	protected void handleBlock(World world, int x, int y, int z, TileEntityQuarry tile)
 	{
-		super.readFromPacket(data, byteBuf, clazz);
-		this.increase = data.readBoolean();
-		this.resetHeight = data.readBoolean();
-		this.breakIndex = data.readFloat();
-		this.isDone = data.readBoolean();
-	}
-	
-	@Override
-	protected void loadExtra(NBTTagCompound compoundTag)
-	{
-		this.row = compoundTag.getByte("row");
-		if (this.row < 1 || 10 < this.row)
+		if (this.height >= tile.yCoord)
 		{
-			this.row = 1;
+			this.resetHeight = true;
 		}
-		this.column = compoundTag.getByte("column");
-		if (this.column < 1 || 10 < this.column)
+		Block block = WorldProxy.getBlock(world, x, y, z);
+		if (block instanceof BlockLiquid || block instanceof IFluidBlock || block == Blocks.air)
 		{
-			this.column = 1;
+			this.increase = true;
+			this.breakIndex = 0;
+			block = WorldProxy.getBlock(world, x, y - 1, z);
+			if (block == Blocks.bedrock)
+			{
+				this.resetHeight = true;
+			}
+			return;
 		}
-		this.height = compoundTag.getByte("height");
-		this.breakIndex = compoundTag.getFloat("breakIndex");
-		this.resetHeight = compoundTag.getBoolean("resetHeight");
-		this.increase = compoundTag.getBoolean("increase");
-		this.isDone = compoundTag.getBoolean("isDone");
+		float hardness = block.getBlockHardness(world, x, y, z);
+		if (this.breakIndex >= hardness)
+		{
+			this.breakIndex = 0;
+			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, 10), world.provider.dimensionId, x, y, z, 10D);
+			this.increase = true;
+			int meta = WorldProxy.getBlockMetadata(world, x, y, z);
+			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
+			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, x, y, z, block, meta);
+			double d = World.MAX_ENTITY_RADIUS;
+			@SuppressWarnings("unchecked")
+			List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x - d, y - d, z - d, x + d, y + d, z + d));
+			for (EntityItem item : items)
+			{
+				returnList.add(item.getEntityItem());
+				item.setDead();
+			}
+			for (ItemStack stack : returnList)
+			{
+				InventoryHelper.addToInventory(tile, stack);
+			}
+			block = WorldProxy.getBlock(world, x, y - 1, z);
+			if (block == Blocks.bedrock)
+			{
+				this.resetHeight = true;
+			}
+		}
+		else
+		{
+			this.breakIndex += .25F;
+			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, MathHelper.clamp_int(Math.round((this.breakIndex / hardness) * 10), 0, 10)), world.provider.dimensionId, x, y, z, 10D);
+		}
 	}
 	
 	@Override
@@ -122,73 +146,51 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	}
 	
 	@Override
-	protected void handleBlock(World world, int x, int y, int z, TileEntityQuarry tile)
+	protected void loadExtra(NBTTagCompound compoundTag)
 	{
-		if (this.height >= tile.yCoord)
-			this.resetHeight = true;
-		Block block = WorldProxy.getBlock(world, x, y, z);
-		if (block instanceof BlockLiquid || block instanceof IFluidBlock || block == Blocks.air)
+		this.row = compoundTag.getByte("row");
+		if (this.row < 1 || 10 < this.row)
 		{
-			this.increase = true;
-			this.breakIndex = 0;
-			block = WorldProxy.getBlock(world, x, y - 1, z);
-			if (block == Blocks.bedrock)
-			{
-				this.resetHeight = true;
-			}
-			return;
+			this.row = 1;
 		}
-		float hardness = block.getBlockHardness(world, x, y, z);
-		if (breakIndex >= hardness)
+		this.column = compoundTag.getByte("column");
+		if (this.column < 1 || 10 < this.column)
 		{
-			breakIndex = 0;
-			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, 10), world.provider.dimensionId, x, y, z, 10D);
-			this.increase = true;
-			int meta = WorldProxy.getBlockMetadata(world, x, y, z);
-			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
-			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, x, y, z, block, meta);
-			double d = World.MAX_ENTITY_RADIUS;
-			@SuppressWarnings("unchecked")
-			List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x - d, y - d, z - d, x + d, y + d, z + d));
-			for (EntityItem item : items)
-			{
-				returnList.add(item.getEntityItem());
-				item.setDead();
-			}
-			for (ItemStack stack : returnList)
-			{
-				InventoryHelper.addToInventory(tile, stack);
-			}
-			block = WorldProxy.getBlock(world, x, y - 1, z);
-			if (block == Blocks.bedrock)
-			{
-				this.resetHeight = true;
-			}
+			this.column = 1;
 		}
-		else
-		{
-			breakIndex += .25F;
-			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, MathHelper.clamp_int(Math.round((breakIndex / hardness) * 10), 0, 10)), world.provider.dimensionId, x, y, z, 10D);
-		}
+		this.height = compoundTag.getByte("height");
+		this.breakIndex = compoundTag.getFloat("breakIndex");
+		this.resetHeight = compoundTag.getBoolean("resetHeight");
+		this.increase = compoundTag.getBoolean("increase");
+		this.isDone = compoundTag.getBoolean("isDone");
 	}
 	
 	@Override
-	protected boolean _validate(World world, int x, int y, int z)
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
-		return !this.isDone;
+		super.readFromPacket(data, byteBuf, clazz);
+		this.increase = data.readBoolean();
+		this.resetHeight = data.readBoolean();
+		this.breakIndex = data.readFloat();
+		this.isDone = data.readBoolean();
 	}
 	
 	@Override
 	protected void saveExtra(NBTTagCompound compoundTag)
 	{
-		compoundTag.setBoolean("resetHeight", resetHeight);
-		compoundTag.setBoolean("increase", increase);
-		compoundTag.setFloat("breakIndex", breakIndex);
+		compoundTag.setBoolean("resetHeight", this.resetHeight);
+		compoundTag.setBoolean("increase", this.increase);
+		compoundTag.setFloat("breakIndex", this.breakIndex);
 		compoundTag.setBoolean("isDone", this.isDone);
 	}
 	
-	public ChunkCoordIntPair getCurrentChunkCoordIntPair(int x, int z)
+	@Override
+	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
-		return new ChunkCoordIntPair((x + row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4);
+		super.writeToPacket(dos, byteBuf, clazz);
+		dos.writeBoolean(this.increase);
+		dos.writeBoolean(this.resetHeight);
+		dos.writeFloat(this.breakIndex);
+		dos.writeBoolean(this.isDone);
 	}
 }
