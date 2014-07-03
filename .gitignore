@@ -25,7 +25,8 @@
 /config
 /crash-reports
 /resourcepacks
-option.txt
+options.txt
+/screenshots
 
 ## ChickenBones stuff
 /asm
