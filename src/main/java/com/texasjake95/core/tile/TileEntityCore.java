@@ -13,6 +13,7 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 	protected ForgeDirection facing;
 	protected String customName;
 	protected String owner;
+	protected int syncTicks = 0;
 	
 	public TileEntityCore()
 	{
