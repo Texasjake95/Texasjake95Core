@@ -10,14 +10,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 public class PlayerUtils {
-	
+
 	public static class Teleporto extends Teleporter {
-		
+
 		public Teleporto(WorldServer world)
 		{
 			super(world);
 		}
-		
+
 		@Override
 		public void placeInPortal(Entity entity, double x, double y, double z, float p5)
 		{
@@ -28,12 +28,12 @@ public class PlayerUtils {
 			entity.setPosition(i, j, k);
 		}
 	}
-	
+
 	public static void teleportPlayerTo(EntityPlayer entityPlayer, double x, double y, double z)
 	{
 		teleportPlayerTo(entityPlayer, x, y, z, entityPlayer.worldObj.provider.dimensionId);
 	}
-	
+
 	public static void teleportPlayerTo(EntityPlayer entityPlayer, double x, double y, double z, int dimension)
 	{
 		World world = entityPlayer.worldObj;
@@ -52,7 +52,7 @@ public class PlayerUtils {
 			player.setPositionAndUpdate(x, y, z);
 		}
 	}
-	
+
 	public static void teleportPlayerTo(EntityPlayer entityPlayer, int dimension)
 	{
 		if (entityPlayer instanceof EntityPlayerMP)

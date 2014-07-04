@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 public class EntityProxy {
-	
+
 	public static World getWorld(Entity entity)
 	{
 		return entity.worldObj;

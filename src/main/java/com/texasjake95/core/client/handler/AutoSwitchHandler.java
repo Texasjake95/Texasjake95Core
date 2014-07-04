@@ -37,16 +37,16 @@ import com.texasjake95.core.proxy.world.WorldProxy;
 // Create Map for above!!!!!
 /**
  * This class handles the auto switching of tools on the player's hot bar
- * 
+ *
  * @author Texasjake95
- * 
+ *
  */
 public class AutoSwitchHandler extends TickHandler {
-	
+
 	/**
 	 * Check and see if anything is preventing the player from switching to any
 	 * new tools
-	 * 
+	 *
 	 * @param player
 	 *            - the player in question
 	 * @return if the tool can auto switch
@@ -58,7 +58,7 @@ public class AutoSwitchHandler extends TickHandler {
 			return false;
 		return true;
 	}
-	
+
 	/*
 	 * public static void teleport(World world, EntityPlayer player) { if
 	 * (!world.isRemote) { Vec3 vec3 = ClientPlayerProxy.getPostion(player,
@@ -79,10 +79,10 @@ public class AutoSwitchHandler extends TickHandler {
 	 */
 	private boolean shouldSwitchBack = false;
 	private int tickCount = 0;
-	
+
 	/**
 	 * Handle Tool Auto Switching
-	 * 
+	 *
 	 * @param tickStart
 	 *            - did the tick start
 	 * @param player
@@ -98,7 +98,6 @@ public class AutoSwitchHandler extends TickHandler {
 			// if (CoreConfig.getInstance().autoSwitch) // Config switch
 			if (MinecraftProxy.inGameHasFocus())
 				if (checkIfAutoSwitchIsPossible(player))
-				{
 					if (GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())))
 					{
 						this.shouldSwitchBack = false;
@@ -127,9 +126,7 @@ public class AutoSwitchHandler extends TickHandler {
 										int currentHarvest = this.data.getHarvestLevel(stack);
 										float strVsBlock = this.data.getBreakSpeed(player);
 										if (stack != null)
-										{
 											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
-										}
 									}
 							}
 							// Cycle through out all the items
@@ -144,15 +141,12 @@ public class AutoSwitchHandler extends TickHandler {
 										int currentHarvest = this.data.getHarvestLevel(stack);
 										float strVsBlock = this.data.getBreakSpeed(player);
 										if (stack != null)
-										{
 											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
-										}
 									}
 							}
 							// Collect all slots that match the highest
 							// strVsBlock
 							for (int i = fakeCurrentItem; i < this.data.hotBarSize; i++)
-							{
 								if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
 								{
 									PlayerInventoryProxy.setCurrentItemSlot(player, i);
@@ -161,11 +155,9 @@ public class AutoSwitchHandler extends TickHandler {
 									float strVsBlock = this.data.getBreakSpeed(player);
 									this.data.addSlots(i, bestSlots, tools, currentHarvest, strVsBlock, stack);
 								}
-							}
 							// Collect all slots that match the highest
 							// strVsBlock
 							for (int i = 0; i <= fakeCurrentItem; i++)
-							{
 								if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
 								{
 									PlayerInventoryProxy.setCurrentItemSlot(player, i);
@@ -174,7 +166,6 @@ public class AutoSwitchHandler extends TickHandler {
 									float strVsBlock = this.data.getBreakSpeed(player);
 									this.data.addSlots(i, bestSlots, tools, currentHarvest, strVsBlock, stack);
 								}
-							}
 							// This checks to see if the players hand is
 							// enough to break the block and if so switch to
 							// it or a non damageable item
@@ -182,7 +173,6 @@ public class AutoSwitchHandler extends TickHandler {
 							if (this.data.bestFloat <= 1.0F)
 							{
 								for (int i = fakeCurrentItem; i < hotBarSize; i++)
-								{
 									if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
 									{
 										PlayerInventoryProxy.setCurrentItemSlot(player, i);
@@ -194,11 +184,8 @@ public class AutoSwitchHandler extends TickHandler {
 											break;
 										}
 									}
-								}
 								if (this.data.bestFloat != -1.0F)
-								{
 									for (int i = 0; i <= fakeCurrentItem; i++)
-									{
 										if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
 										{
 											PlayerInventoryProxy.setCurrentItemSlot(player, i);
@@ -209,14 +196,11 @@ public class AutoSwitchHandler extends TickHandler {
 												break;
 											}
 										}
-									}
-								}
 							}
 							double meta = 1.0F;
 							// Test all damages of items that match the best
 							// strVsBlock and grab the lowest
 							if (this.data.bestFloat != -1.0F)
-							{
 								for (int slot : bestSlots)
 								{
 									ItemStack stack = PlayerInventoryProxy.getStackInSlot(player, slot);
@@ -225,20 +209,15 @@ public class AutoSwitchHandler extends TickHandler {
 										double damage = tools.getDurability(stack);
 										meta = meta > damage ? damage : meta;
 										if (Texasjake95Core.isTesting)
-										{
 											System.out.println(meta);
-										}
 										if (meta == damage)
 										{
 											this.data.bestSlot = slot;
 											if (Texasjake95Core.isTesting)
-											{
 												System.out.println(this.data.bestSlot + ":" + meta);
-											}
 										}
 									}
 								}
-							}
 							PlayerInventoryProxy.setCurrentItemSlot(player, this.data.bestSlot);
 							if (Texasjake95Core.isTesting)
 							{
@@ -255,11 +234,8 @@ public class AutoSwitchHandler extends TickHandler {
 						// constant switching
 						this.tickCount++;
 						if (this.tickCount >= 5)
-						{
 							this.shouldSwitchBack = true;
-						}
 					}
-				}
 		}
 		else
 		{
@@ -275,33 +251,31 @@ public class AutoSwitchHandler extends TickHandler {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void handleClientTick(ClientTickEvent event)
 	{
 	}
-	
+
 	@Override
 	protected void handlePlayerTick(PlayerTickEvent event)
 	{
 		if (event.side == Side.CLIENT)
-		{
 			this.doAutoSwitchStart(event.phase == Phase.START, (EntityClientPlayerMP) event.player);
-			// if (event.player.getCurrentEquippedItem() != null)
-			// this.teleport(event.player.worldObj, event.player);
-		}
+		// if (event.player.getCurrentEquippedItem() != null)
+		// this.teleport(event.player.worldObj, event.player);
 	}
-	
+
 	@Override
 	protected void handleRenderTick(RenderTickEvent event)
 	{
 	}
-	
+
 	@Override
 	protected void handleServerTick(ServerTickEvent event)
 	{
 	}
-	
+
 	@Override
 	protected void handleWorldTick(WorldTickEvent event)
 	{

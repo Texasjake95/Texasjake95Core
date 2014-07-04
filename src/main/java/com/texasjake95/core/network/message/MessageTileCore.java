@@ -18,17 +18,17 @@ import net.minecraft.tileentity.TileEntity;
 import com.texasjake95.core.tile.TileEntityCore;
 
 public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, IMessageHandler<T, IMessage> {
-	
+
 	public int x, y, z;
 	public byte orientation;
 	public String customName, owner;
 	protected ByteBuf byteBuf;
 	protected TileEntityCore tile;
-	
+
 	public MessageTileCore()
 	{
 	}
-	
+
 	public MessageTileCore(TileEntityCore tile)
 	{
 		this.x = tile.xCoord;
@@ -39,7 +39,7 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 		this.owner = tile.getOwnerName();
 		this.tile = tile;
 	}
-	
+
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
@@ -53,7 +53,7 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 		this.owner = new String(buf.readBytes(ownerLength).array());
 		this.byteBuf = buf;
 	}
-	
+
 	@Override
 	public IMessage onMessage(T message, MessageContext ctx)
 	{
@@ -74,7 +74,7 @@ public class MessageTileCore<T extends MessageTileCore<T>> implements IMessage, 
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void toBytes(ByteBuf buf)
 	{

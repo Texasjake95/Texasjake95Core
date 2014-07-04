@@ -23,17 +23,17 @@ import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class TxCoreCommonProxy {
-	
+
 	public static Block machine;
 	protected static WeakReference<EntityPlayer> player = new WeakReference<EntityPlayer>(null);
 	public static final GameProfile gameProfile = new GameProfile(new UUID(156L, 783L), "[TXMOD]");
-	
+
 	private WeakReference<EntityPlayer> createNewPlayer(WorldServer world)
 	{
 		EntityPlayer player = FakePlayerFactory.get(world, gameProfile);
 		return new WeakReference<EntityPlayer>(player);
 	}
-	
+
 	private WeakReference<EntityPlayer> createNewPlayer(WorldServer world, int x, int y, int z)
 	{
 		EntityPlayer player = FakePlayerFactory.get(world, gameProfile);
@@ -42,26 +42,20 @@ public class TxCoreCommonProxy {
 		player.posZ = z;
 		return new WeakReference<EntityPlayer>(player);
 	}
-	
+
 	public final WeakReference<EntityPlayer> getTXPlayer(WorldServer world)
 	{
 		if (player.get() == null)
-		{
 			player = this.createNewPlayer(world);
-		}
 		else
-		{
 			player.get().worldObj = world;
-		}
 		return player;
 	}
-	
+
 	public final WeakReference<EntityPlayer> getTXPlayer(WorldServer world, int x, int y, int z)
 	{
 		if (player.get() == null)
-		{
 			player = this.createNewPlayer(world, x, y, z);
-		}
 		else
 		{
 			player.get().worldObj = world;
@@ -71,22 +65,22 @@ public class TxCoreCommonProxy {
 		}
 		return player;
 	}
-	
+
 	public void initItemsAndBlocks()
 	{
-		GameRegistry.registerBlock((machine = new BlockMachine()), ItemBlockMachine.class, "Machines");
+		GameRegistry.registerBlock(machine = new BlockMachine(), ItemBlockMachine.class, "Machines");
 		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
 		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
 		CoreItems.initItems();
 	}
-	
+
 	/**
 	 * Register All Event Handlers
 	 */
 	public void registerEventHandlers()
 	{
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void registerRecipes()
 	{

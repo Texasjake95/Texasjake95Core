@@ -11,12 +11,12 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
 public class ShapelessDamageRecipe implements IRecipe {
-	
+
 	/** Is a List of ItemStack that composes the recipe. */
 	public final ArrayList<ItemStack> recipeItems = new ArrayList<ItemStack>();
 	/** Is the ItemStack that you get when craft the recipe. */
 	private final ItemStack recipeOutput;
-	
+
 	public ShapelessDamageRecipe(ItemStack par1ItemStack, Object... recipe)
 	{
 		ArrayList<ItemStack> inputFinal = new ArrayList<ItemStack>();
@@ -26,13 +26,9 @@ public class ShapelessDamageRecipe implements IRecipe {
 		{
 			Object input = inputs[i];
 			if (input instanceof ItemStack)
-			{
 				inputFinal.add(((ItemStack) input).copy());
-			}
 			else if (input instanceof Item)
-			{
 				inputFinal.add(new ItemStack((Item) input));
-			}
 			else
 			{
 				if (!(input instanceof Block))
@@ -43,7 +39,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 		this.recipeItems.addAll(inputFinal);
 		this.recipeOutput = par1ItemStack;
 	}
-	
+
 	/**
 	 * Returns an Item that is the result of this recipe
 	 */
@@ -53,7 +49,6 @@ public class ShapelessDamageRecipe implements IRecipe {
 		ArrayList<ItemStack> remainingIngredients = new ArrayList<ItemStack>(this.recipeItems);
 		int damage = 0;
 		for (int x = 0; x < 3; ++x)
-		{
 			for (int y = 0; y < 3; ++y)
 			{
 				ItemStack stack = par1InventoryCrafting.getStackInRowAndColumn(y, x);
@@ -93,17 +88,16 @@ public class ShapelessDamageRecipe implements IRecipe {
 						return null;
 				}
 			}
-		}
 		ItemStack output = new ItemStack(this.recipeOutput.copy().getItem(), this.recipeOutput.copy().stackSize, damage);
 		return output.copy();
 	}
-	
+
 	@Override
 	public ItemStack getRecipeOutput()
 	{
 		return this.recipeOutput;
 	}
-	
+
 	/**
 	 * Returns the size of the recipe area
 	 */
@@ -112,13 +106,12 @@ public class ShapelessDamageRecipe implements IRecipe {
 	{
 		return this.recipeItems.size();
 	}
-	
+
 	@Override
 	public boolean matches(InventoryCrafting var1, World var2)
 	{
 		ArrayList<ItemStack> remainingIngredients = new ArrayList<ItemStack>(this.recipeItems);
 		for (int x = 0; x < 3; ++x)
-		{
 			for (int y = 0; y < 3; ++y)
 			{
 				ItemStack stack = var1.getStackInRowAndColumn(y, x);
@@ -140,7 +133,6 @@ public class ShapelessDamageRecipe implements IRecipe {
 						return false;
 				}
 			}
-		}
 		return remainingIngredients.isEmpty();
 	}
 }

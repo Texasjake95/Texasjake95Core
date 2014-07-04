@@ -6,27 +6,25 @@ import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.lib.config.BaseConfig;
 
 public class CoreConfig extends BaseConfig {
-	
+
 	private static CoreConfig instance;
-	
+
 	public static CoreConfig getInstance()
 	{
 		if (instance == null)
-		{
 			instance = new CoreConfig();
-		}
 		return instance;
 	}
-	
+
 	public boolean autoSwitch = true;
 	public boolean forceTool = true;
 	public boolean useBestTool = true;
-	
+
 	public CoreConfig()
 	{
 		super(new CoreConfigWriter(), false);
 	}
-	
+
 	@Override
 	public void initProps()
 	{
@@ -42,7 +40,7 @@ public class CoreConfig extends BaseConfig {
 		this.useBestTool = useBestTool.getBoolean(true);
 		this.save();
 	}
-	
+
 	@Override
 	public String modName()
 	{

@@ -22,9 +22,9 @@ import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.tile.farm.QuadrantFarm;
 
 public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm> {
-	
+
 	private InventorySeed seedInv = new InventorySeed(10);
-	
+
 	public TileEntityFarm()
 	{
 		super(10);
@@ -33,41 +33,41 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 		this.addQuad(new QuadrantFarm(ForgeDirection.WEST, ForgeDirection.UP, ForgeDirection.SOUTH));
 		this.addQuad(new QuadrantFarm(ForgeDirection.EAST, ForgeDirection.UP, ForgeDirection.SOUTH));
 	}
-	
+
 	@Override
 	public Packet getDescriptionPacket()
 	{
 		return CorePacketHandler.INSTANCE.getPacketFrom(new MessageTileFarm(this));
 	}
-	
+
 	@Override
 	public String getInventoryName()
 	{
 		return "tileEntity.txFarm.name";
 	}
-	
+
 	public ItemStack getItemStack(Item seed, int meta)
 	{
 		return this.seedInv.getStack(seed, meta);
 	}
-	
+
 	public ItemStack getItemStack(ItemIntPair seed)
 	{
 		return this.seedInv.getStack(seed.getItem(), seed.getMeta());
 	}
-	
+
 	public InventorySeed getSeedInv()
 	{
 		return this.seedInv;
 	}
-	
+
 	@Override
 	public void load(NBTTagCompound nbtTagCompound)
 	{
 		super.load(nbtTagCompound);
 		this.seedInv.load(nbtTagCompound.getCompoundTag("seedInv"));
 	}
-	
+
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
@@ -77,7 +77,7 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 			this.seedInv.readFromPacket(data, byteBuf, clazz);
 		}
 	}
-	
+
 	@Override
 	public void save(NBTTagCompound nbtTagCompound)
 	{
@@ -86,7 +86,7 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 		this.seedInv.save(data);
 		nbtTagCompound.setTag("seedInv", data);
 	}
-	
+
 	@Override
 	public void updateEntity()
 	{
@@ -102,7 +102,7 @@ public class TileEntityFarm extends TileEntityQuad<TileEntityFarm, QuadrantFarm>
 			this.pushToChest();
 		}
 	}
-	
+
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{

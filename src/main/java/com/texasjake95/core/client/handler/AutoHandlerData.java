@@ -19,7 +19,7 @@ import com.texasjake95.core.proxy.item.ItemProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
 public class AutoHandlerData {
-	
+
 	float bestFloat = 0;
 	int bestSlot = 0;
 	Block block;
@@ -29,11 +29,11 @@ public class AutoHandlerData {
 	int lowestHarvestLevel;
 	String tool;
 	int x, y, z;
-	
+
 	public AutoHandlerData()
 	{
 	}
-	
+
 	public AutoHandlerData(World world, MovingObjectPosition mop)
 	{
 		this.x = mop.blockX;
@@ -46,37 +46,31 @@ public class AutoHandlerData {
 		this.blockHardness = this.block.getHarvestLevel(this.blockMeta);
 		this.lowestHarvestLevel = Integer.MAX_VALUE;
 	}
-	
+
 	public void addSlots(int slot, ArrayList<Integer> bestSlots, ToolHandlerRegistry tools, int currentHarvest, float strVsBlock, ItemStack stack)
 	{
 		if (tools.canHarvest(this.block, this.blockMeta, stack))
-		{
 			if (!CoreConfig.getInstance().useBestTool && currentHarvest == this.lowestHarvestLevel && strVsBlock == this.bestFloat)
 			{
 				if (currentHarvest == -1)
 					return;
 				if (Texasjake95Core.isTesting)
-				{
 					System.out.println("Adding slot " + slot);
-				}
 				bestSlots.add(slot);
 			}
 			else if (CoreConfig.getInstance().useBestTool && strVsBlock == this.bestFloat)
 			{
 				if (Texasjake95Core.isTesting)
-				{
 					System.out.println("Adding slot " + slot);
-				}
 				bestSlots.add(slot);
 			}
-		}
 	}
-	
+
 	public boolean canToolHarvest(ToolHandlerRegistry tools, ItemStack stack)
 	{
 		return tools.canHarvest(this.block, this.blockMeta, stack);
 	}
-	
+
 	public void checkAndUpdate(int slot, int currentHarvest, float strVsBlock)
 	{
 		if (!CoreConfig.getInstance().useBestTool && currentHarvest <= this.lowestHarvestLevel)
@@ -104,21 +98,17 @@ public class AutoHandlerData {
 			this.bestSlot = slot;
 			this.lowestHarvestLevel = currentHarvest;
 			if (Texasjake95Core.isTesting)
-			{
 				System.out.println("Best Item at " + this.bestSlot + " with strength of " + this.bestFloat);
-			}
 		}
 		else if (CoreConfig.getInstance().useBestTool && this.bestFloat < strVsBlock)
 		{
 			this.bestFloat = strVsBlock;
 			this.bestSlot = slot;
 			if (Texasjake95Core.isTesting)
-			{
 				System.out.println("Best Item at " + this.bestSlot + " with strength of " + this.bestFloat);
-			}
 		}
 	}
-	
+
 	public void clear()
 	{
 		this.x = 0;
@@ -133,17 +123,17 @@ public class AutoHandlerData {
 		this.bestFloat = 0;
 		this.bestSlot = 0;
 	}
-	
+
 	public float getBreakSpeed(EntityClientPlayerMP player)
 	{
 		return PlayerProxy.getBreakSpeed(player, this.block, true, this.blockMeta, this.x, this.y, this.z);
 	}
-	
+
 	public int getHarvestLevel(ItemStack stack)
 	{
 		return stack == null ? -1 : ItemProxy.getHarvestLevel(stack, this.tool);
 	}
-	
+
 	public void reset(World world, MovingObjectPosition mop)
 	{
 		this.x = mop.blockX;

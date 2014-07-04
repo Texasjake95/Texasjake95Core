@@ -6,7 +6,7 @@ import com.texasjake95.core.config.client.CoreConfigEventHandler;
 import com.texasjake95.core.lib.handler.EventRegister;
 
 public class TxCoreClientProxy extends TxCoreCommonProxy {
-	
+
 	@Override
 	public void registerEventHandlers()
 	{

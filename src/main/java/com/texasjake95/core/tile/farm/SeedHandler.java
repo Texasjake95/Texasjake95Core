@@ -23,16 +23,7 @@ import com.texasjake95.core.lib.utils.BlockUtils;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class SeedHandler {
-	
-	public static ArrayList<ItemStack> getHarvests(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
-	{
-		IHarvester harvest = harvestRegistry.get(block);
-		if (harvest != null)
-			return harvest.getDrops(player, world, x, y, z, block, meta);
-		else
-			return BlockUtils.getDrops(player, world, x, y, z, block, meta);
-	}
-	
+
 	private static HashMap<Block, HashMap<Integer, ItemIntPair>> seedRegistry = Maps.newHashMap();
 	private static HashMap<Block, IGrowthChecker> growthRegistry = Maps.newHashMap();
 	private static HashMap<Block, IHarvester> harvestRegistry = Maps.newHashMap();
@@ -51,7 +42,16 @@ public class SeedHandler {
 		registerSeed(Blocks.melon_block, vanillaChecker, vanillaChecker, vanillaChecker);
 		registerSeed(Blocks.nether_wart, 3, Items.nether_wart, 0);
 	}
-	
+
+	public static ArrayList<ItemStack> getHarvests(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
+	{
+		IHarvester harvest = harvestRegistry.get(block);
+		if (harvest != null)
+			return harvest.getDrops(player, world, x, y, z, block, meta);
+		else
+			return BlockUtils.getDrops(player, world, x, y, z, block, meta);
+	}
+
 	public static ItemIntPair getSeed(Block block, int meta)
 	{
 		ISeedProvider seed = seedProRegistry.get(block);
@@ -66,7 +66,7 @@ public class SeedHandler {
 			return null;
 		return metaMap.get(meta);
 	}
-	
+
 	public static boolean isFullGrown(Block block, int meta, World world, int x, int y, int z)
 	{
 		HashMap<Integer, ItemIntPair> metaMap = seedRegistry.get(block);
@@ -77,20 +77,18 @@ public class SeedHandler {
 			return false;
 		return checker.isGrown(block, meta, world, x, y, z);
 	}
-	
+
 	public static boolean isSeed(ItemStack stack)
 	{
 		for (ISeedProvider seed : seedSet)
-		{
 			if (seed != null && seed.isSeed(ItemStackProxy.getItem(stack), ItemStackProxy.getMetadata(stack)))
 				return true;
-		}
 		HashSet<Integer> meta = seeds.get(ItemStackProxy.getItem(stack));
 		if (meta == null)
 			return false;
 		return meta.contains(ItemStackProxy.getMetadata(stack));
 	}
-	
+
 	public static void registerSeed(Block block, IGrowthChecker growth, IHarvester harvester, ISeedProvider seed)
 	{
 		growthRegistry.put(block, growth);
@@ -98,22 +96,18 @@ public class SeedHandler {
 		seedProRegistry.put(block, seed);
 		seedSet.add(seed);
 	}
-	
+
 	public static void registerSeed(Block block, int meta, Item seed, int seedMeta)
 	{
 		ItemIntPair pair = new ItemIntPair(seed, seedMeta);
 		HashMap<Integer, ItemIntPair> metaMap = seedRegistry.get(block);
 		if (metaMap == null)
-		{
 			metaMap = Maps.newHashMap();
-		}
 		metaMap.put(meta, pair);
 		seedRegistry.put(block, metaMap);
 		HashSet<Integer> seedList = seeds.get(seed);
 		if (seedList == null)
-		{
 			seedList = Sets.newHashSet();
-		}
 		seedList.add(seedMeta);
 		seeds.put(seed, seedList);
 	}

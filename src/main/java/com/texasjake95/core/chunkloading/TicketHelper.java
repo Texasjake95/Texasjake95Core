@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 
 public class TicketHelper {
-	
+
 	public static void forceChunk(Ticket ticket, ChunkCoordIntPair chunk)
 	{
 		ImmutableSetMultimap<ChunkCoordIntPair, Ticket> chunks = ForgeChunkManager.getPersistentChunksFor(ticket.world);
@@ -18,25 +18,25 @@ public class TicketHelper {
 			return;
 		ForgeChunkManager.forceChunk(ticket, chunk);
 	}
-	
+
 	public static void populateTicket(Ticket ticket, TileEntity tile)
 	{
 		ticket.getModData().setInteger("loaderX", tile.xCoord);
 		ticket.getModData().setInteger("loaderY", tile.yCoord);
 		ticket.getModData().setInteger("loaderZ", tile.zCoord);
 	}
-	
+
 	public static void registerChunkLoading(Object modInstance, String modID)
 	{
 		ForgeChunkManager.setForcedChunkLoadingCallback(modInstance, new ChunkloadCallback(modID));
 	}
-	
+
 	public static void releaseTicket(IChunkLoader loader)
 	{
 		ForgeChunkManager.releaseTicket(loader.getTicket());
 		loader.setTicket(null);
 	}
-	
+
 	public static void updateChunks(TileEntity tile)
 	{
 		if (tile instanceof IChunkLoader)
@@ -52,13 +52,9 @@ public class TicketHelper {
 			{
 				TicketHelper.populateTicket(ticket, tile);
 				for (ChunkCoordIntPair chunk : ticket.getChunkList())
-				{
 					ForgeChunkManager.unforceChunk(ticket, chunk);
-				}
 				for (ChunkCoordIntPair chunk : loader.getChunks())
-				{
 					forceChunk(ticket, chunk);
-				}
 			}
 		}
 	}

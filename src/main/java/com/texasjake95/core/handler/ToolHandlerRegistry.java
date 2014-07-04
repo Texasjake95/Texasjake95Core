@@ -15,23 +15,21 @@ import com.texasjake95.core.proxy.MaterailProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
-	
+
 	private static final IToolHandler DEFAULT = new VanillaToolHandler();
 	private static ToolHandlerRegistry instance = null;
-	
+
 	public static ToolHandlerRegistry getInstance()
 	{
 		if (instance == null)
-		{
 			instance = new ToolHandlerRegistry();
-		}
 		return instance;
 	}
-	
+
 	private HashMap<String, IToolHandler> damageableHandler = new HashMap<String, IToolHandler>();
 	private HashMap<String, Boolean> damageMatters = new HashMap<String, Boolean>();
 	private HashMap<String, HashMap<Integer, IToolHandler>> nonDamageableHandler = new HashMap<String, HashMap<Integer, IToolHandler>>();
-	
+
 	private ToolHandlerRegistry()
 	{
 		this.registerToolHandler(DEFAULT, new ItemStack(Items.diamond_pickaxe), false);
@@ -50,7 +48,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 		this.registerToolHandler(DEFAULT, new ItemStack(Items.stone_axe), false);
 		this.registerToolHandler(DEFAULT, new ItemStack(Items.wooden_axe), false);
 	}
-	
+
 	@Override
 	public boolean canAutoSwtichTo(ItemStack stack)
 	{
@@ -58,7 +56,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			return true;
 		return this.getHandler(stack).canAutoSwtichTo(stack);
 	}
-	
+
 	@Override
 	public boolean canHarvest(Block block, int blockMeta, ItemStack stack)
 	{
@@ -66,7 +64,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			return MaterailProxy.isToolNotRequired(BlockProxy.getMaterial(block));
 		return this.getHandler(stack).canHarvest(block, blockMeta, stack);
 	}
-	
+
 	@Override
 	public double getDurability(ItemStack stack)
 	{
@@ -74,7 +72,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			return 1.0F;
 		return this.getHandler(stack).getDurability(stack);
 	}
-	
+
 	@Override
 	public IToolHandler getHandler(Item item, int itemMeta)
 	{
@@ -110,18 +108,15 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 					return DEFAULT;
 				}
 			}
+			else if (this.damageableHandler.containsKey(item) && this.damageableHandler.get(item) != null)
+				return this.damageableHandler.get(item);
 			else
 			{
-				if (this.damageableHandler.containsKey(item) && this.damageableHandler.get(item) != null)
-					return this.damageableHandler.get(item);
-				else
+				if (Texasjake95Core.isTesting)
 				{
-					if (Texasjake95Core.isTesting)
-					{
-						// System.out.println("Using vanilla - couldn't find damageable Handler");
-					}
-					return DEFAULT;
+					// System.out.println("Using vanilla - couldn't find damageable Handler");
 				}
+				return DEFAULT;
 			}
 		}
 		else
@@ -133,13 +128,13 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			return DEFAULT;
 		}
 	}
-	
+
 	@Override
 	public IToolHandler getHandler(ItemStack stack)
 	{
 		return this.getHandler(ItemStackProxy.getItem(stack), ItemStackProxy.getMetadata(stack));
 	}
-	
+
 	@Override
 	public boolean isDamageable(ItemStack stack)
 	{
@@ -147,7 +142,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			return false;
 		return this.getHandler(stack).isDamageable(stack);
 	}
-	
+
 	@Override
 	public void registerToolHandler(IToolHandler handler, Item item, int itemMeta, boolean damageMatters)
 	{
@@ -166,9 +161,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			}
 			HashMap<Integer, IToolHandler> metaHandlers = this.nonDamageableHandler.get(item);
 			if (metaHandlers == null)
-			{
 				metaHandlers = new HashMap<Integer, IToolHandler>();
-			}
 			metaHandlers.put(itemMeta, handler);
 			this.nonDamageableHandler.put(Item.itemRegistry.getNameForObject(item), metaHandlers);
 		}
@@ -182,7 +175,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			this.damageableHandler.put(Item.itemRegistry.getNameForObject(item), handler);
 		}
 	}
-	
+
 	@Override
 	public void registerToolHandler(IToolHandler handler, ItemStack stack, boolean damageMatters)
 	{

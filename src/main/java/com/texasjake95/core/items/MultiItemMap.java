@@ -10,7 +10,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 public class MultiItemMap {
-	
+
 	public static Item[] PA;
 	public static Item[] PS;
 	public static Item[] PSA;
@@ -26,13 +26,13 @@ public class MultiItemMap {
 	public static Item[] Axe = new Item[] { Items.wooden_axe, Items.stone_axe, Items.iron_axe, Items.golden_axe, Items.diamond_axe };
 	public static Item[] Shovel = new Item[] { Items.wooden_shovel, Items.stone_shovel, Items.iron_shovel, Items.golden_shovel, Items.diamond_shovel };
 	public static Item[] Sword = new Item[] { Items.wooden_sword, Items.stone_sword, Items.iron_sword, Items.golden_sword, Items.diamond_sword };
-	
+
 	@SuppressWarnings("unchecked")
 	private static void addShapelessDamage(ItemStack itemStack, Object... items)
 	{
 		CraftingManager.getInstance().getRecipeList().add(new ShapelessDamageRecipe(itemStack, items));
 	}
-	
+
 	public static void initItemMaps()
 	{
 		ArrayList<Item> pA = new ArrayList<Item>();
@@ -96,7 +96,7 @@ public class MultiItemMap {
 		Multi = multi.toArray(new Item[0]);
 		MultiRecipe();
 	}
-	
+
 	private static void MultiRecipe()
 	{
 		for (int a = 0; a < 5; a++)

@@ -38,37 +38,36 @@ import com.texasjake95.core.tile.Quadrant;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
-	
+
 	boolean resetHeight = false;
 	boolean increase = false;
 	private float breakIndex = 0;
 	private boolean isDone = false;
-	
+
 	public QuadrantQuarry(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
 	{
 		super(eastWest, upDown, northSouth);
 	}
-	
+
 	@Override
 	protected boolean _validate(World world, int x, int y, int z)
 	{
 		return !this.isDone;
 	}
-	
+
+	@Override
 	public ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z)
 	{
 		ArrayList<ChunkCoordIntPair> chunks = Lists.newArrayList();
-		chunks.add(new ChunkCoordIntPair((x + this.row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4));
+		chunks.add(new ChunkCoordIntPair(x + this.row * this.eastWest.offsetX >> 4, z + this.column * this.northSouth.offsetZ >> 4));
 		return chunks;
 	}
-	
+
 	@Override
 	protected void handleBlock(World world, int x, int y, int z, TileEntityQuarry tile)
 	{
 		if (this.height >= tile.yCoord)
-		{
 			this.resetHeight = true;
-		}
 		Block block = WorldProxy.getBlock(world, x, y, z);
 		if (block instanceof BlockLiquid || block instanceof IFluidBlock || block == Blocks.air)
 		{
@@ -76,9 +75,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			this.breakIndex = 0;
 			block = WorldProxy.getBlock(world, x, y - 1, z);
 			if (block == Blocks.bedrock)
-			{
 				this.resetHeight = true;
-			}
 			return;
 		}
 		float hardness = block.getBlockHardness(world, x, y, z);
@@ -104,22 +101,18 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 				item.setDead();
 			}
 			for (ItemStack stack : returnList)
-			{
 				InventoryUtils.addToInventory(tile, stack);
-			}
 			block = WorldProxy.getBlock(world, x, y - 1, z);
 			if (block.getBlockHardness(world, x, y - 1, z) == -1)
-			{
 				this.resetHeight = true;
-			}
 		}
 		else
 		{
 			this.breakIndex += .25F;
-			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, MathHelper.clamp_int(Math.round((this.breakIndex / hardness) * 10), 0, 10)), world.provider.dimensionId, x, y, z, 10D);
+			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, MathHelper.clamp_int(Math.round(this.breakIndex / hardness * 10), 0, 10)), world.provider.dimensionId, x, y, z, 10D);
 		}
 	}
-	
+
 	@Override
 	protected void incrementLoc()
 	{
@@ -144,36 +137,29 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 				return;
 			}
 		}
-		else
+		else if (this.increase)
 		{
-			if (this.increase)
-			{
-				this.height += 1;
-				this.increase = false;
-			}
+			this.height += 1;
+			this.increase = false;
 		}
 	}
-	
+
 	@Override
 	protected void loadExtra(NBTTagCompound compoundTag)
 	{
 		this.row = compoundTag.getByte("row");
 		if (this.row < 1 || 10 < this.row)
-		{
 			this.row = 1;
-		}
 		this.column = compoundTag.getByte("column");
 		if (this.column < 1 || 10 < this.column)
-		{
 			this.column = 1;
-		}
 		this.height = compoundTag.getByte("height");
 		this.breakIndex = compoundTag.getFloat("breakIndex");
 		this.resetHeight = compoundTag.getBoolean("resetHeight");
 		this.increase = compoundTag.getBoolean("increase");
 		this.isDone = compoundTag.getBoolean("isDone");
 	}
-	
+
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
@@ -183,7 +169,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		this.breakIndex = data.readFloat();
 		this.isDone = data.readBoolean();
 	}
-	
+
 	@Override
 	protected void saveExtra(NBTTagCompound compoundTag)
 	{
@@ -192,7 +178,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		compoundTag.setFloat("breakIndex", this.breakIndex);
 		compoundTag.setBoolean("isDone", this.isDone);
 	}
-	
+
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{

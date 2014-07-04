@@ -30,11 +30,11 @@ import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class BlockMachine extends Block implements ITileEntityProvider {
-	
+
 	private IIcon side;
 	private IIcon top;
 	private final Random rand = new Random();
-	
+
 	public BlockMachine()
 	{
 		super(Material.wood);
@@ -43,7 +43,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		this.setHarvestLevel("axe", 0);
 		this.setCreativeTab(CreativeTabs.tabBlock);
 	}
-	
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List list, Entity entity)
@@ -52,7 +52,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
-	
+
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
@@ -61,7 +61,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		if (tile instanceof IInventory)
 		{
 			IInventory inv = (IInventory) tile;
-			InventoryUtils.explodeInventory(inv, rand, world, x, y, z);
+			InventoryUtils.explodeInventory(inv, this.rand, world, x, y, z);
 			isValid = true;
 		}
 		if (tile instanceof TileEntityFarm)
@@ -74,7 +74,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 			world.func_147453_f(x, y, z, block);
 		super.breakBlock(world, x, y, z, block, meta);
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta)
 	{
@@ -85,7 +85,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		}
 		return new TileEntityFarm();
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta)
@@ -103,13 +103,13 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		}
 		return this.side;
 	}
-	
+
 	@Override
 	public Item getItemDropped(int p_149650_1_, Random rand, int p_149650_3_)
 	{
 		return Item.getItemFromBlock(this);
 	}
-	
+
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@SideOnly(Side.CLIENT)
@@ -118,7 +118,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 1));
 	}
-	
+
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side)
 	{
@@ -143,13 +143,13 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int quantityDropped(Random rand)
 	{
 		return 1;
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister iIconRegister)

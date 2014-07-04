@@ -7,18 +7,18 @@ import net.minecraft.item.ItemStack;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class ItemBlockMachine extends ItemBlock {
-	
+
 	public ItemBlockMachine(Block p_i45326_1_)
 	{
 		super(p_i45326_1_);
 	}
-	
+
 	@Override
 	public int getMetadata(int i)
 	{
 		return i;
 	}
-	
+
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack)
 	{

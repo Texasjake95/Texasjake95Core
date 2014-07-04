@@ -29,15 +29,15 @@ import com.texasjake95.core.network.IPacketHandler;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class InventorySeed implements IPacketHandler {
-	
+
 	private int limit;
 	private HashMap<String, ItemStack> map = Maps.newHashMap();
-	
+
 	public InventorySeed(int limit)
 	{
 		this.limit = limit;
 	}
-	
+
 	public void addItemStack(ItemStack stack)
 	{
 		if (stack == null)
@@ -57,7 +57,7 @@ public class InventorySeed implements IPacketHandler {
 		}
 		this.map.put(key, tempStack);
 	}
-	
+
 	public void dropItemStacks(World world, int x, int y, int z, Random rand)
 	{
 		for (Entry<String, ItemStack> entry : this.map.entrySet())
@@ -72,45 +72,41 @@ public class InventorySeed implements IPacketHandler {
 				{
 					int dropSize = rand.nextInt(21) + 10;
 					if (dropSize > itemstack.stackSize)
-					{
 						dropSize = itemstack.stackSize;
-					}
 					itemstack.stackSize -= dropSize;
 					entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
 					entityitem.motionX = (float) rand.nextGaussian() * 0.05F;
 					entityitem.motionY = (float) rand.nextGaussian() * 0.05F + 0.2F;
 					entityitem.motionZ = (float) rand.nextGaussian() * 0.05F;
 					if (itemstack.hasTagCompound())
-					{
 						entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
-					}
 				}
 			}
 		}
 	}
-	
+
 	public ItemStack getStack(Item seed, int meta)
 	{
 		return this.map.get(this.key(seed, meta));
 	}
-	
+
 	public ItemStack getStack(ItemIntPair pair)
 	{
 		if (pair == null)
 			return null;
 		return this.getStack(pair.getItem(), pair.getMeta());
 	}
-	
+
 	private String key(Item item, int meta)
 	{
 		return GameRegistry.findUniqueIdentifierFor(item).toString() + meta;
 	}
-	
+
 	private String key(ItemStack stack)
 	{
 		return this.key(ItemStackProxy.getItem(stack), ItemStackProxy.getMetadata(stack));
 	}
-	
+
 	public void load(NBTTagCompound data)
 	{
 		NBTTagList items = data.getTagList("items", Constants.NBT.TAG_COMPOUND);
@@ -121,23 +117,19 @@ public class InventorySeed implements IPacketHandler {
 			this.addItemStack(stack);
 		}
 	}
-	
+
 	public void printItems()
 	{
 		for (Entry<String, ItemStack> entry : this.map.entrySet())
 		{
 			ItemStack stack = entry.getValue();
 			if (stack == null)
-			{
 				System.out.println("null");
-			}
 			else
-			{
 				System.out.println(stack.getItem().getUnlocalizedName() + ":" + stack.getItemDamage() + ":" + stack.stackSize);
-			}
 		}
 	}
-	
+
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
@@ -149,7 +141,7 @@ public class InventorySeed implements IPacketHandler {
 			this.map.put(key, ByteBufUtils.readItemStack(byteBuf));
 		}
 	}
-	
+
 	public void save(NBTTagCompound data)
 	{
 		NBTTagList items = new NBTTagList();
@@ -161,7 +153,7 @@ public class InventorySeed implements IPacketHandler {
 		}
 		data.setTag("items", items);
 	}
-	
+
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{

@@ -10,13 +10,13 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 
 public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<MessageBlockRenderUpdate, IMessage> {
-	
+
 	int blockID, x, y, z, progress;;
-	
+
 	public MessageBlockRenderUpdate()
 	{
 	}
-	
+
 	public MessageBlockRenderUpdate(Block block, int x, int y, int z, int progress)
 	{
 		this.blockID = Block.getIdFromBlock(block);
@@ -25,7 +25,7 @@ public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<Messa
 		this.z = z;
 		this.progress = progress;
 	}
-	
+
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
@@ -35,14 +35,14 @@ public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<Messa
 		this.z = buf.readInt();
 		this.progress = buf.readInt();
 	}
-	
+
 	@Override
 	public IMessage onMessage(MessageBlockRenderUpdate message, MessageContext ctx)
 	{
 		Minecraft.getMinecraft().theWorld.destroyBlockInWorldPartially(message.blockID, message.x, message.y, message.z, message.progress);
 		return null;
 	}
-	
+
 	@Override
 	public void toBytes(ByteBuf buf)
 	{

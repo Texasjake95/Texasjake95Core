@@ -15,39 +15,35 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadrant<E>> extends TileEntityInv {
-	
+
 	private final ArrayList<T> list = Lists.newArrayList();
-	
+
 	public TileEntityQuad(int size)
 	{
 		super(size);
 	}
-	
+
 	public TileEntityQuad(int size, int limit)
 	{
 		super(size, limit);
 	}
-	
+
 	protected final void addQuad(T quad)
 	{
 		if (!this.list.isEmpty())
-		{
 			for (T inter : this.list)
-			{
 				if (inter.northSouth == quad.northSouth)
 					if (inter.eastWest == quad.eastWest)
 						if (inter.upDown == quad.upDown)
 							return;
-			}
-		}
 		this.list.add(quad);
 	}
-	
+
 	protected final ImmutableList<T> getQuadCount()
 	{
 		return ImmutableList.copyOf(this.list);
 	}
-	
+
 	@Override
 	protected void load(NBTTagCompound nbtTagCompound)
 	{
@@ -58,7 +54,7 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 			quad.load(nbtTagCompound.getCompoundTag("quad"));
 		}
 	}
-	
+
 	protected final boolean quadAreValid()
 	{
 		for (T quad : this.getQuadCount())
@@ -66,26 +62,22 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 				return true;
 		return false;
 	}
-	
+
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		super.readFromPacket(data, byteBuf, clazz);
 		for (T quad : this.getQuadCount())
-		{
 			quad.readFromPacket(data, byteBuf, clazz);
-		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected final void runQuads()
 	{
 		for (T quad : this.getQuadCount())
-		{
 			quad.run(this.worldObj, this.xCoord, this.yCoord, this.zCoord, (E) this);
-		}
 	}
-	
+
 	@Override
 	protected void save(NBTTagCompound nbtTagCompound)
 	{
@@ -99,31 +91,25 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 			compound = new NBTTagCompound();
 		}
 	}
-	
+
 	protected final void validateAndRunQuads(boolean run)
 	{
 		this.validateQuads();
 		if (run)
-		{
 			this.runQuads();
-		}
 	}
-	
+
 	protected final void validateQuads()
 	{
 		for (T quad : this.getQuadCount())
-		{
 			quad.validate(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		}
 	}
-	
+
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		super.writeToPacket(dos, byteBuf, clazz);
 		for (T quad : this.getQuadCount())
-		{
 			quad.writeToPacket(dos, byteBuf, clazz);
-		}
 	}
 }

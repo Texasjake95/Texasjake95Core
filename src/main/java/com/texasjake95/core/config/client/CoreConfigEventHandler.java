@@ -7,13 +7,11 @@ import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.config.CoreConfig;
 
 public class CoreConfigEventHandler {
-	
+
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)
 	{
 		if (eventArgs.modID.equals(CoreInfo.modId))
-		{
 			CoreConfig.getInstance().initProps();
-		}
 	}
 }

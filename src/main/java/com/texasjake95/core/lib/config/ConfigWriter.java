@@ -10,10 +10,10 @@ import net.minecraftforge.common.config.Configuration;
 import com.texasjake95.commons.file.config.ConfigFile;
 
 public abstract class ConfigWriter {
-	
+
 	// private ConfigFile config;
 	private Configuration forgeConfig;
-	
+
 	public ConfigWriter()
 	{
 		// CoreConfigHandler.getInstance().addConfig(this);
@@ -31,7 +31,7 @@ public abstract class ConfigWriter {
 		// this.config.load();
 		this.forgeConfig.load();
 	}
-	
+
 	// public ConfigFile config()
 	// {
 	// return this.config;
@@ -49,18 +49,18 @@ public abstract class ConfigWriter {
 		}
 		return new ConfigFile(file);
 	}
-	
+
 	public void endProps(ConfigFile config)
 	{
 		config.save();
 	}
-	
+
 	public Configuration forgeConfig()
 	{
 		return this.forgeConfig;
 	}
-	
+
 	public abstract String modID();
-	
+
 	public abstract String modName();
 }

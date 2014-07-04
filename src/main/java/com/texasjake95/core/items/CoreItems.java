@@ -24,7 +24,7 @@ import com.texasjake95.core.items.multi.MultiSwordAxe;
 import com.texasjake95.core.items.multi.MultiWeapon;
 
 public class CoreItems {
-	
+
 	public static Item diamondMulti;
 	public static Item diamondPaxe;
 	public static Item diamondPaxel;
@@ -99,17 +99,17 @@ public class CoreItems {
 	private static final ArrayList<ToolMaterial> toolMaterials2 = Lists.newArrayList(wood2, stone2, iron2, gold2, diamond2);
 	private static final ArrayList<ToolMaterial> toolMaterials3 = Lists.newArrayList(wood3, stone3, iron3, gold3, diamond3);
 	private static final ArrayList<ToolMaterial> toolMaterials4 = Lists.newArrayList(wood4, stone4, iron4, gold4, diamond4);
-	
+
 	private static ToolMaterial create(ToolMaterial base, int useMultiplier)
 	{
 		return EnumHelper.addToolMaterial("TX" + base.name() + useMultiplier, base.getHarvestLevel(), base.getMaxUses() * useMultiplier, base.getEfficiencyOnProperMaterial(), base.getDamageVsEntity(), base.getEnchantability());
 	}
-	
+
 	static Item getItem(String name)
 	{
 		return GameRegistry.findItem(CoreInfo.modId, name);
 	}
-	
+
 	public static void initItems()
 	{
 		for (int i = 0; i < 5; i++)
@@ -194,72 +194,72 @@ public class CoreItems {
 		woodenSwaxel = getItem("Wooden Swaxel");
 		MultiItemMap.initItemMaps();
 	}
-	
+
 	private static Item multi(int tool)
 	{
 		return new MultiWeapon(tool4(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item paxe(int tool)
 	{
 		return new MultiPickAxe(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item paxel(int tool)
 	{
 		return new MultiPickShovelAxe(tool3(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item paxerd(int tool)
 	{
 		return new MultiPickSwordAxe(tool3(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item picord(int tool)
 	{
 		return new MultiPickSword(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item picvel(int tool)
 	{
 		return new MultiPickShovel(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item piverd(int tool)
 	{
 		return new MultiPickShovelSword(tool3(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item shaxe(int tool)
 	{
 		return new MultiShovelAxe(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item shord(int tool)
 	{
 		return new MultiShovelSword(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item swaxe(int tool)
 	{
 		return new MultiSwordAxe(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static Item swaxel(int tool)
 	{
 		return new MultiPickAxe(tool2(tool), CoreInfo.modId);
 	}
-	
+
 	private static ToolMaterial tool2(int index)
 	{
 		return toolMaterials2.get(index);
 	}
-	
+
 	private static ToolMaterial tool3(int index)
 	{
 		return toolMaterials3.get(index);
 	}
-	
+
 	private static ToolMaterial tool4(int index)
 	{
 		return toolMaterials4.get(index);

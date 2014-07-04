@@ -9,14 +9,14 @@ import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.network.message.MessageTileQuarry;
 
 public class CorePacketHandler extends PacketHandler {
-	
+
 	public static final CorePacketHandler INSTANCE = new CorePacketHandler();
-	
+
 	private CorePacketHandler()
 	{
 		super(CoreInfo.modId.toLowerCase());
 	}
-	
+
 	@Override
 	protected void registerMessages()
 	{

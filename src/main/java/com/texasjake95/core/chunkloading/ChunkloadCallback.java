@@ -13,14 +13,14 @@ import net.minecraft.world.World;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
 public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallback {
-	
+
 	private final String modID;
-	
+
 	public ChunkloadCallback(String modID)
 	{
 		this.modID = modID;
 	}
-	
+
 	@Override
 	public void ticketsLoaded(List<Ticket> tickets, World world)
 	{
@@ -34,13 +34,11 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			{
 				IChunkLoader loader = (IChunkLoader) tile;
 				if (this.modID.equals(loader.getModID()))
-				{
 					loader.setTicket(ticket);
-				}
 			}
 		}
 	}
-	
+
 	@Override
 	public List<Ticket> ticketsLoaded(List<Ticket> tickets, World world, int maxTicketCount)
 	{
@@ -55,9 +53,7 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			{
 				IChunkLoader loader = (IChunkLoader) tile;
 				if (maxTicketCount > validTickets.size() && this.modID.equals(loader.getModID()))
-				{
 					validTickets.add(ticket);
-				}
 			}
 		}
 		return validTickets;

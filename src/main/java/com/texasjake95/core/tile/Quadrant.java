@@ -19,7 +19,7 @@ import com.texasjake95.commons.helpers.Checker;
 import com.texasjake95.core.network.IPacketHandler;
 
 public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandler {
-	
+
 	protected ForgeDirection northSouth;
 	protected ForgeDirection eastWest;
 	protected ForgeDirection upDown;
@@ -28,9 +28,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	protected byte row = 1;
 	protected byte height = 0;
 	protected byte column = 1;
-	
-	public abstract ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z);
-	
+
 	public Quadrant(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
 	{
 		if (!Checker.doAnyMatch(northSouth, ForgeDirection.NORTH, ForgeDirection.SOUTH))
@@ -43,27 +41,29 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 			throw new IllegalArgumentException("The pramater \"upDown\" must be UP or DOWN");
 		this.upDown = upDown;
 	}
-	
+
 	protected abstract boolean _validate(World world, int x, int y, int z);
-	
+
+	public abstract ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z);
+
 	protected abstract void handleBlock(World world, int x, int y, int z, T tile);
-	
+
 	protected abstract void incrementLoc();
-	
+
 	public boolean isValid()
 	{
 		return this.valid;
 	}
-	
+
 	public void load(NBTTagCompound compoundTag)
 	{
 		this.loadExtra(compoundTag);
 		this.check = compoundTag.getByte("check");
 		this.valid = compoundTag.getBoolean("valid");
 	}
-	
+
 	protected abstract void loadExtra(NBTTagCompound compoundTag);
-	
+
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
@@ -73,7 +73,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		this.column = data.readByte();
 		this.height = data.readByte();
 	}
-	
+
 	public void run(World world, int x, int y, int z, T tile)
 	{
 		if (this.valid)
@@ -86,7 +86,7 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 			this.incrementLoc();
 		}
 	}
-	
+
 	public void save(NBTTagCompound compoundTag)
 	{
 		compoundTag.setByte("row", this.row);
@@ -96,9 +96,9 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 		compoundTag.setBoolean("valid", this.valid);
 		this.saveExtra(compoundTag);
 	}
-	
+
 	protected abstract void saveExtra(NBTTagCompound compoundTag);
-	
+
 	public void validate(World world, int x, int y, int z)
 	{
 		this.check += 1;
@@ -107,12 +107,10 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 			this.valid = false;
 			this.check = 0;
 			if (this._validate(world, x, y, z))
-			{
 				this.valid = true;
-			}
 		}
 	}
-	
+
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{

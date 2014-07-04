@@ -31,56 +31,52 @@ import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 /**
  * The Main Class for Texasjake95 - Core <br>
  * Handles the firing of classes annotated with {@link Addon}
- * 
+ *
  * @author Texasjake95
- * 
+ *
  */
 @Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion, guiFactory = "com.texasjake95.core.config.client.GuiConfigFactory")
 public class Texasjake95Core {
-	
+
 	@Instance(CoreInfo.modId)
 	public static Texasjake95Core INSTANCE;
 	public static final boolean isTesting = false;
 	@SidedProxy(clientSide = "com.texasjake95.core.client.TxCoreClientProxy", serverSide = "com.texasjake95.core.TxCoreCommonProxy")
 	public static TxCoreCommonProxy proxy;
-	
+
 	public Texasjake95Core()
 	{
 		CoreConfig.getInstance();
 	}
-	
+
 	@EventHandler
 	public void fingerprint(FMLFingerprintViolationEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void fixMapping(FMLMissingMappingsEvent event)
 	{
 		for (MissingMapping mapping : event.get())
-		{
 			if (mapping.name.equals(CoreInfo.modId + ":FarmBlock"))
-			{
 				MappingHelper.remapBlock(mapping, TxCoreCommonProxy.machine);
-			}
-		}
 	}
-	
+
 	@EventHandler
 	public void imc(IMCEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
@@ -93,27 +89,27 @@ public class Texasjake95Core {
 		EventRegister.registerForgeEventHandler(new Handler());
 		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
 	}
-	
+
 	@EventHandler
 	public void serverAboutToStart(FMLServerAboutToStartEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void serverAboutToStart(FMLServerStartedEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void serverAboutToStart(FMLServerStartingEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void serverStopped(FMLServerStoppedEvent event)
 	{
 	}
-	
+
 	@EventHandler
 	public void serverStopping(FMLServerStoppingEvent event)
 	{
