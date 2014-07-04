@@ -1,4 +1,4 @@
-package com.texasjake95.core.lib.helper;
+package com.texasjake95.core.lib.utils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +9,7 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class PlayerHelper {
+public class PlayerUtils {
 	
 	public static class Teleporto extends Teleporter {
 		

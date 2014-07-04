@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -27,12 +29,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.Texasjake95Core;
-import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.lib.utils.BlockUtils;
+import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageBlockRenderUpdate;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.Quadrant;
-import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
@@ -53,9 +55,11 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 		return !this.isDone;
 	}
 	
-	public ChunkCoordIntPair getCurrentChunkCoordIntPair(int x, int z)
+	public ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z)
 	{
-		return new ChunkCoordIntPair((x + this.row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4);
+		ArrayList<ChunkCoordIntPair> chunks = Lists.newArrayList();
+		chunks.add(new ChunkCoordIntPair((x + this.row * this.eastWest.offsetX) >> 4, (z + this.column * this.northSouth.offsetZ) >> 4));
+		return chunks;
 	}
 	
 	@Override
@@ -78,6 +82,11 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			return;
 		}
 		float hardness = block.getBlockHardness(world, x, y, z);
+		if (hardness == -1)
+		{
+			this.resetHeight = true;
+			return;
+		}
 		if (this.breakIndex >= hardness)
 		{
 			this.breakIndex = 0;
@@ -85,7 +94,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			this.increase = true;
 			int meta = WorldProxy.getBlockMetadata(world, x, y, z);
 			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
-			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, x, y, z, block, meta);
+			ArrayList<ItemStack> returnList = BlockUtils.getDrops(player, world, x, y, z, block, meta);
 			double d = World.MAX_ENTITY_RADIUS;
 			@SuppressWarnings("unchecked")
 			List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x - d, y - d, z - d, x + d, y + d, z + d));
@@ -96,10 +105,10 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			}
 			for (ItemStack stack : returnList)
 			{
-				InventoryHelper.addToInventory(tile, stack);
+				InventoryUtils.addToInventory(tile, stack);
 			}
 			block = WorldProxy.getBlock(world, x, y - 1, z);
-			if (block == Blocks.bedrock)
+			if (block.getBlockHardness(world, x, y - 1, z) == -1)
 			{
 				this.resetHeight = true;
 			}

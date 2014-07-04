@@ -14,10 +14,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -25,6 +24,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.api.CoreInfo;
+import com.texasjake95.core.lib.utils.InventoryUtils;
+import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
@@ -55,71 +56,22 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
-		TileEntity tile = world.getTileEntity(x, y, z);
+		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		boolean isValid = false;
+		if (tile instanceof IInventory)
+		{
+			IInventory inv = (IInventory) tile;
+			InventoryUtils.explodeInventory(inv, rand, world, x, y, z);
+			isValid = true;
+		}
 		if (tile instanceof TileEntityFarm)
 		{
 			TileEntityFarm farm = (TileEntityFarm) tile;
-			for (int slot = 0; slot < farm.getSizeInventory(); ++slot)
-			{
-				ItemStack itemstack = farm.getStackInSlot(slot);
-				if (itemstack != null)
-				{
-					float xChange = this.rand.nextFloat() * 0.8F + 0.1F;
-					float yChange = this.rand.nextFloat() * 0.8F + 0.1F;
-					EntityItem entityitem;
-					for (float zChange = this.rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
-					{
-						int dropSize = this.rand.nextInt(21) + 10;
-						if (dropSize > itemstack.stackSize)
-						{
-							dropSize = itemstack.stackSize;
-						}
-						itemstack.stackSize -= dropSize;
-						entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
-						entityitem.motionX = (float) this.rand.nextGaussian() * 0.05F;
-						entityitem.motionY = (float) this.rand.nextGaussian() * 0.05F + 0.2F;
-						entityitem.motionZ = (float) this.rand.nextGaussian() * 0.05F;
-						if (itemstack.hasTagCompound())
-						{
-							entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
-						}
-					}
-				}
-			}
 			farm.getSeedInv().dropItemStacks(world, x, y, z, this.rand);
+			isValid = true;
+		}
+		if (isValid)
 			world.func_147453_f(x, y, z, block);
-		}
-		if (tile instanceof TileEntityQuarry)
-		{
-			TileEntityQuarry quarry = (TileEntityQuarry) tile;
-			for (int slot = 0; slot < quarry.getSizeInventory(); ++slot)
-			{
-				ItemStack itemstack = quarry.getStackInSlot(slot);
-				if (itemstack != null)
-				{
-					float xChange = this.rand.nextFloat() * 0.8F + 0.1F;
-					float yChange = this.rand.nextFloat() * 0.8F + 0.1F;
-					EntityItem entityitem;
-					for (float zChange = this.rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
-					{
-						int dropSize = this.rand.nextInt(21) + 10;
-						if (dropSize > itemstack.stackSize)
-						{
-							dropSize = itemstack.stackSize;
-						}
-						itemstack.stackSize -= dropSize;
-						entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
-						entityitem.motionX = (float) this.rand.nextGaussian() * 0.05F;
-						entityitem.motionY = (float) this.rand.nextGaussian() * 0.05F + 0.2F;
-						entityitem.motionZ = (float) this.rand.nextGaussian() * 0.05F;
-						if (itemstack.hasTagCompound())
-						{
-							entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
-						}
-					}
-				}
-			}
-		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 	
@@ -161,10 +113,10 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item p_149666_1_, CreativeTabs p_149666_2_, List p_149666_3_)
+	public void getSubBlocks(Item item, CreativeTabs tab, List list)
 	{
-		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 0));
-		p_149666_3_.add(new ItemStack(p_149666_1_, 1, 1));
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
 	}
 	
 	@Override

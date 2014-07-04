@@ -10,6 +10,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.Texasjake95Core;
+import com.texasjake95.core.config.CoreConfig;
 // import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.handler.ToolHandlerRegistry;
 import com.texasjake95.core.proxy.entity.PlayerProxy;
@@ -50,7 +51,7 @@ public class AutoHandlerData {
 	{
 		if (tools.canHarvest(this.block, this.blockMeta, stack))
 		{
-			if (/* !CoreConfig.getInstance().useBestTool && */currentHarvest == this.lowestHarvestLevel && strVsBlock == this.bestFloat)
+			if (!CoreConfig.getInstance().useBestTool && currentHarvest == this.lowestHarvestLevel && strVsBlock == this.bestFloat)
 			{
 				if (currentHarvest == -1)
 					return;
@@ -60,7 +61,7 @@ public class AutoHandlerData {
 				}
 				bestSlots.add(slot);
 			}
-			else if (/* CoreConfig.getInstance().useBestTool && */strVsBlock == this.bestFloat)
+			else if (CoreConfig.getInstance().useBestTool && strVsBlock == this.bestFloat)
 			{
 				if (Texasjake95Core.isTesting)
 				{
@@ -78,7 +79,7 @@ public class AutoHandlerData {
 	
 	public void checkAndUpdate(int slot, int currentHarvest, float strVsBlock)
 	{
-		if (/* !CoreConfig.getInstance().useBestTool && */currentHarvest <= this.lowestHarvestLevel)
+		if (!CoreConfig.getInstance().useBestTool && currentHarvest <= this.lowestHarvestLevel)
 		{
 			if (currentHarvest == -1)
 				return;
@@ -107,7 +108,7 @@ public class AutoHandlerData {
 				System.out.println("Best Item at " + this.bestSlot + " with strength of " + this.bestFloat);
 			}
 		}
-		else if (/* CoreConfig.getInstance().useBestTool && */this.bestFloat < strVsBlock)
+		else if (CoreConfig.getInstance().useBestTool && this.bestFloat < strVsBlock)
 		{
 			this.bestFloat = strVsBlock;
 			this.bestSlot = slot;

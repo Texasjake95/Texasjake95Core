@@ -1,27 +1,21 @@
-buildscript
-{
-	repositories
-	{
+buildscript {
+	repositories {
 		mavenCentral()
 		mavenLocal()
-		maven
-		{
+		maven {
 			name = "forge"
 			url = "http://files.minecraftforge.net/maven"
 		}
-		maven
-		{
+		maven {
 			name = "sonatype"
 			url = "https://oss.sonatype.org/content/repositories/snapshots/"
 		}
-		maven
-		{
+		maven {
 			name = "texasjake95Maven"
 			url = "https://github.com/Texasjake95/maven-repo/raw/master/"
 		}
 	}
-	dependencies
-	{
+	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
 		classpath 'com.texasjake95:GradlePlugin:1.1-SNAPSHOT'
 		classpath 'com.texasjake95:MinecraftGradlePlugin:1.0-SNAPSHOT'
@@ -31,10 +25,8 @@ apply plugin: 'forge'
 apply plugin: 'texasjake95'
 apply plugin: 'texasjake95-minecraft'
 
-repositories
-{
-	maven
-	{
+repositories {
+	maven {
 		name =  "ChickenFileServer"
 		url =   "http://www.chickenbones.net/maven/"
 	}
@@ -52,16 +44,7 @@ if(System.getenv().TRAVIS_BUILD_NUMBER)
 version = "$minecraft_version-$mod_version.$buildNumber"
 archivesBaseName = "TXCore"
 
-
-minecraft {
-	version = "$minecraft_version-$forge_version"
-	if(file("../run").exists()) {
-		assetDir = "../run/assets"
-	} else {
-		assetDir = "eclipse/assets"
-	}
-	replace '${version}', "$mod_version.$buildNumber"
-}
+minecraft { replace '${version}', "$mod_version.$buildNumber" }
 
 dependencies {
 	

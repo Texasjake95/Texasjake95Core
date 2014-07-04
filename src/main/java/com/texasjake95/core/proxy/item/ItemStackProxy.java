@@ -36,4 +36,9 @@ public class ItemStackProxy {
 	{
 		stack.tryPlaceItemIntoWorld(player, world, x, y, z, face, idk, idk2, idk3);
 	}
+
+	public static ItemStack splitStack(ItemStack stack, int decr)
+	{
+		return stack.splitStack(decr);
+	}
 }

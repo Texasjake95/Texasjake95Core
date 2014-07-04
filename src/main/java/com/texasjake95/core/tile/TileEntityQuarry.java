@@ -36,8 +36,9 @@ public class TileEntityQuarry extends TileEntityQuad<TileEntityQuarry, QuadrantQ
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4);
 		chunks.add(chunk);
 		for (QuadrantQuarry quad : this.getQuadCount())
-			if (chunk.equals(quad))
-				chunks.add(quad.getCurrentChunkCoordIntPair(this.xCoord, this.zCoord));
+			for (ChunkCoordIntPair workingChunk : quad.getWorkingChunkCoordIntPairs(this.xCoord, this.zCoord))
+				if (!chunk.equals(workingChunk))
+					chunks.add(workingChunk);
 		return chunks;
 	}
 	

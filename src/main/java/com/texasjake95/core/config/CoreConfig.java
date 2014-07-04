@@ -31,22 +31,15 @@ public class CoreConfig extends BaseConfig {
 	public void initProps()
 	{
 		super.initProps();
-		// this.config.load();
-		// this.autoSwitch =
-		// this.config.getCatagory("Auto Switch").addPropertyWithComment("Auto Switch Tool",
-		// true,
-		// "Set this to true for the equipped tool to be switched to the most effective tool on the hot bar").getBoolean(true);
 		Property autoSwitch = this.forgeConfig.get("auto_switch", "Auto Switch Tool", true);
 		autoSwitch = setComment(autoSwitch, "Set this to true for the equipped tool to be switched to the most effective tool on the hot bar");
 		this.autoSwitch = autoSwitch.getBoolean(true);
-		// this.useBestTool =
-		// this.config.getCatagory("Auto Switch").addPropertyWithComment("Use Best Tool",
-		// true, "Use the best tool possible").getBoolean(true);
-		// this.forceTool =
-		// this.config.getCatagory("Auto Switch").addPropertyWithComment("Force Tool",
-		// true,
-		// "Force tool usage if it is able to mine block").getBoolean(true);
-		// this.config.save();
+		Property forceTool = this.forgeConfig.get("auto_switch", "Force Tool", true);
+		forceTool = setComment(forceTool, "Force tool usage if it is able to mine block");
+		this.forceTool = forceTool.getBoolean(true);
+		Property useBestTool = this.forgeConfig.get("auto_switch", "Use Best Tool", true);
+		useBestTool = setComment(useBestTool, "Use the best tool possible");
+		this.useBestTool = useBestTool.getBoolean(true);
 		this.save();
 	}
 	

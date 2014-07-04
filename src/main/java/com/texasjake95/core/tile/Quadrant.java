@@ -5,12 +5,14 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import com.texasjake95.commons.helpers.Checker;
@@ -26,6 +28,8 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	protected byte row = 1;
 	protected byte height = 0;
 	protected byte column = 1;
+	
+	public abstract ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z);
 	
 	public Quadrant(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
 	{

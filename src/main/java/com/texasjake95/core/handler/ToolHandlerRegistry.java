@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.handler.IToolHandler;
 import com.texasjake95.core.api.handler.IToolRegistry;
+import com.texasjake95.core.proxy.BlockProxy;
+import com.texasjake95.core.proxy.MaterailProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
@@ -61,7 +63,7 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 	public boolean canHarvest(Block block, int blockMeta, ItemStack stack)
 	{
 		if (stack == null)
-			return block.getMaterial().isToolNotRequired();
+			return MaterailProxy.isToolNotRequired(BlockProxy.getMaterial(block));
 		return this.getHandler(stack).canHarvest(block, blockMeta, stack);
 	}
 	

@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.texasjake95.core.proxy.item.ItemStackProxy;
+
 public class InventoryBase implements IInventory {
 	
 	private ItemStack[] inv;
@@ -43,7 +45,7 @@ public class InventoryBase implements IInventory {
 		if (this.inv[slot] != null)
 		{
 			ItemStack itemstack;
-			if (this.inv[slot].stackSize <= decr)
+			if (ItemStackProxy.getStackSize(this.inv[slot]) <= decr)
 			{
 				itemstack = this.inv[slot];
 				this.inv[slot] = null;
@@ -51,7 +53,7 @@ public class InventoryBase implements IInventory {
 			}
 			else
 			{
-				itemstack = this.inv[slot].splitStack(decr);
+				itemstack = ItemStackProxy.splitStack(this.inv[slot],decr);
 				if (this.inv[slot].stackSize == 0)
 				{
 					this.inv[slot] = null;

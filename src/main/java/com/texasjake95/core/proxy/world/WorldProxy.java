@@ -1,6 +1,7 @@
 package com.texasjake95.core.proxy.world;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -43,5 +44,10 @@ public class WorldProxy {
 	public static MovingObjectPosition rayTraceBlocks(World world, Vec3 vec1, Vec3 vec2)
 	{
 		return world.rayTraceBlocks(vec1, vec2);
+	}
+
+	public static boolean spawnEntityInWorld(World world, Entity entity)
+	{
+		return world.spawnEntityInWorld(entity);
 	}
 }

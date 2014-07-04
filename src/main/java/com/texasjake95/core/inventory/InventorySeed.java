@@ -1,4 +1,4 @@
-package com.texasjake95.core.tile.farm;
+package com.texasjake95.core.inventory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;

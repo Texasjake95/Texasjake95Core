@@ -29,7 +29,7 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			int loaderX = ticket.getModData().getInteger("loaderX");
 			int loaderY = ticket.getModData().getInteger("loaderY");
 			int loaderZ = ticket.getModData().getInteger("loaderZ");
-			TileEntity tile = world.getTileEntity(loaderX, loaderY, loaderZ);
+			TileEntity tile = WorldProxy.getTileEntity(world, loaderX, loaderY, loaderZ);
 			if (tile instanceof IChunkLoader)
 			{
 				IChunkLoader loader = (IChunkLoader) tile;

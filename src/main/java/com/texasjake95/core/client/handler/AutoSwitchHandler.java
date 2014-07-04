@@ -12,21 +12,20 @@ import cpw.mods.fml.relauncher.Side;
 
 import net.minecraftforge.common.MinecraftForge;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.event.AutoSwitchEvent;
 import com.texasjake95.core.handler.ToolHandlerRegistry;
 import com.texasjake95.core.lib.handler.event.TickHandler;
+import com.texasjake95.core.proxy.client.MinecraftProxy;
 import com.texasjake95.core.proxy.client.entity.ClientPlayerProxy;
+import com.texasjake95.core.proxy.client.settings.GameSettingsProxy;
 import com.texasjake95.core.proxy.entity.EntityProxy;
 import com.texasjake95.core.proxy.entity.PlayerProxy;
 import com.texasjake95.core.proxy.inventory.PlayerInventoryProxy;
@@ -60,22 +59,16 @@ public class AutoSwitchHandler extends TickHandler {
 		return true;
 	}
 	
-	public static void teleport(World world, EntityPlayer player)
-	{
-		if (!world.isRemote)
-		{
-			Vec3 vec3 = ClientPlayerProxy.getPostion(player, 1.0F);
-			vec3.yCoord++;
-			Vec3 lookVec = ClientPlayerProxy.getLook(player, 1.0F);
-			Vec3 aVector = vec3.addVector(lookVec.xCoord * 50.0D, lookVec.yCoord * 50.0D, lookVec.zCoord * 50.0D);
-			MovingObjectPosition movingObjPos = WorldProxy.rayTraceBlocks(world, vec3, aVector);
-			if (movingObjPos != null)
-			{
-				PlayerProxy.setPostion(player, movingObjPos);
-			}
-		}
-	}
-	
+	/*
+	 * public static void teleport(World world, EntityPlayer player) { if
+	 * (!world.isRemote) { Vec3 vec3 = ClientPlayerProxy.getPostion(player,
+	 * 1.0F); vec3.yCoord++; Vec3 lookVec = ClientPlayerProxy.getLook(player,
+	 * 1.0F); Vec3 aVector = vec3.addVector(lookVec.xCoord * 50.0D,
+	 * lookVec.yCoord * 50.0D, lookVec.zCoord * 50.0D); MovingObjectPosition
+	 * movingObjPos = WorldProxy.rayTraceBlocks(world, vec3, aVector); if
+	 * (movingObjPos != null) { PlayerProxy.setPostion(player, movingObjPos); }
+	 * } }
+	 */
 	/**
 	 * Current Item slot
 	 */
@@ -103,15 +96,15 @@ public class AutoSwitchHandler extends TickHandler {
 				return;
 			World world = EntityProxy.getWorld(player);
 			// if (CoreConfig.getInstance().autoSwitch) // Config switch
-			if (Minecraft.getMinecraft().inGameHasFocus)
+			if (MinecraftProxy.inGameHasFocus())
 				if (checkIfAutoSwitchIsPossible(player))
 				{
-					if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack))
+					if (GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())))
 					{
 						this.shouldSwitchBack = false;
 						ToolHandlerRegistry tools = ToolHandlerRegistry.getInstance();
 						this.tickCount = 0;
-						MovingObjectPosition mop = Minecraft.getMinecraft().objectMouseOver;
+						MovingObjectPosition mop = MinecraftProxy.getObjectMouseOver();
 						if (mop != null)
 						{
 							if (WorldProxy.isAirBlock(world, mop.blockX, mop.blockY, mop.blockZ))
@@ -272,7 +265,7 @@ public class AutoSwitchHandler extends TickHandler {
 		{
 			if (PlayerProxy.isCreative(player))
 				return;
-			if (!GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && this.currentItem > -1 && this.shouldSwitchBack)
+			if (!GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())) && this.currentItem > -1 && this.shouldSwitchBack)
 			{
 				this.tickCount = 0;
 				PlayerInventoryProxy.setCurrentItemSlot(player, this.currentItem);

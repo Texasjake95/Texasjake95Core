@@ -21,7 +21,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
-import com.texasjake95.core.lib.helper.InventoryHelper;
+import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
@@ -169,7 +169,7 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 				IInventoryProxy.setInventorySlotContents(this, invSlot, null);
 				continue;
 			}
-			InventoryHelper.addToInventory(inv, stack);
+			InventoryUtils.addToInventory(inv, stack);
 		}
 	}
 	

@@ -3,6 +3,7 @@ package com.texasjake95.core.tile.farm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -12,13 +13,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.Texasjake95Core;
-import com.texasjake95.core.lib.helper.InventoryHelper;
 import com.texasjake95.core.lib.pair.BlockIntPair;
 import com.texasjake95.core.lib.pair.ItemIntPair;
+import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.Quadrant;
@@ -107,7 +109,7 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 				if (pair != null)
 				{
 					EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
-					ItemIntPair item = TileEntityFarm.getSeed(pair.getBlock(), pair.getMeta());
+					ItemIntPair item = SeedHandler.getSeed(pair.getBlock(), pair.getMeta());
 					ItemStack stack = tile.getSeedInv().getStack(item);
 					if (stack != null)
 					{
@@ -128,19 +130,19 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 				}
 			}
 		}
-		else if (TileEntityFarm.isFullGrown(block, meta, world, x, y, z))
+		else if (SeedHandler.isFullGrown(block, meta, world, x, y, z))
 		{
 			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
-			ArrayList<ItemStack> returnList = TileEntityFarm.getHarvests(player, world, x, y, z, block, meta);
+			ArrayList<ItemStack> returnList = SeedHandler.getHarvests(player, world, x, y, z, block, meta);
 			for (ItemStack stack : returnList)
 			{
-				if (TileEntityFarm.isSeed(stack))
+				if (SeedHandler.isSeed(stack))
 				{
 					tile.getSeedInv().addItemStack(stack);
 				}
-				InventoryHelper.addToInventory(tile, stack);
+				InventoryUtils.addToInventory(tile, stack);
 			}
-			ItemIntPair pair = TileEntityFarm.getSeed(block, meta);
+			ItemIntPair pair = SeedHandler.getSeed(block, meta);
 			if (pair != null)
 			{
 				ItemStack stack = tile.getSeedInv().getStack(pair);
@@ -208,5 +210,17 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	@Override
 	protected void saveExtra(NBTTagCompound compoundTag)
 	{
+	}
+	
+	@Override
+	public ArrayList<ChunkCoordIntPair> getWorkingChunkCoordIntPairs(int x, int z)
+	{
+		ArrayList<ChunkCoordIntPair> chunks = Lists.newArrayList();
+		int beginX = (x) >> 4, beginZ = (z) >> 4;
+		int endX = (x + 10) >> 4, endZ = (z + 10) >> 4;
+		for (int chunkX = beginX; chunkX <= endX; chunkX++)
+			for (int chunkZ = beginZ; chunkZ <= endZ; chunkZ++)
+				chunks.add(new ChunkCoordIntPair(chunkX, chunkZ));
+		return chunks;
 	}
 }
