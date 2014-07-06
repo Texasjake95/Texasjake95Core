@@ -47,22 +47,16 @@ archivesBaseName = "Texasjake95Core"
 minecraft { replace '${version}', "$mod_version.$buildNumber" }
 
 dependencies {
-	
+
 	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
-	
-	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"dev"
-	compile group: "codechicken", name: "NotEnoughItems", version:"$minecraft_version-$nei_version", classifier:"src"
-	
-	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"dev"
-	compile group: "codechicken", name: "CodeChickenCore", version:"$minecraft_version-$ccc_version", classifier:"src"
-	
-	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"dev"
-	compile group: "codechicken", name: "CodeChickenLib", version: "$minecraft_version-$ccl_version", classifier:"src"
-	
+
 	//compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-	
+
 	//compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
 }
+
+depAdd.addNEI()
+
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -71,7 +65,7 @@ uploadArchives {
 	dependsOn 'reobf'
 	dependsOn 'build'
 	repositories {
-		
+
 		if(project.hasProperty("filesmaven"))
 		{
 			mavenDeployer {
@@ -86,18 +80,18 @@ uploadArchives {
 						packaging 'jar'
 						description 'Library for Texasjake95\'s mods'
 						url 'https://github.com/Texasjake95/Texasjake95Core'
-						
+
 						scm {
 							url 'https://github.com/Texasjake95/Texasjake95Core'
 							connection 'scm:git:git://github.com/Texasjake95/Texasjake95Core.git'
 							developerConnection 'scm:git:git@github.com:Texasjake95/Texasjake95Core.git'
 						}
-						
+
 						issueManagement {
 							system 'github'
 							url 'https://github.com/Texasjake95/Texasjake95Core/issues'
 						}
-						
+
 						developers {
 							developer {
 								id 'Texasjake95'
@@ -130,18 +124,7 @@ processResources
 		// replace version and mcversion
 		expand 'version': "$mod_version.$buildNumber", 'mcversion': "$minecraft_version"
 	}
-	
+
 	// copy everything else, thats not the mcmod.info
 	from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
-
-
-atSetup.addAT(find(project,"NotEnoughItems-$minecraft_version-$nei_version-dev"),"nei_at.cfg",file("${buildDir}/unpacked/NEI/"))
-
-modSetup.addMod(find(project, "CodeChickenCore-$minecraft_version-$ccc_version-dev"))
-modSetup.addMod(find(project, "NotEnoughItems-$minecraft_version-$nei_version-dev"))
-modSetup.addMod(find(project, "CodeChickenLib-$minecraft_version-$ccl_version-dev"))
-
-eclipseSetup.addEclipseSetup("CodeChickenCore-$minecraft_version-$ccc_version", "dev", "src")
-eclipseSetup.addEclipseSetup("CodeChickenLib-$minecraft_version-$ccl_version", "dev", "src")
-eclipseSetup.addEclipseSetup("NotEnoughItems-$minecraft_version-$nei_version", "dev", "src")
