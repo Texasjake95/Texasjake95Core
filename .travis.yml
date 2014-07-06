@@ -4,9 +4,9 @@ jdk:
 
 before_install: bash scripts/preInstall.sh
 
-install: ./gradlew setupCIWorkspace
+install: ./gradlew setupCIWorkspace -S
 
-script: ./gradlew build
+script: ./gradlew build -S
 
 after_success: bash scripts/success.sh
 
