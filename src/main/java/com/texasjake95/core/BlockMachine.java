@@ -14,6 +14,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,6 +27,7 @@ import net.minecraft.world.World;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.tile.FurnaceTest;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
@@ -51,6 +53,16 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.5F, 1.0F);
 		super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p_149727_5_, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
+	{
+		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		if (!world.isRemote)
+			if (tile instanceof FurnaceTest)
+				((FurnaceTest) tile).printInv();
+		return false;
 	}
 
 	@Override
@@ -82,6 +94,8 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		{
 			case 1:
 				return new TileEntityQuarry();
+			case 2:
+				return new FurnaceTest();
 		}
 		return new TileEntityFarm();
 	}
@@ -117,6 +131,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	{
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 2));
 	}
 
 	@Override

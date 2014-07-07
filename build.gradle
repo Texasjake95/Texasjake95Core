@@ -112,10 +112,6 @@ uploadArchives {
 	}
 }
 
-def find(project, depName) {
-	return project.configurations.default.find { it.name.contains(depName) }
-}
-
 processResources
 {
 	// replace stuff in mcmod.info, nothing else

@@ -39,6 +39,11 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 		this.inv = new InventoryBase(size, limit);
 	}
 
+	public TileEntityInv(InventoryBase inv)
+	{
+		this.inv = inv;
+	}
+
 	@Override
 	public void closeInventory()
 	{

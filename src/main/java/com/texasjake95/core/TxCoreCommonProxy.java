@@ -19,6 +19,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.items.CoreItems;
+import com.texasjake95.core.tile.FurnaceTest;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
@@ -71,6 +72,7 @@ public class TxCoreCommonProxy {
 		GameRegistry.registerBlock(machine = new BlockMachine(), ItemBlockMachine.class, "Machines");
 		GameRegistry.registerTileEntity(TileEntityFarm.class, "TXFARM");
 		GameRegistry.registerTileEntity(TileEntityQuarry.class, "TXQUARRY");
+		GameRegistry.registerTileEntity(FurnaceTest.class, "TXTESTFURNACE");
 		CoreItems.initItems();
 	}
 

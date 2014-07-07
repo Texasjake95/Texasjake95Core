@@ -28,6 +28,8 @@ public class ItemBlockMachine extends ItemBlock {
 				return "tile.txfarm";
 			case 1:
 				return "tile.txquarry";
+			case 2:
+				return "tile.txFurnace";
 			default:
 				return "tile.txfarm";
 		}
