@@ -38,11 +38,17 @@ public class ItemToolBase extends ItemTool {
 	{
 		CustomArrayList<Block> list = new CustomArrayList<Block>();
 		if (Pickaxe)
+		{
 			list.addAll(pickaxe);
+		}
 		if (Shovel)
+		{
 			list.addAll(shovel);
+		}
 		if (Axe)
+		{
 			list.addAll(axe);
+		}
 		list.addAll(extra);
 		return Sets.newHashSet(list);
 	}
@@ -55,7 +61,9 @@ public class ItemToolBase extends ItemTool {
 		super(damageMod, toolMaterial, blocksEffectiveAgainst);
 		this.prefix = texturePrefix;
 		for (String toolClass : types)
+		{
 			this.setHarvestLevel(toolClass, this.toolMaterial.getHarvestLevel());
+		}
 	}
 
 	protected final boolean axe(Block block, int meta)
@@ -116,7 +124,9 @@ public class ItemToolBase extends ItemTool {
 		CustomArrayList<CreativeTabs> tabs = new CustomArrayList<CreativeTabs>();
 		tabs.add(CreativeTabs.tabTools);
 		if (this.isSword)
+		{
 			tabs.add(CreativeTabs.tabCombat);
+		}
 		return tabs.toArray(new CreativeTabs[tabs.list.size()]);
 	}
 
@@ -127,9 +137,13 @@ public class ItemToolBase extends ItemTool {
 		for (String type : this.getToolClasses(stack))
 		{
 			if (type.equals("pickaxe") && this.pickaxe(block, meta))
+			{
 				isValid = true;
+			}
 			if (type.equals("axe") && this.axe(block, meta))
+			{
 				isValid = true;
+			}
 		}
 		if (isValid)
 			return this.getEfficiency(stack, block.getHarvestTool(meta));
@@ -157,9 +171,13 @@ public class ItemToolBase extends ItemTool {
 	public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase)
 	{
 		if (this.isSword)
+		{
 			par1ItemStack.damageItem(1, par3EntityLivingBase);
+		}
 		else
+		{
 			par1ItemStack.damageItem(2, par3EntityLivingBase);
+		}
 		return true;
 	}
 
@@ -172,7 +190,9 @@ public class ItemToolBase extends ItemTool {
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
 		if (this.isSword)
+		{
 			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
+		}
 		return par1ItemStack;
 	}
 

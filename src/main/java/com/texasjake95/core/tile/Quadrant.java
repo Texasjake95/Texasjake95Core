@@ -107,7 +107,9 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 			this.valid = false;
 			this.check = 0;
 			if (this._validate(world, x, y, z))
+			{
 				this.valid = true;
+			}
 		}
 	}
 

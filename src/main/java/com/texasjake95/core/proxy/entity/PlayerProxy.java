@@ -29,7 +29,9 @@ public class PlayerProxy {
 		{
 			EntityPlayerMP playerMP = (EntityPlayerMP) player;
 			if (playerMP.playerNetServerHandler.netManager.isChannelOpen())
+			{
 				playerMP.setPositionAndUpdate(x, y, z);
+			}
 		}
 	}
 

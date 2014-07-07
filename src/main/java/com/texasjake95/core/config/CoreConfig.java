@@ -12,7 +12,9 @@ public class CoreConfig extends BaseConfig {
 	public static CoreConfig getInstance()
 	{
 		if (instance == null)
+		{
 			instance = new CoreConfig();
+		}
 		return instance;
 	}
 

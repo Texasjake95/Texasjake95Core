@@ -18,7 +18,9 @@ public class BlockUtils {
 		float dropChance = ForgeEventFactory.fireBlockHarvesting(dropsList, world, block, x, y, z, meta, 0, 1.0F, false, player);
 		for (ItemStack s : dropsList)
 			if (world.rand.nextFloat() <= dropChance)
+			{
 				returnList.add(s);
+			}
 		world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
 		world.setBlockToAir(x, y, z);
 		return returnList;

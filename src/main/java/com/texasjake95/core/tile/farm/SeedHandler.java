@@ -102,12 +102,16 @@ public class SeedHandler {
 		ItemIntPair pair = new ItemIntPair(seed, seedMeta);
 		HashMap<Integer, ItemIntPair> metaMap = seedRegistry.get(block);
 		if (metaMap == null)
+		{
 			metaMap = Maps.newHashMap();
+		}
 		metaMap.put(meta, pair);
 		seedRegistry.put(block, metaMap);
 		HashSet<Integer> seedList = seeds.get(seed);
 		if (seedList == null)
+		{
 			seedList = Sets.newHashSet();
+		}
 		seedList.add(seedMeta);
 		seeds.put(seed, seedList);
 	}

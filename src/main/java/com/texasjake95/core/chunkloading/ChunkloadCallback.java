@@ -34,7 +34,9 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			{
 				IChunkLoader loader = (IChunkLoader) tile;
 				if (this.modID.equals(loader.getModID()))
+				{
 					loader.setTicket(ticket);
+				}
 			}
 		}
 	}
@@ -53,7 +55,9 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			{
 				IChunkLoader loader = (IChunkLoader) tile;
 				if (maxTicketCount > validTickets.size() && this.modID.equals(loader.getModID()))
+				{
 					validTickets.add(ticket);
+				}
 			}
 		}
 		return validTickets;

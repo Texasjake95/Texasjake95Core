@@ -11,17 +11,17 @@ public class InventoryFurnaceInput extends InventoryBase {
 		super(size);
 	}
 
-	@Override
-	public boolean isItemValidForSlot(int var1, ItemStack stack)
-	{
-		return true;
-	}
-
 	public boolean isEmpty()
 	{
 		for (int slot = 0; slot < this.getSizeInventory(); slot++)
 			if (this.getStackInSlot(slot) != null)
 				return false;
+		return true;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int var1, ItemStack stack)
+	{
 		return true;
 	}
 }

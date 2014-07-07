@@ -47,16 +47,22 @@ public class TxCoreCommonProxy {
 	public final WeakReference<EntityPlayer> getTXPlayer(WorldServer world)
 	{
 		if (player.get() == null)
+		{
 			player = this.createNewPlayer(world);
+		}
 		else
+		{
 			player.get().worldObj = world;
+		}
 		return player;
 	}
 
 	public final WeakReference<EntityPlayer> getTXPlayer(WorldServer world, int x, int y, int z)
 	{
 		if (player.get() == null)
+		{
 			player = this.createNewPlayer(world, x, y, z);
+		}
 		else
 		{
 			player.get().worldObj = world;

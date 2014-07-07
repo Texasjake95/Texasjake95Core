@@ -43,6 +43,8 @@ public abstract class BaseConfig {
 	public final void save()
 	{
 		if (this.forgeConfig.hasChanged())
+		{
 			this.forgeConfig.save();
+		}
 	}
 }

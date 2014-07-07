@@ -56,16 +56,6 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p_149727_5_, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
-	{
-		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
-		if (!world.isRemote)
-			if (tile instanceof FurnaceTest)
-				((FurnaceTest) tile).printInv();
-		return false;
-	}
-
-	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
 		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
@@ -83,7 +73,9 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 			isValid = true;
 		}
 		if (isValid)
+		{
 			world.func_147453_f(x, y, z, block);
+		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 
@@ -157,6 +149,18 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 				break;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p_149727_5_, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
+	{
+		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		if (!world.isRemote)
+			if (tile instanceof FurnaceTest)
+			{
+				((FurnaceTest) tile).printInv();
+			}
+		return false;
 	}
 
 	@Override

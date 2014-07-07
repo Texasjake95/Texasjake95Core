@@ -22,7 +22,130 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 
 	public TileEntityFurnaceBase(int slots, int fuelSlots, int ticksToCook)
 	{
-		furnace = new FurnaceBase(slots, fuelSlots, ticksToCook);
+		this.furnace = new FurnaceBase(slots, fuelSlots, ticksToCook);
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack stack, int side)
+	{
+		for (int input : this.furnace.getInputSlots())
+			if (slot == input)
+				return false;
+		for (int fuel : this.furnace.getFuelSlots())
+			if (slot == fuel)
+				return stack.getItem() == Items.bucket;
+		return side == 0;
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack stack, int side)
+	{
+		return this.isItemValidForSlot(slot, stack);
+	}
+
+	@Override
+	public void closeInventory()
+	{
+		this.furnace.closeInventory();
+	}
+
+	@Override
+	public ItemStack decrStackSize(int slot, int amount)
+	{
+		return this.furnace.decrStackSize(slot, amount);
+	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int side)
+	{
+		return side == 0 ? this.furnace.getOutputSlots() : (side == 1 ? this.furnace.getInputSlots() : this.furnace.getFuelSlots());
+	}
+
+	@Override
+	public String getInventoryName()
+	{
+		return "tile.txFurnace.name";
+	}
+
+	@Override
+	public int getInventoryStackLimit()
+	{
+		return this.furnace.getInventoryStackLimit();
+	}
+
+	@Override
+	public int getSizeInventory()
+	{
+		return this.furnace.getSizeInventory();
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int slot)
+	{
+		return this.furnace.getStackInSlot(slot);
+	}
+
+	@Override
+	public ItemStack getStackInSlotOnClosing(int slot)
+	{
+		return this.furnace.getStackInSlotOnClosing(slot);
+	}
+
+	@Override
+	public boolean hasCustomInventoryName()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
+	{
+		return this.furnace.isItemValidForSlot(slot, stack);
+	}
+
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer p_70300_1_)
+	{
+		return true;
+	}
+
+	@Override
+	protected void load(NBTTagCompound nbtTagCompound)
+	{
+		this.furnace.readFromNBT(nbtTagCompound);
+	}
+
+	@Override
+	public void openInventory()
+	{
+		this.furnace.openInventory();
+	}
+
+	public void printInv()
+	{
+		for (int slot = 0; slot < this.getSizeInventory(); slot++)
+		{
+			System.out.println(this.getStackInSlot(slot));
+		}
+		System.out.println();
+	}
+
+	@Override
+	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
+	{
+		this.furnace.readFromPacket(data, byteBuf, clazz);
+	}
+
+	@Override
+	protected void save(NBTTagCompound nbtTagCompound)
+	{
+		this.furnace.writeToNBT(nbtTagCompound);
+	}
+
+	@Override
+	public void setInventorySlotContents(int slot, ItemStack stack)
+	{
+		this.furnace.setInventorySlotContents(slot, stack);
 	}
 
 	@Override
@@ -36,131 +159,8 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	}
 
 	@Override
-	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
-	{
-		furnace.readFromPacket(data, byteBuf, clazz);
-	}
-
-	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
-		furnace.writeToPacket(dos, byteBuf, clazz);
-	}
-
-	@Override
-	protected void load(NBTTagCompound nbtTagCompound)
-	{
-		furnace.readFromNBT(nbtTagCompound);
-	}
-
-	@Override
-	protected void save(NBTTagCompound nbtTagCompound)
-	{
-		furnace.writeToNBT(nbtTagCompound);
-	}
-
-	@Override
-	public int getSizeInventory()
-	{
-		return furnace.getSizeInventory();
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int slot)
-	{
-		return furnace.getStackInSlot(slot);
-	}
-
-	@Override
-	public ItemStack decrStackSize(int slot, int amount)
-	{
-		return furnace.decrStackSize(slot, amount);
-	}
-
-	@Override
-	public ItemStack getStackInSlotOnClosing(int slot)
-	{
-		return furnace.getStackInSlotOnClosing(slot);
-	}
-
-	@Override
-	public void setInventorySlotContents(int slot, ItemStack stack)
-	{
-		furnace.setInventorySlotContents(slot, stack);
-	}
-
-	@Override
-	public String getInventoryName()
-	{
-		return "tile.txFurnace.name";
-	}
-
-	@Override
-	public boolean hasCustomInventoryName()
-	{
-		return false;
-	}
-
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return furnace.getInventoryStackLimit();
-	}
-
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer p_70300_1_)
-	{
-		return true;
-	}
-
-	@Override
-	public void openInventory()
-	{
-		furnace.openInventory();
-	}
-
-	@Override
-	public void closeInventory()
-	{
-		furnace.closeInventory();
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack stack)
-	{
-		return furnace.isItemValidForSlot(slot, stack);
-	}
-
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side)
-	{
-		return side == 0 ? furnace.getOutputSlots() : (side == 1 ? furnace.getInputSlots() : furnace.getFuelSlots());
-	}
-
-	@Override
-	public boolean canInsertItem(int slot, ItemStack stack, int side)
-	{
-		return this.isItemValidForSlot(slot, stack);
-	}
-
-	public void printInv()
-	{
-		for (int slot = 0; slot < this.getSizeInventory(); slot++)
-		{
-			System.out.println(this.getStackInSlot(slot));
-		}
-		System.out.println();
-	}
-
-	@Override
-	public boolean canExtractItem(int slot, ItemStack stack, int side)
-	{
-		for (int input : furnace.getInputSlots())
-			if (slot == input)
-				return false;
-		for (int fuel : furnace.getFuelSlots())
-			if (slot == fuel)
-				return stack.getItem() == Items.bucket;
-		return side == 0;
+		this.furnace.writeToPacket(dos, byteBuf, clazz);
 	}
 }

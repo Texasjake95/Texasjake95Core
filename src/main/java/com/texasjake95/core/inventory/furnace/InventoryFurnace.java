@@ -17,14 +17,25 @@ public class InventoryFurnace implements IInventory {
 	private InventoryFurnaceOutput outputSlots;
 	private InventoryFurnaceFuel fuelSlots;
 
-	public InventoryFurnaceInput getInputs()
+	public InventoryFurnace(int slots, int fuelSlots)
 	{
-		return this.inputSlots;
+		this.inputSlots = new InventoryFurnaceInput(slots);
+		this.outputSlots = new InventoryFurnaceOutput(slots);
+		this.fuelSlots = new InventoryFurnaceFuel(fuelSlots);
 	}
 
-	public InventoryFurnaceOutput getOutputs()
+	@Override
+	public void closeInventory()
 	{
-		return this.outputSlots;
+		this.inputSlots.closeInventory();
+		this.outputSlots.closeInventory();
+		this.fuelSlots.closeInventory();
+	}
+
+	@Override
+	public ItemStack decrStackSize(int slot, int amount)
+	{
+		return this.getInventory(slot).decrStackSize(this.shiftSlot(slot), amount);
 	}
 
 	public InventoryFurnaceFuel getFuel()
@@ -32,11 +43,9 @@ public class InventoryFurnace implements IInventory {
 		return this.fuelSlots;
 	}
 
-	public InventoryFurnace(int slots, int fuelSlots)
+	public InventoryFurnaceInput getInputs()
 	{
-		inputSlots = new InventoryFurnaceInput(slots);
-		outputSlots = new InventoryFurnaceOutput(slots);
-		this.fuelSlots = new InventoryFurnaceFuel(fuelSlots);
+		return this.inputSlots;
 	}
 
 	public IInventory getInventory(int slot)
@@ -55,38 +64,33 @@ public class InventoryFurnace implements IInventory {
 		return inv;
 	}
 
-	public int shiftSlot(int slot)
+	@Override
+	public String getInventoryName()
 	{
-		IInventory inv = this.inputSlots;
-		if (slot >= inv.getSizeInventory())
-		{
-			slot -= inv.getSizeInventory();
-			inv = this.outputSlots;
-		}
-		if (slot >= inv.getSizeInventory())
-		{
-			slot -= inv.getSizeInventory();
-			inv = this.fuelSlots;
-		}
-		return slot;
+		return null;
+	}
+
+	@Override
+	public int getInventoryStackLimit()
+	{
+		return 64;
+	}
+
+	public InventoryFurnaceOutput getOutputs()
+	{
+		return this.outputSlots;
 	}
 
 	@Override
 	public int getSizeInventory()
 	{
-		return inputSlots.getSizeInventory() + outputSlots.getSizeInventory() + fuelSlots.getSizeInventory();
+		return this.inputSlots.getSizeInventory() + this.outputSlots.getSizeInventory() + this.fuelSlots.getSizeInventory();
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot)
 	{
-		return getInventory(slot).getStackInSlot(shiftSlot(slot));
-	}
-
-	@Override
-	public ItemStack decrStackSize(int slot, int amount)
-	{
-		return getInventory(slot).decrStackSize(shiftSlot(slot), amount);
+		return this.getInventory(slot).getStackInSlot(this.shiftSlot(slot));
 	}
 
 	@Override
@@ -96,35 +100,15 @@ public class InventoryFurnace implements IInventory {
 	}
 
 	@Override
-	public void setInventorySlotContents(int slot, ItemStack stack)
-	{
-		this.getInventory(slot).setInventorySlotContents(shiftSlot(slot), stack);
-	}
-
-	@Override
-	public String getInventoryName()
-	{
-		return null;
-	}
-
-	@Override
 	public boolean hasCustomInventoryName()
 	{
 		return false;
 	}
 
 	@Override
-	public int getInventoryStackLimit()
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
 	{
-		return 64;
-	}
-
-	@Override
-	public void markDirty()
-	{
-		inputSlots.markDirty();
-		outputSlots.markDirty();
-		fuelSlots.markDirty();
+		return this.getInventory(slot).isItemValidForSlot(this.shiftSlot(slot), stack);
 	}
 
 	@Override
@@ -134,25 +118,19 @@ public class InventoryFurnace implements IInventory {
 	}
 
 	@Override
+	public void markDirty()
+	{
+		this.inputSlots.markDirty();
+		this.outputSlots.markDirty();
+		this.fuelSlots.markDirty();
+	}
+
+	@Override
 	public void openInventory()
 	{
-		inputSlots.openInventory();
-		outputSlots.openInventory();
-		fuelSlots.openInventory();
-	}
-
-	@Override
-	public void closeInventory()
-	{
-		inputSlots.closeInventory();
-		outputSlots.closeInventory();
-		fuelSlots.closeInventory();
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack stack)
-	{
-		return this.getInventory(slot).isItemValidForSlot(shiftSlot(slot), stack);
+		this.inputSlots.openInventory();
+		this.outputSlots.openInventory();
+		this.fuelSlots.openInventory();
 	}
 
 	public void readFromNBT(NBTTagCompound compound)
@@ -167,6 +145,28 @@ public class InventoryFurnace implements IInventory {
 		this.inputSlots.readFromPacket(dis, byteBuf);
 		this.outputSlots.readFromPacket(dis, byteBuf);
 		this.fuelSlots.readFromPacket(dis, byteBuf);
+	}
+
+	@Override
+	public void setInventorySlotContents(int slot, ItemStack stack)
+	{
+		this.getInventory(slot).setInventorySlotContents(this.shiftSlot(slot), stack);
+	}
+
+	public int shiftSlot(int slot)
+	{
+		IInventory inv = this.inputSlots;
+		if (slot >= inv.getSizeInventory())
+		{
+			slot -= inv.getSizeInventory();
+			inv = this.outputSlots;
+		}
+		if (slot >= inv.getSizeInventory())
+		{
+			slot -= inv.getSizeInventory();
+			inv = this.fuelSlots;
+		}
+		return slot;
 	}
 
 	public void writeToNBT(NBTTagCompound compound)

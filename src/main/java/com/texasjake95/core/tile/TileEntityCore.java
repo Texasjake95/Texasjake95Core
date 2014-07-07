@@ -90,11 +90,17 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 	{
 		super.readFromNBT(nbtTagCompound);
 		if (nbtTagCompound.hasKey("direction"))
+		{
 			this.facing = ForgeDirection.getOrientation(nbtTagCompound.getByte("direction"));
+		}
 		if (nbtTagCompound.hasKey("customName"))
+		{
 			this.customName = nbtTagCompound.getString("customName");
+		}
 		if (nbtTagCompound.hasKey("owner"))
+		{
 			this.owner = nbtTagCompound.getString("owner");
+		}
 		this.load(nbtTagCompound);
 	}
 
@@ -114,7 +120,9 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 	public void setFacing(ForgeDirection direction)
 	{
 		if (direction != ForgeDirection.UNKNOWN)
+		{
 			this.facing = direction;
+		}
 	}
 
 	public void setOwnerName(String name)
@@ -129,7 +137,9 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 		nbtTagCompound.setByte("direction", (byte) this.facing.ordinal());
 		nbtTagCompound.setString("owner", this.owner);
 		if (this.hasCustomName())
+		{
 			nbtTagCompound.setString("customName", this.customName);
+		}
 		this.save(nbtTagCompound);
 	}
 }

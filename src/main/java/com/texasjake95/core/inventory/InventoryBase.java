@@ -55,7 +55,9 @@ public class InventoryBase implements IInventory {
 			{
 				itemstack = ItemStackProxy.splitStack(this.inv[slot], decr);
 				if (this.inv[slot].stackSize == 0)
+				{
 					this.inv[slot] = null;
+				}
 				return itemstack;
 			}
 		}
@@ -131,7 +133,9 @@ public class InventoryBase implements IInventory {
 			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			byte b0 = nbttagcompound1.getByte("Slot");
 			if (b0 >= 0 && b0 < this.inv.length)
+			{
 				this.inv[b0] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+			}
 		}
 	}
 
@@ -142,14 +146,18 @@ public class InventoryBase implements IInventory {
 		this.inv = new ItemStack[this.size];
 		for (int i = 0; i < this.size; i++)
 			if (dis.readBoolean())
+			{
 				this.inv[i] = ByteBufUtils.readItemStack(byteBuf);
+			}
 	}
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack)
 	{
 		if (slot < this.size)
+		{
 			this.inv[slot] = stack;
+		}
 	}
 
 	public void writeToNBT(NBTTagCompound compound)
@@ -174,7 +182,9 @@ public class InventoryBase implements IInventory {
 		{
 			ItemStack stack = this.getStackInSlot(i);
 			if (stack == null)
+			{
 				dos.writeBoolean(false);
+			}
 			else
 			{
 				dos.writeBoolean(true);

@@ -102,8 +102,12 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 		int beginX = x >> 4, beginZ = z >> 4;
 		int endX = x + 10 >> 4, endZ = z + 10 >> 4;
 		for (int chunkX = beginX; chunkX <= endX; chunkX++)
+		{
 			for (int chunkZ = beginZ; chunkZ <= endZ; chunkZ++)
+			{
 				chunks.add(new ChunkCoordIntPair(chunkX, chunkZ));
+			}
+		}
 		return chunks;
 	}
 
@@ -128,9 +132,13 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 						ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
 						columnMap.remove(this.column);
 						if (columnMap.isEmpty())
+						{
 							this.seedMap.remove(this.row);
+						}
 						else
+						{
 							this.seedMap.put(this.row, columnMap);
+						}
 					}
 					else
 					{
@@ -145,7 +153,9 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			for (ItemStack stack : returnList)
 			{
 				if (SeedHandler.isSeed(stack))
+				{
 					tile.getSeedInv().addItemStack(stack);
+				}
 				InventoryUtils.addToInventory(tile, stack);
 			}
 			ItemIntPair pair = SeedHandler.getSeed(block, meta);
@@ -153,12 +163,16 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			{
 				ItemStack stack = tile.getSeedInv().getStack(pair);
 				if (stack != null)
+				{
 					ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
+				}
 				else
 				{
 					HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 					if (columnMap == null)
+					{
 						columnMap = Maps.newHashMap();
+					}
 					columnMap.put(this.column, new BlockIntPair(block, meta));
 				}
 			}
@@ -198,10 +212,14 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	{
 		this.row = compoundTag.getByte("row");
 		if (this.row < 1 || 10 < this.row)
+		{
 			this.row = 1;
+		}
 		this.column = compoundTag.getByte("column");
 		if (this.column < 1 || 10 < this.column)
+		{
 			this.column = 1;
+		}
 		this.height = compoundTag.getByte("height");
 	}
 

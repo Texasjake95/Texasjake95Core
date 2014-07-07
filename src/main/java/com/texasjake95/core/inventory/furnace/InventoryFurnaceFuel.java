@@ -12,17 +12,17 @@ public class InventoryFurnaceFuel extends InventoryBase {
 		super(size);
 	}
 
-	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack stack)
-	{
-		return TileEntityFurnace.isItemFuel(stack);
-	}
-
 	public boolean isEmpty()
 	{
 		for (int slot = 0; slot < this.getSizeInventory(); slot++)
 			if (this.getStackInSlot(slot) != null)
 				return false;
 		return true;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
+	{
+		return TileEntityFurnace.isItemFuel(stack);
 	}
 }

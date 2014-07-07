@@ -59,7 +59,9 @@ public class Texasjake95Core {
 	{
 		for (MissingMapping mapping : event.get())
 			if (mapping.name.equals(CoreInfo.modId + ":FarmBlock"))
+			{
 				MappingHelper.remapBlock(mapping, TxCoreCommonProxy.machine);
+			}
 	}
 
 	@EventHandler

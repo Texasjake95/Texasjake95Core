@@ -126,7 +126,9 @@ public class AutoSwitchHandler extends TickHandler {
 										int currentHarvest = this.data.getHarvestLevel(stack);
 										float strVsBlock = this.data.getBreakSpeed(player);
 										if (stack != null)
+										{
 											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
+										}
 									}
 							}
 							// Cycle through out all the items
@@ -141,7 +143,9 @@ public class AutoSwitchHandler extends TickHandler {
 										int currentHarvest = this.data.getHarvestLevel(stack);
 										float strVsBlock = this.data.getBreakSpeed(player);
 										if (stack != null)
+										{
 											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
+										}
 									}
 							}
 							// Collect all slots that match the highest
@@ -185,6 +189,7 @@ public class AutoSwitchHandler extends TickHandler {
 										}
 									}
 								if (this.data.bestFloat != -1.0F)
+								{
 									for (int i = 0; i <= fakeCurrentItem; i++)
 										if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
 										{
@@ -196,11 +201,13 @@ public class AutoSwitchHandler extends TickHandler {
 												break;
 											}
 										}
+								}
 							}
 							double meta = 1.0F;
 							// Test all damages of items that match the best
 							// strVsBlock and grab the lowest
 							if (this.data.bestFloat != -1.0F)
+							{
 								for (int slot : bestSlots)
 								{
 									ItemStack stack = PlayerInventoryProxy.getStackInSlot(player, slot);
@@ -209,15 +216,20 @@ public class AutoSwitchHandler extends TickHandler {
 										double damage = tools.getDurability(stack);
 										meta = meta > damage ? damage : meta;
 										if (Texasjake95Core.isTesting)
+										{
 											System.out.println(meta);
+										}
 										if (meta == damage)
 										{
 											this.data.bestSlot = slot;
 											if (Texasjake95Core.isTesting)
+											{
 												System.out.println(this.data.bestSlot + ":" + meta);
+											}
 										}
 									}
 								}
+							}
 							PlayerInventoryProxy.setCurrentItemSlot(player, this.data.bestSlot);
 							if (Texasjake95Core.isTesting)
 							{
@@ -234,7 +246,9 @@ public class AutoSwitchHandler extends TickHandler {
 						// constant switching
 						this.tickCount++;
 						if (this.tickCount >= 5)
+						{
 							this.shouldSwitchBack = true;
+						}
 					}
 		}
 		else
@@ -261,9 +275,11 @@ public class AutoSwitchHandler extends TickHandler {
 	protected void handlePlayerTick(PlayerTickEvent event)
 	{
 		if (event.side == Side.CLIENT)
+		{
 			this.doAutoSwitchStart(event.phase == Phase.START, (EntityClientPlayerMP) event.player);
-		// if (event.player.getCurrentEquippedItem() != null)
-		// this.teleport(event.player.worldObj, event.player);
+			// if (event.player.getCurrentEquippedItem() != null)
+			// this.teleport(event.player.worldObj, event.player);
+		}
 	}
 
 	@Override

@@ -12,6 +12,8 @@ public class CoreConfigEventHandler {
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)
 	{
 		if (eventArgs.modID.equals(CoreInfo.modId))
+		{
 			CoreConfig.getInstance().initProps();
+		}
 	}
 }

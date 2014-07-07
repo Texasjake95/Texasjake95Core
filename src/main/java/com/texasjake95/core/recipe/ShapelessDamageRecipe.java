@@ -26,9 +26,13 @@ public class ShapelessDamageRecipe implements IRecipe {
 		{
 			Object input = inputs[i];
 			if (input instanceof ItemStack)
+			{
 				inputFinal.add(((ItemStack) input).copy());
+			}
 			else if (input instanceof Item)
+			{
 				inputFinal.add(new ItemStack((Item) input));
+			}
 			else
 			{
 				if (!(input instanceof Block))
@@ -49,6 +53,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 		ArrayList<ItemStack> remainingIngredients = new ArrayList<ItemStack>(this.recipeItems);
 		int damage = 0;
 		for (int x = 0; x < 3; ++x)
+		{
 			for (int y = 0; y < 3; ++y)
 			{
 				ItemStack stack = par1InventoryCrafting.getStackInRowAndColumn(y, x);
@@ -88,6 +93,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 						return null;
 				}
 			}
+		}
 		ItemStack output = new ItemStack(this.recipeOutput.copy().getItem(), this.recipeOutput.copy().stackSize, damage);
 		return output.copy();
 	}
@@ -112,6 +118,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 	{
 		ArrayList<ItemStack> remainingIngredients = new ArrayList<ItemStack>(this.recipeItems);
 		for (int x = 0; x < 3; ++x)
+		{
 			for (int y = 0; y < 3; ++y)
 			{
 				ItemStack stack = var1.getStackInRowAndColumn(y, x);
@@ -133,6 +140,7 @@ public class ShapelessDamageRecipe implements IRecipe {
 						return false;
 				}
 			}
+		}
 		return remainingIngredients.isEmpty();
 	}
 }

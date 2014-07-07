@@ -22,7 +22,9 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 	public static ToolHandlerRegistry getInstance()
 	{
 		if (instance == null)
+		{
 			instance = new ToolHandlerRegistry();
+		}
 		return instance;
 	}
 
@@ -161,7 +163,9 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			}
 			HashMap<Integer, IToolHandler> metaHandlers = this.nonDamageableHandler.get(item);
 			if (metaHandlers == null)
+			{
 				metaHandlers = new HashMap<Integer, IToolHandler>();
+			}
 			metaHandlers.put(itemMeta, handler);
 			this.nonDamageableHandler.put(Item.itemRegistry.getNameForObject(item), metaHandlers);
 		}
