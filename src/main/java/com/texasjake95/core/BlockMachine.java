@@ -73,9 +73,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 			isValid = true;
 		}
 		if (isValid)
-		{
 			world.func_147453_f(x, y, z, block);
-		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 
@@ -157,9 +155,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
 		if (!world.isRemote)
 			if (tile instanceof FurnaceTest)
-			{
 				((FurnaceTest) tile).printInv();
-			}
 		return false;
 	}
 

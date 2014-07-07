@@ -108,13 +108,9 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 			{
 				CachedShapelessDamageRecipe recipe = null;
 				if (irecipe instanceof ShapelessDamageRecipe)
-				{
 					recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
-				}
 				if (recipe == null)
-				{
 					continue;
-				}
 				this.arecipes.add(recipe);
 			}
 	}
@@ -130,20 +126,14 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 			{
 				CachedShapelessDamageRecipe recipe = null;
 				if (irecipe instanceof ShapelessDamageRecipe)
-				{
 					recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
-				}
 				if (recipe == null)
-				{
 					continue;
-				}
 				this.arecipes.add(recipe);
 			}
 		}
 		else
-		{
 			super.loadCraftingRecipes(outputId, results);
-		}
 	}
 
 	@Override
@@ -155,13 +145,9 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 		{
 			CachedShapelessDamageRecipe recipe = null;
 			if (irecipe instanceof ShapelessDamageRecipe)
-			{
 				recipe = new CachedShapelessDamageRecipe((ShapelessDamageRecipe) irecipe);
-			}
 			if (recipe == null)
-			{
 				continue;
-			}
 			if (recipe.contains(recipe.ingredients, ingredient))
 			{
 				recipe.setIngredientPermutation(recipe.ingredients, ingredient);

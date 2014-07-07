@@ -55,17 +55,13 @@ public class AutoHandlerData {
 				if (currentHarvest == -1)
 					return;
 				if (Texasjake95Core.isTesting)
-				{
 					System.out.println("Adding slot " + slot);
-				}
 				bestSlots.add(slot);
 			}
 			else if (CoreConfig.getInstance().useBestTool && strVsBlock == this.bestFloat)
 			{
 				if (Texasjake95Core.isTesting)
-				{
 					System.out.println("Adding slot " + slot);
-				}
 				bestSlots.add(slot);
 			}
 	}
@@ -102,18 +98,14 @@ public class AutoHandlerData {
 			this.bestSlot = slot;
 			this.lowestHarvestLevel = currentHarvest;
 			if (Texasjake95Core.isTesting)
-			{
 				System.out.println("Best Item at " + this.bestSlot + " with strength of " + this.bestFloat);
-			}
 		}
 		else if (CoreConfig.getInstance().useBestTool && this.bestFloat < strVsBlock)
 		{
 			this.bestFloat = strVsBlock;
 			this.bestSlot = slot;
 			if (Texasjake95Core.isTesting)
-			{
 				System.out.println("Best Item at " + this.bestSlot + " with strength of " + this.bestFloat);
-			}
 		}
 	}
 

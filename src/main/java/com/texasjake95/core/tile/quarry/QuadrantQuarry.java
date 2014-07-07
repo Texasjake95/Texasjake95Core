@@ -67,9 +67,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	protected void handleBlock(World world, int x, int y, int z, TileEntityQuarry tile)
 	{
 		if (this.height >= tile.yCoord)
-		{
 			this.resetHeight = true;
-		}
 		Block block = WorldProxy.getBlock(world, x, y, z);
 		if (block instanceof BlockLiquid || block instanceof IFluidBlock || block == Blocks.air)
 		{
@@ -77,9 +75,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			this.breakIndex = 0;
 			block = WorldProxy.getBlock(world, x, y - 1, z);
 			if (block == Blocks.bedrock)
-			{
 				this.resetHeight = true;
-			}
 			return;
 		}
 		float hardness = block.getBlockHardness(world, x, y, z);
@@ -105,14 +101,10 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 				item.setDead();
 			}
 			for (ItemStack stack : returnList)
-			{
 				InventoryUtils.addToInventory(tile, stack);
-			}
 			block = WorldProxy.getBlock(world, x, y - 1, z);
 			if (block.getBlockHardness(world, x, y - 1, z) == -1)
-			{
 				this.resetHeight = true;
-			}
 		}
 		else
 		{
@@ -157,14 +149,10 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	{
 		this.row = compoundTag.getByte("row");
 		if (this.row < 1 || 10 < this.row)
-		{
 			this.row = 1;
-		}
 		this.column = compoundTag.getByte("column");
 		if (this.column < 1 || 10 < this.column)
-		{
 			this.column = 1;
-		}
 		this.height = compoundTag.getByte("height");
 		this.breakIndex = compoundTag.getFloat("breakIndex");
 		this.resetHeight = compoundTag.getBoolean("resetHeight");

@@ -72,18 +72,14 @@ public class InventorySeed implements IPacketHandler {
 				{
 					int dropSize = rand.nextInt(21) + 10;
 					if (dropSize > itemstack.stackSize)
-					{
 						dropSize = itemstack.stackSize;
-					}
 					itemstack.stackSize -= dropSize;
 					entityitem = new EntityItem(world, x + xChange, y + yChange, z + zChange, new ItemStack(itemstack.getItem(), dropSize, itemstack.getItemDamage()));
 					entityitem.motionX = (float) rand.nextGaussian() * 0.05F;
 					entityitem.motionY = (float) rand.nextGaussian() * 0.05F + 0.2F;
 					entityitem.motionZ = (float) rand.nextGaussian() * 0.05F;
 					if (itemstack.hasTagCompound())
-					{
 						entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemstack.getTagCompound().copy());
-					}
 				}
 			}
 		}
@@ -128,13 +124,9 @@ public class InventorySeed implements IPacketHandler {
 		{
 			ItemStack stack = entry.getValue();
 			if (stack == null)
-			{
 				System.out.println("null");
-			}
 			else
-			{
 				System.out.println(stack.getItem().getUnlocalizedName() + ":" + stack.getItemDamage() + ":" + stack.stackSize);
-			}
 		}
 	}
 

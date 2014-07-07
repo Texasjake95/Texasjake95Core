@@ -25,26 +25,16 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 	{
 		ArrayList<ItemStack> returnList = Lists.newArrayList();
 		if (block == Blocks.cactus || block == Blocks.reeds)
-		{
 			for (int i = 2; i >= 1; i--)
 			{
 				if (WorldProxy.isAirBlock(world, x, y + i, z))
-				{
 					continue;
-				}
 				for (ItemStack stack : BlockUtils.getDrops(player, world, x, y + i, z, block, meta))
-				{
 					returnList.add(stack);
-				}
 			}
-		}
 		if (block == Blocks.pumpkin || block == Blocks.melon_block)
-		{
 			for (ItemStack stack : BlockUtils.getDrops(player, world, x, y, z, block, meta))
-			{
 				returnList.add(stack);
-			}
-		}
 		return returnList;
 	}
 

@@ -52,13 +52,9 @@ public class TicketHelper {
 			{
 				TicketHelper.populateTicket(ticket, tile);
 				for (ChunkCoordIntPair chunk : ticket.getChunkList())
-				{
 					ForgeChunkManager.unforceChunk(ticket, chunk);
-				}
 				for (ChunkCoordIntPair chunk : loader.getChunks())
-				{
 					forceChunk(ticket, chunk);
-				}
 			}
 		}
 	}

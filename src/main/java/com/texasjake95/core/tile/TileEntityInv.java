@@ -70,21 +70,13 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 	{
 		IInventory inv = (IInventory) WorldProxy.getTileEntity(world, x, y, z);
 		if (WorldProxy.getBlock(world, x - 1, y, z) == block)
-		{
 			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x - 1, y, z), inv);
-		}
 		if (WorldProxy.getBlock(world, x + 1, y, z) == block)
-		{
 			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x + 1, y, z), inv);
-		}
 		if (WorldProxy.getBlock(world, x, y, z - 1) == block)
-		{
 			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z - 1), inv);
-		}
 		if (WorldProxy.getBlock(world, x, y, z + 1) == block)
-		{
 			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z + 1), inv);
-		}
 		return inv;
 	}
 
@@ -166,9 +158,7 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 		{
 			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
 			if (stack == null)
-			{
 				continue;
-			}
 			if (stack.stackSize == 0)
 			{
 				IInventoryProxy.setInventorySlotContents(this, invSlot, null);

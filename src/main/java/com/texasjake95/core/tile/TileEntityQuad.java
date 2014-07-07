@@ -31,13 +31,11 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 	protected final void addQuad(T quad)
 	{
 		if (!this.list.isEmpty())
-		{
 			for (T inter : this.list)
 				if (inter.northSouth == quad.northSouth)
 					if (inter.eastWest == quad.eastWest)
 						if (inter.upDown == quad.upDown)
 							return;
-		}
 		this.list.add(quad);
 	}
 
@@ -70,18 +68,14 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 	{
 		super.readFromPacket(data, byteBuf, clazz);
 		for (T quad : this.getQuadCount())
-		{
 			quad.readFromPacket(data, byteBuf, clazz);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
 	protected final void runQuads()
 	{
 		for (T quad : this.getQuadCount())
-		{
 			quad.run(this.worldObj, this.xCoord, this.yCoord, this.zCoord, (E) this);
-		}
 	}
 
 	@Override
@@ -102,17 +96,13 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 	{
 		this.validateQuads();
 		if (run)
-		{
 			this.runQuads();
-		}
 	}
 
 	protected final void validateQuads()
 	{
 		for (T quad : this.getQuadCount())
-		{
 			quad.validate(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		}
 	}
 
 	@Override
@@ -120,8 +110,6 @@ public abstract class TileEntityQuad<E extends TileEntityCore, T extends Quadran
 	{
 		super.writeToPacket(dos, byteBuf, clazz);
 		for (T quad : this.getQuadCount())
-		{
 			quad.writeToPacket(dos, byteBuf, clazz);
-		}
 	}
 }

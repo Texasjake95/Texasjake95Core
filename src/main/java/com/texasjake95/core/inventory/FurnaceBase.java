@@ -69,9 +69,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	{
 		int[] slots = new int[size];
 		for (int slot = 0; slot < size; slot++)
-		{
 			slots[slot] = slot + offset;
-		}
 		return slots;
 	}
 
@@ -111,13 +109,9 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
 		int[] realOutput = new int[output.length + fuel.length];
 		for (int slot = 0; slot < output.length; slot++)
-		{
 			realOutput[slot] = output[slot];
-		}
 		for (int slot = 0; slot < fuel.length; slot++)
-		{
 			realOutput[slot + output.length] = fuel[slot];
-		}
 		return realOutput;
 	}
 
@@ -177,9 +171,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	private void print(int[] g)
 	{
 		for (int i : g)
-		{
 			System.out.println(i);
-		}
 		System.out.println();
 	}
 
@@ -206,18 +198,12 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		{
 			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(this.furnace.getInputs().getStackInSlot(slot));
 			if (this.furnace.getOutputs().getStackInSlot(slot) == null)
-			{
 				this.furnace.getOutputs().setInventorySlotContents(slot, itemstack.copy());
-			}
 			else if (this.furnace.getOutputs().getStackInSlot(slot).isItemEqual(itemstack))
-			{
 				this.furnace.getOutputs().getStackInSlot(slot).stackSize += itemstack.stackSize;
-			}
 			--this.furnace.getInputs().getStackInSlot(slot).stackSize;
 			if (this.furnace.getInputs().getStackInSlot(slot).stackSize <= 0)
-			{
 				this.furnace.getInputs().setInventorySlotContents(slot, null);
-			}
 		}
 	}
 
@@ -226,17 +212,13 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		boolean flag = this.furnaceBurnTime > 0;
 		boolean flag1 = false;
 		if (this.furnaceBurnTime > 0)
-		{
 			--this.furnaceBurnTime;
-		}
 		if (!world.isRemote)
 		{
 			if (this.furnaceBurnTime != 0 || !this.furnace.getFuel().isEmpty() && !this.furnace.getInputs().isEmpty())
 			{
 				if (this.furnaceBurnTime == 0 && this.canSmelt())
-				{
 					for (int slot = 0; slot < this.furnace.getFuel().getSizeInventory(); slot++)
-					{
 						if (this.furnaceBurnTime <= 0)
 						{
 							this.currentItemBurnTime = this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(this.furnace.getFuel().getStackInSlot(slot));
@@ -247,45 +229,31 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 								{
 									--this.furnace.getFuel().getStackInSlot(slot).stackSize;
 									if (this.furnace.getFuel().getStackInSlot(slot).stackSize == 0)
-									{
 										this.furnace.getFuel().setInventorySlotContents(slot, this.furnace.getFuel().getStackInSlot(slot).getItem().getContainerItem(this.furnace.getFuel().getStackInSlot(slot)));
-									}
 								}
 							}
 						}
 						else
-						{
 							break;
-						}
-					}
-				}
 				if (this.isBurning() && this.canSmelt())
 				{
 					++this.furnaceCookTime;
 					if (this.furnaceCookTime >= this.ticksToCook)
-					{
 						for (int slot = 0; slot < this.furnace.getInputs().getSizeInventory(); slot++)
 						{
 							this.furnaceCookTime = 0;
 							this.smeltItem(slot);
 							flag1 = true;
 						}
-					}
 				}
 				else
-				{
 					this.furnaceCookTime = 0;
-				}
 			}
 			if (flag != this.furnaceBurnTime > 0)
-			{
 				flag1 = true;
-			}
 		}
 		if (flag1)
-		{
 			this.markDirty();
-		}
 	}
 
 	public void writeToNBT(NBTTagCompound compound)

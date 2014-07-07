@@ -124,9 +124,7 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	public void printInv()
 	{
 		for (int slot = 0; slot < this.getSizeInventory(); slot++)
-		{
 			System.out.println(this.getStackInSlot(slot));
-		}
 		System.out.println();
 	}
 
@@ -153,9 +151,7 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	{
 		super.updateEntity();
 		if (!this.worldObj.isRemote)
-		{
 			this.furnace.updateEntity(this.worldObj);
-		}
 	}
 
 	@Override
