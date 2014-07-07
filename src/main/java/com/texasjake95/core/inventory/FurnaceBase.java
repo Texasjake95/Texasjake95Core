@@ -60,7 +60,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 			if (!this.furnace.getOutputs().getStackInSlot(slot).isItemEqual(itemstack))
 				return false;
 			int result = this.furnace.getOutputs().getStackInSlot(slot).stackSize + itemstack.stackSize;
-			return result <= this.getInventoryStackLimit() && result <= this.furnace.getOutputs().getStackInSlot(slot).getMaxStackSize(); // Forge
+			return result <= this.getInventoryStackLimit() && result <= this.furnace.getOutputs().getStackInSlot(slot).getMaxStackSize();
 		}
 	}
 
@@ -104,7 +104,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	@SideOnly(Side.CLIENT)
 	public int getCookProgressScaled(int scale)
 	{
-		return this.furnaceCookTime * scale / 200;
+		return this.furnaceCookTime * scale / this.ticksToCook;
 	}
 
 	public int[] getFuelSlots()
@@ -259,7 +259,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 			{
 				if (this.furnaceBurnTime == 0 && this.canSmelt())
 					for (int slot = 0; slot < this.furnace.getFuel().getSizeInventory(); slot++)
-						if (this.furnaceBurnTime <= 0)
+						if (this.furnaceBurnTime == 0)
 						{
 							this.currentItemBurnTime = this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(this.furnace.getFuel().getStackInSlot(slot));
 							if (this.furnaceBurnTime > 0)
@@ -278,7 +278,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 				if (this.isBurning() && this.canSmelt())
 				{
 					++this.furnaceCookTime;
-					if (this.furnaceCookTime >= this.ticksToCook)
+					if (this.furnaceCookTime == this.ticksToCook)
 						for (int slot = 0; slot < this.furnace.getInputs().getSizeInventory(); slot++)
 						{
 							this.furnaceCookTime = 0;

@@ -123,13 +123,10 @@ public class InventoryFurnace implements IInventory {
 	public void load(NBTTagCompound compound)
 	{
 		NBTTagCompound data = compound.getCompoundTag(input);
-		System.out.println("Input: " + data);
 		this.inputSlots.readFromNBT(data);
 		data = compound.getCompoundTag(output);
-		System.out.println("Output: " + data);
 		this.outputSlots.readFromNBT(data);
 		data = compound.getCompoundTag(fuel);
-		System.out.println("Fuel: " + data);
 		this.fuelSlots.readFromNBT(data);
 	}
 
@@ -160,15 +157,12 @@ public class InventoryFurnace implements IInventory {
 	{
 		NBTTagCompound data = new NBTTagCompound();
 		this.inputSlots.writeToNBT(data);
-		System.out.println("Input: " + data);
 		compound.setTag(input, data);
 		data = new NBTTagCompound();
 		this.outputSlots.writeToNBT(data);
-		System.out.println("Output: " + data);
 		compound.setTag(output, data);
 		data = new NBTTagCompound();
 		this.fuelSlots.writeToNBT(data);
-		System.out.println("Fuel: " + data);
 		compound.setTag(fuel, data);
 	}
 
