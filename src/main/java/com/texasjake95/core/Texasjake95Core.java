@@ -16,6 +16,7 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -88,6 +89,7 @@ public class Texasjake95Core {
 		proxy.registerRecipes();
 		EventRegister.registerForgeEventHandler(new Handler());
 		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
+		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 	}
 
 	@EventHandler

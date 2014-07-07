@@ -50,9 +50,18 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List list, Entity entity)
 	{
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.5F, 1.0F);
-		super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		switch (WorldProxy.getBlockMetadata(world, x, y, z))
+		{
+			case 0:
+				this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.5F, 1.0F);
+				super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
+				this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+				break;
+			default:
+				this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+				super.addCollisionBoxesToList(world, x, y, z, mask, list, entity);
+				break;
+		}
 	}
 
 	@Override
@@ -150,12 +159,17 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p_149727_5_, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
 	{
 		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		if (player.isSneaking())
+			return false;
 		if (!world.isRemote)
 			if (tile instanceof FurnaceTest)
-				((FurnaceTest) tile).printInv();
+			{
+				player.openGui(Texasjake95Core.INSTANCE, 0, world, x, y, z);
+				return true;
+			}
 		return false;
 	}
 

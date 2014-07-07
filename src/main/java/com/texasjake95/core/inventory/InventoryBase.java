@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 
+import net.minecraftforge.common.util.Constants;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -125,13 +127,13 @@ public class InventoryBase implements IInventory {
 
 	public void readFromNBT(NBTTagCompound compound)
 	{
-		NBTTagList nbttaglist = compound.getTagList("Items", 9);
+		NBTTagList nbttaglist = compound.getTagList("Items", Constants.NBT.TAG_COMPOUND);
 		for (int i = 0; i < nbttaglist.tagCount(); ++i)
 		{
 			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-			byte b0 = nbttagcompound1.getByte("Slot");
-			if (b0 >= 0 && b0 < this.inv.length)
-				this.inv[b0] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+			byte slot = nbttagcompound1.getByte("Slot");
+			if (slot >= 0 && slot < this.inv.length)
+				this.inv[slot] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
 		}
 	}
 

@@ -18,11 +18,11 @@ import com.texasjake95.core.inventory.FurnaceBase;
 
 public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInventory {
 
-	private FurnaceBase furnace;
+	public FurnaceBase furnace;
 
 	public TileEntityFurnaceBase(int slots, int fuelSlots, int ticksToCook)
 	{
-		this.furnace = new FurnaceBase(slots, fuelSlots, ticksToCook);
+		this.furnace = new FurnaceBase(slots, fuelSlots, ticksToCook, this);
 	}
 
 	@Override
@@ -112,7 +112,13 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	@Override
 	protected void load(NBTTagCompound nbtTagCompound)
 	{
-		this.furnace.readFromNBT(nbtTagCompound);
+		this.furnace.load(nbtTagCompound);
+	}
+
+	@Override
+	public void markDirty()
+	{
+		super.markDirty();
 	}
 
 	@Override
@@ -137,7 +143,7 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	@Override
 	protected void save(NBTTagCompound nbtTagCompound)
 	{
-		this.furnace.writeToNBT(nbtTagCompound);
+		this.furnace.save(nbtTagCompound);
 	}
 
 	@Override

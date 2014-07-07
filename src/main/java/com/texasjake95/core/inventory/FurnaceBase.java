@@ -7,6 +7,8 @@ import io.netty.buffer.ByteBufOutputStream;
 import java.io.IOException;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -18,19 +20,22 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.furnace.InventoryFurnace;
 import com.texasjake95.core.network.IPacketHandler;
+import com.texasjake95.core.tile.TileEntityFurnaceBase;
 
 public class FurnaceBase implements IInventory, IPacketHandler {
 
 	public InventoryFurnace furnace;
-	private int furnaceBurnTime;
-	private int furnaceCookTime;
-	private int ticksToCook;
-	private int currentItemBurnTime;
+	public int furnaceBurnTime;
+	public int furnaceCookTime;
+	public int currentItemBurnTime;
+	private final int ticksToCook;
+	private TileEntityFurnaceBase tile;
 
-	public FurnaceBase(int slots, int fuelSlots, int ticksToCook)
+	public FurnaceBase(int slots, int fuelSlots, int ticksToCook, TileEntityFurnaceBase tile)
 	{
 		this.furnace = new InventoryFurnace(slots, fuelSlots);
 		this.ticksToCook = ticksToCook;
+		this.tile = tile;
 	}
 
 	private boolean canSmelt()
@@ -79,6 +84,29 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		return this.furnace.decrStackSize(slot, amount);
 	}
 
+	/**
+	 * Returns an integer between 0 and the passed value representing how much
+	 * burn time is left on the current fuel item, where 0 means that the item
+	 * is exhausted and the passed value means that the item is fresh
+	 */
+	@SideOnly(Side.CLIENT)
+	public int getBurnTimeRemainingScaled(int scale)
+	{
+		if (this.currentItemBurnTime == 0)
+			this.currentItemBurnTime = 200;
+		return this.furnaceBurnTime * scale / this.currentItemBurnTime;
+	}
+
+	/**
+	 * Returns an integer between 0 and the passed value representing how close
+	 * the current item is to being completely cooked
+	 */
+	@SideOnly(Side.CLIENT)
+	public int getCookProgressScaled(int scale)
+	{
+		return this.furnaceCookTime * scale / 200;
+	}
+
 	public int[] getFuelSlots()
 	{
 		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
@@ -94,7 +122,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	@Override
 	public String getInventoryName()
 	{
-		return null;
+		return this.tile.getInventoryName();
 	}
 
 	@Override
@@ -156,9 +184,18 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		return true;
 	}
 
+	public void load(NBTTagCompound compound)
+	{
+		this.furnace.load(compound);
+		this.furnaceBurnTime = compound.getInteger("furnaceBurnTime");
+		this.furnaceCookTime = compound.getInteger("furnaceCookTime");
+		this.currentItemBurnTime = compound.getInteger("currentItemBurnTime");
+	}
+
 	@Override
 	public void markDirty()
 	{
+		this.tile.markDirty();
 		this.furnace.markDirty();
 	}
 
@@ -175,15 +212,18 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		System.out.println();
 	}
 
-	public void readFromNBT(NBTTagCompound compound)
-	{
-		this.furnace.readFromNBT(compound.getCompoundTag("furnace"));
-	}
-
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{
 		this.furnace.readFromPacket(data, byteBuf);
+	}
+
+	public void save(NBTTagCompound compound)
+	{
+		this.furnace.save(compound);
+		compound.setInteger("furnaceBurnTime", this.furnaceBurnTime);
+		compound.setInteger("furnaceCookTime", this.furnaceCookTime);
+		compound.setInteger("currentItemBurnTime", this.currentItemBurnTime);
 	}
 
 	@Override
@@ -254,13 +294,6 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		}
 		if (flag1)
 			this.markDirty();
-	}
-
-	public void writeToNBT(NBTTagCompound compound)
-	{
-		NBTTagCompound data = new NBTTagCompound();
-		this.furnace.writeToNBT(data);
-		compound.setTag("furnace", data);
 	}
 
 	@Override
