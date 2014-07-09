@@ -4,9 +4,9 @@ jdk:
 
 before_install: bash scripts/preInstall.sh
 
-install: bash install.sh
+install: bash scripts/install.sh
 
-script: bash script.sh
+script: bash scripts/script.sh
 
 after_success: bash scripts/success.sh
 
