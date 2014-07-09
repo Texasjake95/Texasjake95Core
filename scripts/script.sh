@@ -17,6 +17,6 @@ runCommand()
 }
 
 
-command="./gradlew build -S"
-echo command
-runCommand command
+command="bash ./gradlew build -S"
+echo $command
+runCommand "$command"

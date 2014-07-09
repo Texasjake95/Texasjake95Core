@@ -17,6 +17,6 @@ runCommand()
 }
 
 
-command="./gradlew setupCIWorkspace -S"
-echo command
-runCommand command
+command="bash ./gradlew setupCIWorkspace -S"
+echo $command
+runCommand "$command"
