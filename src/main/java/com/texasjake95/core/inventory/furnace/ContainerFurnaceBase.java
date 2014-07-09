@@ -10,10 +10,7 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.tileentity.TileEntityFurnace;
 
-import com.texasjake95.core.inventory.FurnaceBase;
 import com.texasjake95.core.proxy.inventory.PlayerInventoryProxy;
 
 public class ContainerFurnaceBase extends Container {
@@ -111,12 +108,12 @@ public class ContainerFurnaceBase extends Container {
 			}
 			else if (!this.isInRange(slotNumber, inputStart, inputEnd) && !this.isInRange(slotNumber, fuelStart, fuelEnd))
 			{
-				if (FurnaceRecipes.smelting().getSmeltingResult(itemstack1) != null)
+				if (furnace.recipeProvider.getResult(itemstack1) != null)
 				{
 					if (!this.mergeItemStack(itemstack1, inputStart, inputEnd, false))
 						return null;
 				}
-				else if (TileEntityFurnace.isItemFuel(itemstack1))
+				else if (furnace.isItemFuel(itemstack1))
 				{
 					if (!this.mergeItemStack(itemstack1, fuelStart, fuelEnd, false))
 						return null;

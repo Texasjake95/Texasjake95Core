@@ -11,6 +11,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 
+import com.texasjake95.core.ItemMisc;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.items.multi.MultiPickAxe;
 import com.texasjake95.core.items.multi.MultiPickShovel;
@@ -80,6 +81,7 @@ public class CoreItems {
 	public static Item woodenShord;
 	public static Item woodenSwaxe;
 	public static Item woodenSwaxel;
+	public static Item misc;
 	private static final ToolMaterial diamond4 = create(ToolMaterial.EMERALD, 4);
 	private static final ToolMaterial diamond3 = create(ToolMaterial.EMERALD, 3);
 	private static final ToolMaterial diamond2 = create(ToolMaterial.EMERALD, 2);
@@ -193,6 +195,9 @@ public class CoreItems {
 		woodenSwaxe = getItem("Wooden Swaxe");
 		woodenSwaxel = getItem("Wooden Swaxel");
 		MultiItemMap.initItemMaps();
+		misc = new ItemMisc();
+		GameRegistry.registerItem(misc, "TXMisc");
+
 	}
 
 	private static Item multi(int tool)

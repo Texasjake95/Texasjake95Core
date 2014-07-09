@@ -101,7 +101,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 				item.setDead();
 			}
 			for (ItemStack stack : returnList)
-				InventoryUtils.addToInventory(tile, stack);
+				InventoryUtils.addToInventory(tile, stack, ForgeDirection.UNKNOWN);
 			block = WorldProxy.getBlock(world, x, y - 1, z);
 			if (block.getBlockHardness(world, x, y - 1, z) == -1)
 				this.resetHeight = true;

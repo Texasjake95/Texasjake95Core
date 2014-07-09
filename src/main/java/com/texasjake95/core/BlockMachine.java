@@ -28,7 +28,9 @@ import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.FurnaceTest;
+import com.texasjake95.core.tile.MA;
 import com.texasjake95.core.tile.TileEntityFarm;
+import com.texasjake95.core.tile.TileEntityFurnaceBase;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
 public class BlockMachine extends Block implements ITileEntityProvider {
@@ -95,6 +97,10 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 				return new TileEntityQuarry();
 			case 2:
 				return new FurnaceTest();
+			case 3:
+				return new MA();
+			case 4:
+				return new BOTH();
 		}
 		return new TileEntityFarm();
 	}
@@ -131,6 +137,8 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 1));
 		list.add(new ItemStack(item, 1, 2));
+		list.add(new ItemStack(item, 1, 3));
+		list.add(new ItemStack(item, 1, 4));
 	}
 
 	@Override
@@ -165,7 +173,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 		if (player.isSneaking())
 			return false;
 		if (!world.isRemote)
-			if (tile instanceof FurnaceTest)
+			if (tile instanceof TileEntityFurnaceBase)
 			{
 				player.openGui(Texasjake95Core.INSTANCE, 0, world, x, y, z);
 				return true;

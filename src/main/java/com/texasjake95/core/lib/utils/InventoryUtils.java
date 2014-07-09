@@ -2,28 +2,32 @@ package com.texasjake95.core.lib.utils;
 
 import java.util.Random;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import com.texasjake95.commons.util.Range;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
 public class InventoryUtils {
 
-	public static void addToInventory(IInventory inv, ItemStack stack)
+	public static void addToInventory(IInventory inv, ItemStack stack, ForgeDirection side)
 	{
 		if (stack == null)
 			return;
-		for (int slot = 0; slot < inv.getSizeInventory(); slot++)
+		for (int slot : getSlots(inv, side))
 		{
 			if (stack.stackSize == 0)
 				break;
 			ItemStack invStack = inv.getStackInSlot(slot);
 			if (invStack == null)
 			{
-				if (inv.isItemValidForSlot(slot, stack))
+				if (isItemValidForSlot(inv, slot, stack, side))
 				{
 					inv.setInventorySlotContents(slot, stack.copy());
 					stack.stackSize = 0;
@@ -31,7 +35,7 @@ public class InventoryUtils {
 				break;
 			}
 			if (stack.getItem() == invStack.getItem() && stack.getItemDamage() == invStack.getItemDamage())
-				if (inv.isItemValidForSlot(slot, stack))
+				if (isItemValidForSlot(inv, slot, stack, side))
 				{
 					int maxSize = Math.min(inv.getInventoryStackLimit(), invStack.getMaxStackSize());
 					while (invStack.stackSize < maxSize && stack.stackSize > 0)
@@ -42,6 +46,31 @@ public class InventoryUtils {
 					inv.setInventorySlotContents(slot, invStack);
 				}
 		}
+	}
+
+	public static boolean isItemValidForSlot(IInventory inv, int slot, ItemStack stack, ForgeDirection side)
+	{
+		if (inv instanceof ISidedInventory)
+		{
+			ISidedInventory sided = (ISidedInventory) inv;
+			return sided.canInsertItem(slot, stack, side.getOpposite().ordinal());
+		}
+		return inv.isItemValidForSlot(slot, stack);
+	}
+
+	public static int[] getSlots(IInventory inv, ForgeDirection side)
+	{
+		if (inv instanceof ISidedInventory)
+		{
+			ISidedInventory sided = (ISidedInventory) inv;
+			return sided.getAccessibleSlotsFromSide(side.getOpposite().ordinal());
+		}
+		int[] slots = new int[inv.getSizeInventory()];
+		for (int i : Range.range(inv.getSizeInventory()))
+		{
+			slots[i] = i;
+		}
+		return slots;
 	}
 
 	public static void explodeInventory(IInventory inv, Random rand, World world, int x, int y, int z)

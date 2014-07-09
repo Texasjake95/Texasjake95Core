@@ -8,13 +8,26 @@ import java.io.IOException;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.world.World;
 
-import com.texasjake95.core.inventory.FurnaceBase;
+import com.texasjake95.core.inventory.furnace.FurnaceBase;
+import com.texasjake95.core.lib.utils.InventoryUtils;
+import com.texasjake95.core.proxy.inventory.IInventoryProxy;
+import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.recipe.IRecipeProvider;
+import com.texasjake95.core.recipe.RecipeProviders;
 
 public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInventory {
 
@@ -22,7 +35,12 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 
 	public TileEntityFurnaceBase(int slots, int fuelSlots, int ticksToCook)
 	{
-		this.furnace = new FurnaceBase(slots, fuelSlots, ticksToCook, this);
+		this(slots, fuelSlots, ticksToCook, RecipeProviders.macerator);
+	}
+
+	public TileEntityFurnaceBase(int slots, int fuelSlots, int ticksToCook, IRecipeProvider recipes)
+	{
+		this.furnace = new FurnaceBase(slots, fuelSlots, ticksToCook, this, recipes);
 	}
 
 	@Override
@@ -33,14 +51,17 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 				return false;
 		for (int fuel : this.furnace.getFuelSlots())
 			if (slot == fuel)
-				return stack.getItem() == Items.bucket;
+				return !this.furnace.isItemFuel(stack);
 		return side == 0;
 	}
 
 	@Override
 	public boolean canInsertItem(int slot, ItemStack stack, int side)
 	{
-		return this.isItemValidForSlot(slot, stack);
+		int validSlot = side == 0 ? -1 : (this.furnace.isItemFuel(stack) ? this.furnace.getFuelSlots(stack) : this.furnace.getInputSlots(stack));
+		if (slot == validSlot)
+			return this.isItemValidForSlot(slot, stack);
+		return false;
 	}
 
 	@Override
@@ -58,7 +79,7 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side)
 	{
-		return side == 0 ? this.furnace.getOutputSlots() : (side == 1 ? this.furnace.getInputSlots() : this.furnace.getFuelSlots());
+		return side == 0 ? this.furnace.getOutputSlots() : this.furnace.getInputSlots();
 	}
 
 	@Override
@@ -146,6 +167,25 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 		this.furnace.save(nbtTagCompound);
 	}
 
+	private void pushToInv(IInventory inv, ForgeDirection side)
+	{
+		for (int invSlot : getAccessibleSlotsFromSide(side.getOpposite().getOpposite().ordinal()))
+		{
+			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
+			if (this.canExtractItem(invSlot, stack, side.getOpposite().getOpposite().ordinal()))
+			{
+				if (stack == null)
+					continue;
+				if (stack.stackSize == 0)
+				{
+					IInventoryProxy.setInventorySlotContents(this, invSlot, null);
+					continue;
+				}
+				InventoryUtils.addToInventory(inv, stack, side);
+			}
+		}
+	}
+
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack)
 	{
@@ -157,7 +197,38 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	{
 		super.updateEntity();
 		if (!this.worldObj.isRemote)
+		{
 			this.furnace.updateEntity(this.worldObj);
+			for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
+			{
+				TileEntity tile = WorldProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+				if (tile instanceof TileEntityChest)
+				{
+					Block chest = WorldProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+					IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
+					this.pushToInv(temp, d);
+				}
+				else if (tile instanceof IInventory)
+				{
+					IInventory temp = (IInventory) tile;
+					this.pushToInv(temp, d);
+				}
+			}
+		}
+	}
+
+	protected IInventory getChestInv(World world, int x, int y, int z, Block block)
+	{
+		IInventory inv = (IInventory) WorldProxy.getTileEntity(world, x, y, z);
+		if (WorldProxy.getBlock(world, x - 1, y, z) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x - 1, y, z), inv);
+		if (WorldProxy.getBlock(world, x + 1, y, z) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x + 1, y, z), inv);
+		if (WorldProxy.getBlock(world, x, y, z - 1) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z - 1), inv);
+		if (WorldProxy.getBlock(world, x, y, z + 1) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z + 1), inv);
+		return inv;
 	}
 
 	@Override

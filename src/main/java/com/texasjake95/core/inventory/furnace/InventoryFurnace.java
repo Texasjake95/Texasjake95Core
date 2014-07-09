@@ -11,6 +11,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.texasjake95.core.recipe.IRecipeProvider;
+
 public class InventoryFurnace implements IInventory {
 
 	private InventoryFurnaceInput inputSlots;
@@ -20,9 +22,9 @@ public class InventoryFurnace implements IInventory {
 	static final String output = "output";
 	static final String fuel = "fuel";
 
-	public InventoryFurnace(int slots, int fuelSlots)
+	public InventoryFurnace(int slots, int fuelSlots, IRecipeProvider recipes)
 	{
-		this.inputSlots = new InventoryFurnaceInput(slots);
+		this.inputSlots = new InventoryFurnaceInput(slots,recipes);
 		this.outputSlots = new InventoryFurnaceOutput(slots);
 		this.fuelSlots = new InventoryFurnaceFuel(fuelSlots);
 	}

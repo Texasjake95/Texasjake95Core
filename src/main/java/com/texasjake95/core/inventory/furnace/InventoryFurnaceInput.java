@@ -3,12 +3,16 @@ package com.texasjake95.core.inventory.furnace;
 import net.minecraft.item.ItemStack;
 
 import com.texasjake95.core.inventory.InventoryBase;
+import com.texasjake95.core.recipe.IRecipeProvider;
 
 public class InventoryFurnaceInput extends InventoryBase {
 
-	public InventoryFurnaceInput(int size)
+	IRecipeProvider recipes;
+
+	public InventoryFurnaceInput(int size, IRecipeProvider recipes)
 	{
 		super(size);
+		this.recipes = recipes;
 	}
 
 	public boolean isEmpty()
@@ -22,6 +26,6 @@ public class InventoryFurnaceInput extends InventoryBase {
 	@Override
 	public boolean isItemValidForSlot(int var1, ItemStack stack)
 	{
-		return true;
+		return recipes.getResult(stack) != null;
 	}
 }

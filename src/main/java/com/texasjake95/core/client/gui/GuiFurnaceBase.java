@@ -10,14 +10,15 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 
-import com.texasjake95.core.inventory.FurnaceBase;
+import com.texasjake95.core.inventory.MachineBase;
 import com.texasjake95.core.inventory.furnace.ContainerFurnaceBase;
+import com.texasjake95.core.inventory.furnace.FurnaceBase;
 
 @SideOnly(Side.CLIENT)
 public class GuiFurnaceBase extends GuiContainer {
 
 	private static final ResourceLocation furnaceGuiTextures = new ResourceLocation("textures/gui/container/furnace.png");
-	private FurnaceBase furnace;
+	private MachineBase furnace;
 
 	public GuiFurnaceBase(InventoryPlayer invPlayer, FurnaceBase furnace)
 	{

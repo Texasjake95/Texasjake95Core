@@ -5,6 +5,10 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import com.google.common.collect.Lists;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.relauncher.Side;
@@ -13,32 +17,32 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.furnace.InventoryFurnace;
 import com.texasjake95.core.network.IPacketHandler;
-import com.texasjake95.core.tile.TileEntityFurnaceBase;
+import com.texasjake95.core.recipe.IRecipeProvider;
 
-public class FurnaceBase implements IInventory, IPacketHandler {
+public abstract class MachineBase implements IInventory, IPacketHandler {
 
 	public InventoryFurnace furnace;
 	public int furnaceBurnTime;
 	public int furnaceCookTime;
 	public int currentItemBurnTime;
 	private final int ticksToCook;
-	private TileEntityFurnaceBase tile;
+	private IInventory tile;
+	public final IRecipeProvider recipeProvider;
 
-	public FurnaceBase(int slots, int fuelSlots, int ticksToCook, TileEntityFurnaceBase tile)
+	public MachineBase(int slots, int fuelSlots, int ticksToCook, IInventory tile, IRecipeProvider recipes)
 	{
-		this.furnace = new InventoryFurnace(slots, fuelSlots);
+		this.furnace = new InventoryFurnace(slots, fuelSlots,recipes);
+		this.recipeProvider = recipes;
 		this.ticksToCook = ticksToCook;
 		this.tile = tile;
 	}
 
-	private boolean canSmelt()
+	protected boolean canSmelt()
 	{
 		for (int slot = 0; slot < this.furnace.getInputs().getSizeInventory(); slot++)
 			if (this.canSmelt(slot))
@@ -52,7 +56,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 			return false;
 		else
 		{
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(this.furnace.getInputs().getStackInSlot(slot));
+			ItemStack itemstack = this.recipeProvider.getResult(this.furnace.getInputs().getStackInSlot(slot));
 			if (itemstack == null)
 				return false;
 			if (this.furnace.getOutputs().getStackInSlot(slot) == null)
@@ -62,6 +66,32 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 			int result = this.furnace.getOutputs().getStackInSlot(slot).stackSize + itemstack.stackSize;
 			return result <= this.getInventoryStackLimit() && result <= this.furnace.getOutputs().getStackInSlot(slot).getMaxStackSize();
 		}
+	}
+
+	private Integer[] createSlotArray(IInventory inv, int offset, ItemStack stack)
+	{
+		ArrayList<Integer> slots = Lists.newArrayList();
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+		{
+			if (inv.getStackInSlot(i) == null)
+			{
+				slots.add(i + offset);
+			}
+		}
+		if (!slots.isEmpty())
+			return slots.toArray(new Integer[slots.size()]);
+		ArrayList<SlotData> slotData = Lists.newArrayList();
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+		{
+			if (inv.getStackInSlot(i) != null && stack.isItemEqual(inv.getStackInSlot(i)))
+				slotData.add(new SlotData(i, inv.getStackInSlot(i)));
+		}
+		Collections.sort(slotData);
+		for (SlotData data : slotData)
+		{
+			slots.add(data.slot + offset);
+		}
+		return slots.toArray(new Integer[slots.size()]);
 	}
 
 	@Override
@@ -107,6 +137,14 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		return this.furnaceCookTime * scale / this.ticksToCook;
 	}
 
+	public int getFuelSlots(ItemStack stack)
+	{
+		Integer[] fuel = this.createSlotArray(this.furnace.getFuel(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory(), stack);
+		if (fuel.length >= 1)
+			return fuel[0];
+		return -1;
+	}
+
 	public int[] getFuelSlots()
 	{
 		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
@@ -116,7 +154,21 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	public int[] getInputSlots()
 	{
 		int[] input = this.createSlotArray(this.furnace.getInputs().getSizeInventory(), 0);
-		return input;
+		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
+		int[] realInput = new int[input.length + fuel.length];
+		for (int slot = 0; slot < input.length; slot++)
+			realInput[slot] = input[slot];
+		for (int slot = 0; slot < fuel.length; slot++)
+			realInput[slot + input.length] = fuel[slot];
+		return realInput;
+	}
+
+	public int getInputSlots(ItemStack stack)
+	{
+		Integer[] input = this.createSlotArray(this.furnace.getInputs(), 0, stack);
+		if (input.length >= 1)
+			return input[0];
+		return -1;
 	}
 
 	@Override
@@ -236,7 +288,7 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 	{
 		if (this.canSmelt(slot))
 		{
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(this.furnace.getInputs().getStackInSlot(slot));
+			ItemStack itemstack = this.recipeProvider.getResult(this.furnace.getInputs().getStackInSlot(slot));
 			if (this.furnace.getOutputs().getStackInSlot(slot) == null)
 				this.furnace.getOutputs().setInventorySlotContents(slot, itemstack.copy());
 			else if (this.furnace.getOutputs().getStackInSlot(slot).isItemEqual(itemstack))
@@ -257,23 +309,9 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		{
 			if (this.furnaceBurnTime != 0 || !this.furnace.getFuel().isEmpty() && !this.furnace.getInputs().isEmpty())
 			{
-				if (this.furnaceBurnTime == 0 && this.canSmelt())
+				if (this.needsFuel())
 					for (int slot = 0; slot < this.furnace.getFuel().getSizeInventory(); slot++)
-						if (this.furnaceBurnTime == 0)
-						{
-							this.currentItemBurnTime = this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(this.furnace.getFuel().getStackInSlot(slot));
-							if (this.furnaceBurnTime > 0)
-							{
-								flag1 = true;
-								if (this.furnace.getFuel().getStackInSlot(slot) != null)
-								{
-									--this.furnace.getFuel().getStackInSlot(slot).stackSize;
-									if (this.furnace.getFuel().getStackInSlot(slot).stackSize == 0)
-										this.furnace.getFuel().setInventorySlotContents(slot, this.furnace.getFuel().getStackInSlot(slot).getItem().getContainerItem(this.furnace.getFuel().getStackInSlot(slot)));
-								}
-							}
-						}
-						else
+						if (this.handleFuel(slot))
 							break;
 				if (this.isBurning() && this.canSmelt())
 				{
@@ -295,6 +333,12 @@ public class FurnaceBase implements IInventory, IPacketHandler {
 		if (flag1)
 			this.markDirty();
 	}
+
+	protected abstract boolean needsFuel();
+
+	protected abstract boolean handleFuel(int slot);
+
+	protected abstract boolean isItemFuel(ItemStack stack);
 
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
