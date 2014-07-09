@@ -18,5 +18,5 @@ runCommand()
 
 
 command="./gradlew setupCIWorkspace -S"
-
+echo command
 runCommand command

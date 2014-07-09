@@ -18,5 +18,5 @@ runCommand()
 
 
 command="./gradlew build -S"
-
+echo command
 runCommand command
