@@ -1,6 +1,12 @@
 package com.texasjake95.core.lib.utils;
 
+import cpw.mods.fml.common.eventhandler.Event.Result;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
@@ -8,6 +14,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import com.texasjake95.core.inventory.InvRange;
 
 public class PlayerUtils {
 
@@ -27,6 +35,16 @@ public class PlayerUtils {
 			// int height = this.worldServerInstance.getHeightValue(i, k)+1;
 			entity.setPosition(i, j, k);
 		}
+	}
+
+	public static boolean canAddToInv(EntityPlayer player, EntityItem item)
+	{
+		EntityItemPickupEvent event = new EntityItemPickupEvent(player, item);
+		if (MinecraftForge.EVENT_BUS.post(event) || (event.hasResult() && event.getResult() == Result.DENY))
+			return false;
+		if (InventoryUtils.canAddToInv(new InvRange(player.inventory, 36), item.getEntityItem()))
+			return true;
+		return false;
 	}
 
 	public static void teleportPlayerTo(EntityPlayer entityPlayer, double x, double y, double z)

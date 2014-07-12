@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.lib.item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,7 @@ public class ItemDataMap {
 
 	public void addItemData(ItemData itemData)
 	{
-		list.add(itemData);
-	}
-
-	public String getUnlocalizedName(ItemStack stack)
-	{
-		return getData(stack).unlocName;
+		this.list.add(itemData);
 	}
 
 	private ItemData getData(ItemStack stack)
@@ -35,23 +30,26 @@ public class ItemDataMap {
 		return this.list.get(meta);
 	}
 
-	public void registerIcons(IIconRegister register)
-	{
-		for (ItemData data : list)
-			data.registerIIcon(register);
-	}
-
 	public IIcon getIcon(ItemStack stack)
 	{
-		return getData(stack).getIcon();
+		return this.getData(stack).getIcon();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void getSubItems(Item item, CreativeTabs tab, List list)
 	{
 		for (int data = 0; data < this.list.size(); data++)
-		{
 			list.add(new ItemStack(item, 1, data));
-		}
+	}
+
+	public String getUnlocalizedName(ItemStack stack)
+	{
+		return this.getData(stack).unlocName;
+	}
+
+	public void registerIcons(IIconRegister register)
+	{
+		for (ItemData data : this.list)
+			data.registerIIcon(register);
 	}
 }

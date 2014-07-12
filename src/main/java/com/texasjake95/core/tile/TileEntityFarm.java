@@ -15,8 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 
+import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.inventory.InventorySeed;
-import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageTileFarm;
 import com.texasjake95.core.tile.farm.QuadrantFarm;

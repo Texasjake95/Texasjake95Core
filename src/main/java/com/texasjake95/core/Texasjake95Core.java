@@ -21,12 +21,10 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 
-import net.minecraft.init.Blocks;
-
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.chunkloading.TicketHelper;
 import com.texasjake95.core.config.CoreConfig;
-import com.texasjake95.core.lib.handler.EventRegister;
+import com.texasjake95.core.lib.MappingHelper;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
@@ -82,12 +80,10 @@ public class Texasjake95Core {
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		CoreConfig.getInstance().initProps();
-		Blocks.quartz_ore.setHarvestLevel("pickaxe", 3);
 		RecipeSorter.register("texasjake95:shapelessDamage", ShapelessDamageRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
 		proxy.registerEventHandlers();
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();
-		EventRegister.registerForgeEventHandler(new Handler());
 		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 	}

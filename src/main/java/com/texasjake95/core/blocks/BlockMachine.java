@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.blocks;
 
 import java.util.List;
 import java.util.Random;
@@ -24,11 +24,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.FurnaceTest;
-import com.texasjake95.core.tile.MA;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityFurnaceBase;
 import com.texasjake95.core.tile.TileEntityQuarry;
@@ -97,10 +97,6 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 				return new TileEntityQuarry();
 			case 2:
 				return new FurnaceTest();
-			case 3:
-				return new MA();
-			case 4:
-				return new BOTH();
 		}
 		return new TileEntityFarm();
 	}

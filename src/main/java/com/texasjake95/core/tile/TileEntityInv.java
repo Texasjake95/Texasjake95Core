@@ -142,12 +142,12 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 			{
 				Block chest = WorldProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 				IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
-				this.pushToInv(temp,d);
+				this.pushToInv(temp, d);
 			}
 			else if (tile instanceof IInventory)
 			{
 				IInventory temp = (IInventory) tile;
-				this.pushToInv(temp,d);
+				this.pushToInv(temp, d);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 				IInventoryProxy.setInventorySlotContents(this, invSlot, null);
 				continue;
 			}
-			InventoryUtils.addToInventory(inv, stack,side);
+			InventoryUtils.addToInventory(inv, stack, side);
 		}
 	}
 

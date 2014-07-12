@@ -11,7 +11,6 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 
-import com.texasjake95.core.ItemMisc;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.items.multi.MultiPickAxe;
 import com.texasjake95.core.items.multi.MultiPickShovel;
@@ -197,62 +196,61 @@ public class CoreItems {
 		MultiItemMap.initItemMaps();
 		misc = new ItemMisc();
 		GameRegistry.registerItem(misc, "TXMisc");
-
 	}
 
 	private static Item multi(int tool)
 	{
-		return new MultiWeapon(tool4(tool), CoreInfo.modId);
+		return new MultiWeapon(tool4(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("multi");
 	}
 
 	private static Item paxe(int tool)
 	{
-		return new MultiPickAxe(tool2(tool), CoreInfo.modId);
+		return new MultiPickAxe(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("paxe");
 	}
 
 	private static Item paxel(int tool)
 	{
-		return new MultiPickShovelAxe(tool3(tool), CoreInfo.modId);
+		return new MultiPickShovelAxe(tool3(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("paxel");
 	}
 
 	private static Item paxerd(int tool)
 	{
-		return new MultiPickSwordAxe(tool3(tool), CoreInfo.modId);
+		return new MultiPickSwordAxe(tool3(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("paxerd");
 	}
 
 	private static Item picord(int tool)
 	{
-		return new MultiPickSword(tool2(tool), CoreInfo.modId);
+		return new MultiPickSword(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("picord");
 	}
 
 	private static Item picvel(int tool)
 	{
-		return new MultiPickShovel(tool2(tool), CoreInfo.modId);
+		return new MultiPickShovel(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("picvel");
 	}
 
 	private static Item piverd(int tool)
 	{
-		return new MultiPickShovelSword(tool3(tool), CoreInfo.modId);
+		return new MultiPickShovelSword(tool3(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("piverd");
 	}
 
 	private static Item shaxe(int tool)
 	{
-		return new MultiShovelAxe(tool2(tool), CoreInfo.modId);
+		return new MultiShovelAxe(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("shaxe");
 	}
 
 	private static Item shord(int tool)
 	{
-		return new MultiShovelSword(tool2(tool), CoreInfo.modId);
+		return new MultiShovelSword(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("shord");
 	}
 
 	private static Item swaxe(int tool)
 	{
-		return new MultiSwordAxe(tool2(tool), CoreInfo.modId);
+		return new MultiSwordAxe(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("swaxe");
 	}
 
 	private static Item swaxel(int tool)
 	{
-		return new MultiPickAxe(tool2(tool), CoreInfo.modId);
+		return new MultiPickAxe(tool2(tool), CoreInfo.modId).setMaterialName(types[tool].toLowerCase()).setToolName("swaxel");
 	}
 
 	private static ToolMaterial tool2(int index)

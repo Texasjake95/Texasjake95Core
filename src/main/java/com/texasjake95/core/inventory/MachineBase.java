@@ -36,7 +36,7 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 
 	public MachineBase(int slots, int fuelSlots, int ticksToCook, IInventory tile, IRecipeProvider recipes)
 	{
-		this.furnace = new InventoryFurnace(slots, fuelSlots,recipes);
+		this.furnace = new InventoryFurnace(slots, fuelSlots, recipes);
 		this.recipeProvider = recipes;
 		this.ticksToCook = ticksToCook;
 		this.tile = tile;
@@ -68,36 +68,28 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		}
 	}
 
-	private Integer[] createSlotArray(IInventory inv, int offset, ItemStack stack)
-	{
-		ArrayList<Integer> slots = Lists.newArrayList();
-		for (int i = 0; i < inv.getSizeInventory(); i++)
-		{
-			if (inv.getStackInSlot(i) == null)
-			{
-				slots.add(i + offset);
-			}
-		}
-		if (!slots.isEmpty())
-			return slots.toArray(new Integer[slots.size()]);
-		ArrayList<SlotData> slotData = Lists.newArrayList();
-		for (int i = 0; i < inv.getSizeInventory(); i++)
-		{
-			if (inv.getStackInSlot(i) != null && stack.isItemEqual(inv.getStackInSlot(i)))
-				slotData.add(new SlotData(i, inv.getStackInSlot(i)));
-		}
-		Collections.sort(slotData);
-		for (SlotData data : slotData)
-		{
-			slots.add(data.slot + offset);
-		}
-		return slots.toArray(new Integer[slots.size()]);
-	}
-
 	@Override
 	public void closeInventory()
 	{
 		this.furnace.closeInventory();
+	}
+
+	private Integer[] createSlotArray(IInventory inv, int offset, ItemStack stack)
+	{
+		ArrayList<Integer> slots = Lists.newArrayList();
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+			if (inv.getStackInSlot(i) == null)
+				slots.add(i + offset);
+		if (!slots.isEmpty())
+			return slots.toArray(new Integer[slots.size()]);
+		ArrayList<SlotData> slotData = Lists.newArrayList();
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+			if (inv.getStackInSlot(i) != null && stack.isItemEqual(inv.getStackInSlot(i)))
+				slotData.add(new SlotData(i, inv.getStackInSlot(i)));
+		Collections.sort(slotData);
+		for (SlotData data : slotData)
+			slots.add(data.slot + offset);
+		return slots.toArray(new Integer[slots.size()]);
 	}
 
 	private int[] createSlotArray(int size, int offset)
@@ -137,18 +129,18 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		return this.furnaceCookTime * scale / this.ticksToCook;
 	}
 
+	public int[] getFuelSlots()
+	{
+		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
+		return fuel;
+	}
+
 	public int getFuelSlots(ItemStack stack)
 	{
 		Integer[] fuel = this.createSlotArray(this.furnace.getFuel(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory(), stack);
 		if (fuel.length >= 1)
 			return fuel[0];
 		return -1;
-	}
-
-	public int[] getFuelSlots()
-	{
-		int[] fuel = this.createSlotArray(this.furnace.getFuel().getSizeInventory(), this.furnace.getOutputs().getSizeInventory() + this.furnace.getInputs().getSizeInventory());
-		return fuel;
 	}
 
 	public int[] getInputSlots()
@@ -213,6 +205,8 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		return this.getStackInSlot(slot);
 	}
 
+	protected abstract boolean handleFuel(int slot);
+
 	@Override
 	public boolean hasCustomInventoryName()
 	{
@@ -223,6 +217,8 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 	{
 		return this.furnaceBurnTime > 0;
 	}
+
+	protected abstract boolean isItemFuel(ItemStack stack);
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack)
@@ -250,6 +246,8 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		this.tile.markDirty();
 		this.furnace.markDirty();
 	}
+
+	protected abstract boolean needsFuel();
 
 	@Override
 	public void openInventory()
@@ -333,12 +331,6 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		if (flag1)
 			this.markDirty();
 	}
-
-	protected abstract boolean needsFuel();
-
-	protected abstract boolean handleFuel(int slot);
-
-	protected abstract boolean isItemFuel(ItemStack stack);
 
 	@Override
 	public void writeToPacket(ByteBufOutputStream dos, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException

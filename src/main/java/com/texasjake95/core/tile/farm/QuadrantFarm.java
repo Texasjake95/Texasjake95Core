@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import com.texasjake95.core.Texasjake95Core;
+import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.pair.BlockIntPair;
-import com.texasjake95.core.lib.pair.ItemIntPair;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;

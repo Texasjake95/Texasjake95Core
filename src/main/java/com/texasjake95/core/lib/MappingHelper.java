@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.lib;
 
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
 import cpw.mods.fml.common.registry.GameRegistry.Type;

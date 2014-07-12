@@ -7,12 +7,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 
 public class FurnaceRecipeProvider implements IRecipeProvider {
 
-	@Override
-	public ItemStack getResult(ItemStack stack)
-	{
-		return instance.getSmeltingResult(stack);
-	}
-
 	private static final FurnaceRecipes instance = FurnaceRecipes.smelting();
 
 	@Override
@@ -34,15 +28,20 @@ public class FurnaceRecipeProvider implements IRecipeProvider {
 	}
 
 	@Override
+	public void addRecipe(String input, ItemStack output, float exp)
+	{
+		// TODO Auto-generated method stub
+	}
+
+	@Override
 	public float getEXP(ItemStack stack)
 	{
 		return instance.func_151398_b(stack);
 	}
 
 	@Override
-	public void addRecipe(String input, ItemStack output, float exp)
+	public ItemStack getResult(ItemStack stack)
 	{
-		// TODO Auto-generated method stub
-		
+		return instance.getSmeltingResult(stack);
 	}
 }

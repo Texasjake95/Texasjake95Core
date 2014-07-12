@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.items;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
@@ -31,10 +31,6 @@ public class ItemBlockMachine extends ItemBlock {
 				return "tile.txquarry";
 			case 2:
 				return "tile.txFurnace";
-			case 3:
-				return "tile.tx";
-			case 4:
-				return "tile.txBoth";
 			default:
 				return "tile.txfarm";
 		}

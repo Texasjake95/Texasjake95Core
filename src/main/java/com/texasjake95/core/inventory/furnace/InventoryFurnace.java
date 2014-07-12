@@ -24,7 +24,7 @@ public class InventoryFurnace implements IInventory {
 
 	public InventoryFurnace(int slots, int fuelSlots, IRecipeProvider recipes)
 	{
-		this.inputSlots = new InventoryFurnaceInput(slots,recipes);
+		this.inputSlots = new InventoryFurnaceInput(slots, recipes);
 		this.outputSlots = new InventoryFurnaceOutput(slots);
 		this.fuelSlots = new InventoryFurnaceFuel(fuelSlots);
 	}

@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import com.texasjake95.commons.util.Range;
+import com.texasjake95.core.inventory.InvRange;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
 public class InventoryUtils {
@@ -48,29 +49,59 @@ public class InventoryUtils {
 		}
 	}
 
-	public static boolean isItemValidForSlot(IInventory inv, int slot, ItemStack stack, ForgeDirection side)
+	public static boolean canAddToInv(IInventory inv, ItemStack stack, ForgeDirection side)
 	{
-		if (inv instanceof ISidedInventory)
+		for (int slot : getSlots(inv, side))
 		{
-			ISidedInventory sided = (ISidedInventory) inv;
-			return sided.canInsertItem(slot, stack, side.getOpposite().ordinal());
+			if (stack.stackSize == 0)
+				break;
+			ItemStack invStack = inv.getStackInSlot(slot);
+			if (invStack == null)
+				if (isItemValidForSlot(inv, slot, stack, side))
+					return true;
+			if (stack.getItem() == invStack.getItem() && stack.getItemDamage() == invStack.getItemDamage())
+				if (isItemValidForSlot(inv, slot, stack, side))
+				{
+					int maxSize = Math.min(inv.getInventoryStackLimit(), invStack.getMaxStackSize());
+					if (invStack.stackSize < maxSize && stack.stackSize > 0)
+						return true;
+					inv.setInventorySlotContents(slot, invStack);
+				}
 		}
-		return inv.isItemValidForSlot(slot, stack);
+		return false;
 	}
 
-	public static int[] getSlots(IInventory inv, ForgeDirection side)
+	public static boolean canAddToInv(InvRange range, ItemStack itemStack)
 	{
-		if (inv instanceof ISidedInventory)
-		{
-			ISidedInventory sided = (ISidedInventory) inv;
-			return sided.getAccessibleSlotsFromSide(side.getOpposite().ordinal());
-		}
-		int[] slots = new int[inv.getSizeInventory()];
-		for (int i : Range.range(inv.getSizeInventory()))
-		{
-			slots[i] = i;
-		}
-		return slots;
+		ItemStack stack = itemStack.copy();
+		for (int pass = 0; pass < 2; pass++)
+			if (stack.stackSize > 0)
+				for (int slot : range.getSlots())
+				{
+					ItemStack invStack = range.getStack(slot);
+					if (invStack == null)
+					{
+						int maxSize = Math.min(range.getInvSize(), itemStack.getMaxStackSize());
+						if (stack.stackSize < maxSize)
+							return true;
+						else
+						{
+							range.setItem(slot, stack.splitStack(maxSize));
+							continue;
+						}
+					}
+					else if (stack.isItemEqual(invStack) && ItemStack.areItemStackTagsEqual(stack, invStack))
+					{
+						invStack = invStack.copy();
+						int maxSize = Math.min(range.getInvSize(), itemStack.getMaxStackSize());
+						while (stack.stackSize > 0 && invStack.stackSize < maxSize)
+						{
+							invStack.stackSize += 1;
+							stack.stackSize -= 1;
+						}
+					}
+				}
+		return stack.stackSize == 0;
 	}
 
 	public static void explodeInventory(IInventory inv, Random rand, World world, int x, int y, int z)
@@ -98,5 +129,28 @@ public class InventoryUtils {
 				}
 			}
 		}
+	}
+
+	public static int[] getSlots(IInventory inv, ForgeDirection side)
+	{
+		if (inv instanceof ISidedInventory)
+		{
+			ISidedInventory sided = (ISidedInventory) inv;
+			return sided.getAccessibleSlotsFromSide(side.getOpposite().ordinal());
+		}
+		int[] slots = new int[inv.getSizeInventory()];
+		for (int i : Range.range(inv.getSizeInventory()))
+			slots[i] = i;
+		return slots;
+	}
+
+	public static boolean isItemValidForSlot(IInventory inv, int slot, ItemStack stack, ForgeDirection side)
+	{
+		if (inv instanceof ISidedInventory)
+		{
+			ISidedInventory sided = (ISidedInventory) inv;
+			return sided.canInsertItem(slot, stack, side.getOpposite().ordinal());
+		}
+		return inv.isItemValidForSlot(slot, stack);
 	}
 }

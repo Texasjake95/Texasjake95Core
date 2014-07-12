@@ -29,6 +29,11 @@ public class WorldProxy {
 		return world.isAirBlock(x, y, z);
 	}
 
+	public static boolean isBlockIndirectlyGettingPowered(World world, int x, int y, int z)
+	{
+		return world.isBlockIndirectlyGettingPowered(x, y, z);
+	}
+
 	/**
 	 * Sets the block and metadata at a given location. Args: X, Y, Z, new
 	 * block, new metadata, flags. Flag 1 will cause a block update. Flag 2 will

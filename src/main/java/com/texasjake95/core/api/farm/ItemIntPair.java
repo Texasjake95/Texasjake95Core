@@ -1,4 +1,4 @@
-package com.texasjake95.core.lib.pair;
+package com.texasjake95.core.api.farm;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

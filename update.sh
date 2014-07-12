@@ -25,7 +25,7 @@ fi
 
 command="$commandBase setupDecompWorkSpace"
 echo "Run 1"
-runCommand "$command"
+runCommand "$command --refresh-dependencies"
 
 echo "Run 2"
 runCommand "$command"

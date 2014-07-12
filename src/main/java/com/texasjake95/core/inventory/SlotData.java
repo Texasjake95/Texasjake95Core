@@ -14,18 +14,18 @@ public class SlotData implements Comparable<SlotData> {
 	}
 
 	@Override
-	public String toString()
-	{
-		return "Slot: " + slot + " => Stack: " + stack;
-	}
-
-	@Override
 	public int compareTo(SlotData data)
 	{
-		int compare = Integer.compare(stack.stackSize, data.stack.stackSize);
+		int compare = Integer.compare(this.stack.stackSize, data.stack.stackSize);
 		if (compare != 0)
 			return compare;
 		compare = Integer.compare(this.slot, data.slot);
 		return compare;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Slot: " + this.slot + " => Stack: " + this.stack;
 	}
 }

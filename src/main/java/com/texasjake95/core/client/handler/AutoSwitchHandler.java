@@ -233,7 +233,7 @@ public class AutoSwitchHandler extends TickHandler {
 						// Count ticks before switching back to prevent
 						// constant switching
 						this.tickCount++;
-						if (this.tickCount >= 5)
+						if (this.tickCount >= 2)
 							this.shouldSwitchBack = true;
 					}
 		}

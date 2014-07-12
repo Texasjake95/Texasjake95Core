@@ -26,6 +26,6 @@ public class InventoryFurnaceInput extends InventoryBase {
 	@Override
 	public boolean isItemValidForSlot(int var1, ItemStack stack)
 	{
-		return recipes.getResult(stack) != null;
+		return this.recipes.getResult(stack) != null;
 	}
 }

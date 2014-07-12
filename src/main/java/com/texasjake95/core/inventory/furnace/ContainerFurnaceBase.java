@@ -108,12 +108,12 @@ public class ContainerFurnaceBase extends Container {
 			}
 			else if (!this.isInRange(slotNumber, inputStart, inputEnd) && !this.isInRange(slotNumber, fuelStart, fuelEnd))
 			{
-				if (furnace.recipeProvider.getResult(itemstack1) != null)
+				if (this.furnace.recipeProvider.getResult(itemstack1) != null)
 				{
 					if (!this.mergeItemStack(itemstack1, inputStart, inputEnd, false))
 						return null;
 				}
-				else if (furnace.isItemFuel(itemstack1))
+				else if (this.furnace.isItemFuel(itemstack1))
 				{
 					if (!this.mergeItemStack(itemstack1, fuelStart, fuelEnd, false))
 						return null;

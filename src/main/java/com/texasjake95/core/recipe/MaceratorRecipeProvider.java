@@ -27,49 +27,6 @@ public class MaceratorRecipeProvider implements IRecipeProvider {
 		this.addRecipe("oreGold", new ItemStack(CoreItems.misc, 2, 1), 0);
 	}
 
-	public ItemStack getResult(ItemStack stack)
-	{
-		Iterator<Entry<Object, ItemStack>> iterator = this.recipes.entrySet().iterator();
-		Entry<Object, ItemStack> entry;
-		do
-		{
-			if (!iterator.hasNext())
-			{
-				return null;
-			}
-			entry = iterator.next();
-		}
-		while (!this.objectMatches(stack, entry.getKey()));
-		return (ItemStack) entry.getValue();
-	}
-
-	@SuppressWarnings("rawtypes")
-	private boolean objectMatches(ItemStack stack, Object object)
-	{
-		if (object instanceof List)
-		{
-			List list = (List) object;
-			Iterator iterator = list.iterator();
-			ItemStack temp;
-			do
-			{
-				if (!iterator.hasNext())
-				{
-					return false;
-				}
-				temp = (ItemStack) iterator.next();
-			}
-			while (!this.objectMatches(stack, temp));
-			return true;
-		}
-		else if (object instanceof ItemStack)
-		{
-			ItemStack stack2 = (ItemStack) object;
-			return stack2.getItem() == stack.getItem() && (stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == stack.getItemDamage());
-		}
-		return false;
-	}
-
 	@Override
 	public void addRecipe(Block input, ItemStack output, float exp)
 	{
@@ -85,7 +42,7 @@ public class MaceratorRecipeProvider implements IRecipeProvider {
 	@Override
 	public void addRecipe(ItemStack input, ItemStack output, float exp)
 	{
-		addRecipe((Object) input, output, exp);
+		this.addRecipe((Object) input, output, exp);
 	}
 
 	private void addRecipe(Object input, ItemStack output, float exp)
@@ -95,16 +52,56 @@ public class MaceratorRecipeProvider implements IRecipeProvider {
 	}
 
 	@Override
+	public void addRecipe(String input, ItemStack output, float exp)
+	{
+		ArrayList<ItemStack> stacks = OreDictionary.getOres(input);
+		System.out.println(input + ": " + stacks.size());
+		this.addRecipe(stacks, output, exp);
+	}
+
+	@Override
 	public float getEXP(ItemStack stack)
 	{
 		return 0;
 	}
 
 	@Override
-	public void addRecipe(String input, ItemStack output, float exp)
+	public ItemStack getResult(ItemStack stack)
 	{
-		ArrayList<ItemStack> stacks = OreDictionary.getOres(input);
-		System.out.println(input + ": " + stacks.size());
-		this.addRecipe(stacks, output, exp);
+		Iterator<Entry<Object, ItemStack>> iterator = this.recipes.entrySet().iterator();
+		Entry<Object, ItemStack> entry;
+		do
+		{
+			if (!iterator.hasNext())
+				return null;
+			entry = iterator.next();
+		}
+		while (!this.objectMatches(stack, entry.getKey()));
+		return entry.getValue();
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean objectMatches(ItemStack stack, Object object)
+	{
+		if (object instanceof List)
+		{
+			List list = (List) object;
+			Iterator iterator = list.iterator();
+			ItemStack temp;
+			do
+			{
+				if (!iterator.hasNext())
+					return false;
+				temp = (ItemStack) iterator.next();
+			}
+			while (!this.objectMatches(stack, temp));
+			return true;
+		}
+		else if (object instanceof ItemStack)
+		{
+			ItemStack stack2 = (ItemStack) object;
+			return stack2.getItem() == stack.getItem() && (stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == stack.getItemDamage());
+		}
+		return false;
 	}
 }

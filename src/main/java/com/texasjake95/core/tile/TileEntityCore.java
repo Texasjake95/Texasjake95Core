@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import com.texasjake95.core.network.IPacketHandler;
+import com.texasjake95.core.proxy.world.WorldProxy;
 
 public abstract class TileEntityCore extends TileEntity implements IPacketHandler {
 
@@ -14,6 +15,7 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 	protected String customName;
 	protected String owner;
 	protected int syncTicks = 0;
+	protected boolean hasRedStone;
 
 	public TileEntityCore()
 	{
@@ -120,6 +122,11 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 	public void setOwnerName(String name)
 	{
 		this.owner = name;
+	}
+
+	public void updateRedstone()
+	{
+		this.hasRedStone = WorldProxy.isBlockIndirectlyGettingPowered(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 	}
 
 	@Override

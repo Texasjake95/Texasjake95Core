@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import com.texasjake95.core.api.farm.IGrowthChecker;
 import com.texasjake95.core.api.farm.IHarvester;
 import com.texasjake95.core.api.farm.ISeedProvider;
-import com.texasjake95.core.lib.pair.ItemIntPair;
+import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.utils.BlockUtils;
 import com.texasjake95.core.proxy.world.WorldProxy;
 

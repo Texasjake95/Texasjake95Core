@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.items;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.texasjake95.core.api.CoreInfo;
+import com.texasjake95.core.lib.item.ItemData;
+import com.texasjake95.core.lib.item.ItemDataMap;
 
 public class ItemMisc extends Item {
 
@@ -25,6 +27,13 @@ public class ItemMisc extends Item {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
+	public void getSubItems(Item item, CreativeTabs tab, List list)
+	{
+		map.getSubItems(item, tab, list);
+	}
+
+	@Override
 	public String getUnlocalizedName(ItemStack stack)
 	{
 		return map.getUnlocalizedName(stack);
@@ -34,12 +43,5 @@ public class ItemMisc extends Item {
 	public void registerIcons(IIconRegister register)
 	{
 		map.registerIcons(register);
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public void getSubItems(Item item, CreativeTabs tab, List list)
-	{
-		map.getSubItems(item, tab, list);
 	}
 }

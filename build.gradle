@@ -17,8 +17,8 @@ buildscript {
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-		classpath 'com.texasjake95:GradlePlugin:1.1-SNAPSHOT'
-		classpath 'com.texasjake95:MinecraftGradlePlugin:1.0-SNAPSHOT'
+		classpath 'com.github.texasjake95:GradlePlugin:1.2-SNAPSHOT'
+		classpath 'com.github.texasjake95:MinecraftGradlePlugin:1.0-SNAPSHOT'
 	}
 }
 apply plugin: 'forge'
@@ -55,8 +55,8 @@ dependencies {
 	//compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
 }
 
-depAdd.addNEI()
-
+depAdd.addNEI("compile")
+depAdd.addIronChests("runtime",false)
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7

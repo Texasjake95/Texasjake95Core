@@ -1,4 +1,4 @@
-package com.texasjake95.core;
+package com.texasjake95.core.lib.item;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
@@ -18,13 +18,13 @@ public class ItemData {
 		map.addItemData(this);
 	}
 
-	public void registerIIcon(IIconRegister register)
-	{
-		this.icon = register.registerIcon(String.format("%s:%s", modid, texName));
-	}
-
 	public IIcon getIcon()
 	{
 		return this.icon;
+	}
+
+	public void registerIIcon(IIconRegister register)
+	{
+		this.icon = register.registerIcon(String.format("%s:%s", this.modid, this.texName));
 	}
 }

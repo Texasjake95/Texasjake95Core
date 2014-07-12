@@ -21,12 +21,6 @@ public class FurnaceBase extends MachineBase {
 	}
 
 	@Override
-	protected boolean needsFuel()
-	{
-		return this.furnaceBurnTime == 0 && this.canSmelt();
-	}
-
-	@Override
 	protected boolean handleFuel(int slot)
 	{
 		this.currentItemBurnTime = this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(this.furnace.getFuel().getStackInSlot(slot));
@@ -49,4 +43,9 @@ public class FurnaceBase extends MachineBase {
 		return TileEntityFurnace.isItemFuel(stack);
 	}
 
+	@Override
+	protected boolean needsFuel()
+	{
+		return this.furnaceBurnTime == 0 && this.canSmelt();
+	}
 }
