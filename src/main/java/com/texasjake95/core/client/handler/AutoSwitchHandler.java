@@ -21,7 +21,8 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.event.AutoSwitchEvent;
-import com.texasjake95.core.handler.ToolHandlerRegistry;
+import com.texasjake95.core.api.handler.IToolRegistry;
+import com.texasjake95.core.api.impl.CoreAPI;
 import com.texasjake95.core.lib.handler.event.TickHandler;
 import com.texasjake95.core.proxy.client.MinecraftProxy;
 import com.texasjake95.core.proxy.client.entity.ClientPlayerProxy;
@@ -36,7 +37,7 @@ import com.texasjake95.core.proxy.world.WorldProxy;
 // blackList etc
 // Create Map for above!!!!!
 /**
- * This class handles the auto switching of tools on the player's hot bar
+ * This class handles the auto switching of tools on the player's hot bar.
  *
  * @author Texasjake95
  *
@@ -44,8 +45,7 @@ import com.texasjake95.core.proxy.world.WorldProxy;
 public class AutoSwitchHandler extends TickHandler {
 
 	/**
-	 * Check and see if anything is preventing the player from switching to any
-	 * new tools
+	 * Check and see if anything is preventing the player from switching to any new tools.
 	 *
 	 * @param player
 	 *            - the player in question
@@ -60,28 +60,33 @@ public class AutoSwitchHandler extends TickHandler {
 	}
 
 	/*
-	 * public static void teleport(World world, EntityPlayer player) { if
-	 * (!world.isRemote) { Vec3 vec3 = ClientPlayerProxy.getPostion(player,
-	 * 1.0F); vec3.yCoord++; Vec3 lookVec = ClientPlayerProxy.getLook(player,
-	 * 1.0F); Vec3 aVector = vec3.addVector(lookVec.xCoord * 50.0D,
-	 * lookVec.yCoord * 50.0D, lookVec.zCoord * 50.0D); MovingObjectPosition
-	 * movingObjPos = WorldProxy.rayTraceBlocks(world, vec3, aVector); if
-	 * (movingObjPos != null) { PlayerProxy.setPostion(player, movingObjPos); }
-	 * } }
+	 * public static void teleport(World world, EntityPlayer player) { if (!world.isRemote) {
+	 * Vec3 vec3 = ClientPlayerProxy.getPostion(player, 1.0F); vec3.yCoord++; Vec3 lookVec =
+	 * ClientPlayerProxy.getLook(player, 1.0F); Vec3 aVector = vec3.addVector(lookVec.xCoord *
+	 * 50.0D, lookVec.yCoord * 50.0D, lookVec.zCoord * 50.0D); MovingObjectPosition
+	 * movingObjPos = WorldProxy.rayTraceBlocks(world, vec3, aVector); if (movingObjPos !=
+	 * null) { PlayerProxy.setPostion(player, movingObjPos); } } }
 	 */
 	/**
-	 * Current Item slot
+	 * Current Item slot.
 	 */
 	private int currentItem = -1;
+	/**
+	 * The instance of {@link AutoHandlerData} the class uses to handle the data that it
+	 * gathers.
+	 */
 	AutoHandlerData data = new AutoHandlerData();
 	/**
-	 * Used to flag the switching back to the original tool in hand
+	 * Used to flag the switching back to the original tool in hand.
 	 */
 	private boolean shouldSwitchBack = false;
+	/**
+	 * the current amount of ticks since the 'Attack' Keybinding was released.
+	 */
 	private int tickCount = 0;
 
 	/**
-	 * Handle Tool Auto Switching
+	 * Handle Tool Auto Switching.
 	 *
 	 * @param tickStart
 	 *            - did the tick start
@@ -101,7 +106,7 @@ public class AutoSwitchHandler extends TickHandler {
 					if (GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())))
 					{
 						this.shouldSwitchBack = false;
-						ToolHandlerRegistry tools = ToolHandlerRegistry.getInstance();
+						IToolRegistry tools = CoreAPI.toolRegistry;
 						this.tickCount = 0;
 						MovingObjectPosition mop = MinecraftProxy.getObjectMouseOver();
 						if (mop != null)

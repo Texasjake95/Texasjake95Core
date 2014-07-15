@@ -22,11 +22,11 @@ public class InventoryFurnace implements IInventory {
 	static final String output = "output";
 	static final String fuel = "fuel";
 
-	public InventoryFurnace(int slots, int fuelSlots, IRecipeProvider recipes)
+	public InventoryFurnace(int slots, int fuelSlotsAmount, IRecipeProvider recipes)
 	{
 		this.inputSlots = new InventoryFurnaceInput(slots, recipes);
 		this.outputSlots = new InventoryFurnaceOutput(slots);
-		this.fuelSlots = new InventoryFurnaceFuel(fuelSlots);
+		this.fuelSlots = new InventoryFurnaceFuel(fuelSlotsAmount);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class InventoryFurnace implements IInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer p_70300_1_)
+	public boolean isUseableByPlayer(EntityPlayer player)
 	{
 		return true;
 	}

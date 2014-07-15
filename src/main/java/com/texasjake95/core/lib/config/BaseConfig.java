@@ -17,11 +17,11 @@ public abstract class BaseConfig {
 	private boolean hasWorldGen = false;
 	public boolean retroGen = false;
 
-	public BaseConfig(ConfigWriter configw, boolean hasWorldGen)
+	public BaseConfig(ConfigWriter configwriter, boolean hasWorldGen)
 	{
-		this.configw = configw;
+		this.configw = configwriter;
 		// this.config = configw.config();
-		this.forgeConfig = configw.forgeConfig();
+		this.forgeConfig = this.configw.forgeConfig();
 		this.hasWorldGen = hasWorldGen;
 	}
 

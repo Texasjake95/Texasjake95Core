@@ -14,17 +14,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import com.texasjake95.core.items.CoreItems;
-
 public class MaceratorRecipeProvider implements IRecipeProvider {
 
 	private HashMap<Object, ItemStack> recipes = Maps.newHashMap();
-	private HashMap<Object, Float> exp = Maps.newHashMap();
+	private HashMap<Object, Float> expOutput = Maps.newHashMap();
 
 	public MaceratorRecipeProvider()
 	{
-		this.addRecipe("oreIron", new ItemStack(CoreItems.misc, 2, 0), 0);
-		this.addRecipe("oreGold", new ItemStack(CoreItems.misc, 2, 1), 0);
+		// this.addRecipe("oreIron", new ItemStack(CoreItems.misc, 2, 0), 0);
+		// this.addRecipe("oreGold", new ItemStack(CoreItems.misc, 2, 1), 0);
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class MaceratorRecipeProvider implements IRecipeProvider {
 	private void addRecipe(Object input, ItemStack output, float exp)
 	{
 		this.recipes.put(input, output);
-		this.exp.put(input, exp);
+		this.expOutput.put(input, exp);
 	}
 
 	@Override

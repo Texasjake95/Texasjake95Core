@@ -6,4 +6,8 @@ public class CoreInfo {
 	public static final String modId = "Texasjake95Core";
 	public static final String modName = "Texasjake95 - Core";
 	public static final String modVersion = "${version}";
+
+	private CoreInfo()
+	{
+	}
 }

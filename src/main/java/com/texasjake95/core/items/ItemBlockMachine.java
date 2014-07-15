@@ -8,16 +8,16 @@ import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class ItemBlockMachine extends ItemBlock {
 
-	public ItemBlockMachine(Block p_i45326_1_)
+	public ItemBlockMachine(Block block)
 	{
-		super(p_i45326_1_);
+		super(block);
 		this.setHasSubtypes(true);
 	}
 
 	@Override
-	public int getMetadata(int i)
+	public int getMetadata(int meta)
 	{
-		return i;
+		return meta;
 	}
 
 	@Override

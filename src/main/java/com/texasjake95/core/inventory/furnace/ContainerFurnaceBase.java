@@ -20,18 +20,18 @@ public class ContainerFurnaceBase extends Container {
 	private int lastBurnTime;
 	private int lastItemBurnTime;
 
-	public ContainerFurnaceBase(InventoryPlayer invPlayer, FurnaceBase furnace)
+	public ContainerFurnaceBase(InventoryPlayer invPlayer, FurnaceBase furnaceBase)
 	{
-		this.furnace = furnace;
+		this.furnace = furnaceBase;
 		int offset = 0;
-		for (int slot = 0; slot < furnace.furnace.getInputs().getSizeInventory(); slot++)
-			this.addSlotToContainer(new Slot(furnace, slot + offset, 56 + slot * 18, 17));
-		offset += furnace.furnace.getInputs().getSizeInventory();
-		for (int slot = 0; slot < furnace.furnace.getOutputs().getSizeInventory(); slot++)
-			this.addSlotToContainer(new SlotFurnace(invPlayer.player, furnace, slot + offset, 116 + slot * 18, 35));
-		offset += furnace.furnace.getOutputs().getSizeInventory();
-		for (int slot = 0; slot < furnace.furnace.getFuel().getSizeInventory(); slot++)
-			this.addSlotToContainer(new Slot(furnace, slot + offset, 56 + slot * 18, 53));
+		for (int slot = 0; slot < this.furnace.furnace.getInputs().getSizeInventory(); slot++)
+			this.addSlotToContainer(new Slot(this.furnace, slot + offset, 56 + slot * 18, 17));
+		offset += this.furnace.furnace.getInputs().getSizeInventory();
+		for (int slot = 0; slot < this.furnace.furnace.getOutputs().getSizeInventory(); slot++)
+			this.addSlotToContainer(new SlotFurnace(invPlayer.player, this.furnace, slot + offset, 116 + slot * 18, 35));
+		offset += this.furnace.furnace.getOutputs().getSizeInventory();
+		for (int slot = 0; slot < this.furnace.furnace.getFuel().getSizeInventory(); slot++)
+			this.addSlotToContainer(new Slot(this.furnace, slot + offset, 56 + slot * 18, 53));
 		int i;
 		for (i = 0; i < 3; ++i)
 			for (int j = 0; j < 9; ++j)
@@ -41,18 +41,18 @@ public class ContainerFurnaceBase extends Container {
 	}
 
 	@Override
-	public void addCraftingToCrafters(ICrafting p_75132_1_)
+	public void addCraftingToCrafters(ICrafting crafting)
 	{
-		super.addCraftingToCrafters(p_75132_1_);
-		p_75132_1_.sendProgressBarUpdate(this, 0, this.furnace.furnaceCookTime);
-		p_75132_1_.sendProgressBarUpdate(this, 1, this.furnace.furnaceBurnTime);
-		p_75132_1_.sendProgressBarUpdate(this, 2, this.furnace.currentItemBurnTime);
+		super.addCraftingToCrafters(crafting);
+		crafting.sendProgressBarUpdate(this, 0, this.furnace.furnaceCookTime);
+		crafting.sendProgressBarUpdate(this, 1, this.furnace.furnaceBurnTime);
+		crafting.sendProgressBarUpdate(this, 2, this.furnace.currentItemBurnTime);
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer p_75145_1_)
+	public boolean canInteractWith(EntityPlayer player)
 	{
-		return this.furnace.isUseableByPlayer(p_75145_1_);
+		return this.furnace.isUseableByPlayer(player);
 	}
 
 	/**
@@ -141,13 +141,13 @@ public class ContainerFurnaceBase extends Container {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void updateProgressBar(int p_75137_1_, int p_75137_2_)
+	public void updateProgressBar(int type, int time)
 	{
-		if (p_75137_1_ == 0)
-			this.furnace.furnaceCookTime = p_75137_2_;
-		if (p_75137_1_ == 1)
-			this.furnace.furnaceBurnTime = p_75137_2_;
-		if (p_75137_1_ == 2)
-			this.furnace.currentItemBurnTime = p_75137_2_;
+		if (type == 0)
+			this.furnace.furnaceCookTime = time;
+		if (type == 1)
+			this.furnace.furnaceBurnTime = time;
+		if (type == 2)
+			this.furnace.currentItemBurnTime = time;
 	}
 }

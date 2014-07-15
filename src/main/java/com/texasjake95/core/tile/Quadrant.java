@@ -29,17 +29,17 @@ public abstract class Quadrant<T extends TileEntityCore> implements IPacketHandl
 	protected byte height = 0;
 	protected byte column = 1;
 
-	public Quadrant(ForgeDirection eastWest, ForgeDirection upDown, ForgeDirection northSouth)
+	public Quadrant(ForgeDirection eastWestDir, ForgeDirection upDownDir, ForgeDirection northSouthDir)
 	{
-		if (!Checker.doAnyMatch(northSouth, ForgeDirection.NORTH, ForgeDirection.SOUTH))
+		if (!Checker.doAnyMatch(northSouthDir, ForgeDirection.NORTH, ForgeDirection.SOUTH))
 			throw new IllegalArgumentException("The pramater \"northSouth\" must be NORTH or SOUTH");
-		this.northSouth = northSouth;
-		if (!Checker.doAnyMatch(eastWest, ForgeDirection.EAST, ForgeDirection.WEST))
+		this.northSouth = northSouthDir;
+		if (!Checker.doAnyMatch(eastWestDir, ForgeDirection.EAST, ForgeDirection.WEST))
 			throw new IllegalArgumentException("The pramater \"eastWest\" must be EAST or WEST");
-		this.eastWest = eastWest;
-		if (!Checker.doAnyMatch(upDown, ForgeDirection.UP, ForgeDirection.DOWN))
+		this.eastWest = eastWestDir;
+		if (!Checker.doAnyMatch(upDownDir, ForgeDirection.UP, ForgeDirection.DOWN))
 			throw new IllegalArgumentException("The pramater \"upDown\" must be UP or DOWN");
-		this.upDown = upDown;
+		this.upDown = upDownDir;
 	}
 
 	protected abstract boolean _validate(World world, int x, int y, int z);

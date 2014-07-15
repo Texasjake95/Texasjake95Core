@@ -28,8 +28,7 @@ import com.texasjake95.core.lib.MappingHelper;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
- * The Main Class for Texasjake95 - Core <br>
- * Handles the firing of classes annotated with {@link Addon}
+ * The Main Class for the mod known as Texasjake95 - Core. <br>
  *
  * @author Texasjake95
  *

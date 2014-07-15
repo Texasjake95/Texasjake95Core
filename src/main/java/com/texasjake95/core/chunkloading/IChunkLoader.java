@@ -8,7 +8,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 
 public interface IChunkLoader {
 
-	public List<ChunkCoordIntPair> getChunks();
+	List<ChunkCoordIntPair> getChunks();
 
 	String getModID();
 

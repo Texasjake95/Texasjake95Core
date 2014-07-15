@@ -1,4 +1,4 @@
-package com.texasjake95.core.handler;
+package com.texasjake95.core.api.impl;
 
 import java.util.HashMap;
 
@@ -7,19 +7,19 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.handler.IToolHandler;
 import com.texasjake95.core.api.handler.IToolRegistry;
+import com.texasjake95.core.api.impl.vanilla.VanillaToolHandler;
 import com.texasjake95.core.proxy.BlockProxy;
 import com.texasjake95.core.proxy.MaterailProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
-public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
+final class ToolHandlerRegistry implements IToolRegistry {
 
 	private static final IToolHandler DEFAULT = new VanillaToolHandler();
 	private static ToolHandlerRegistry instance = null;
 
-	public static ToolHandlerRegistry getInstance()
+	static ToolHandlerRegistry getInstance()
 	{
 		if (instance == null)
 			instance = new ToolHandlerRegistry();
@@ -76,11 +76,6 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 	@Override
 	public IToolHandler getHandler(Item item, int itemMeta)
 	{
-		if (Texasjake95Core.isTesting)
-		{
-			// System.out.println(item + " " +
-			// this.damageMatters.containsKey(item));
-		}
 		if (this.damageMatters.containsKey(item))
 		{
 			if (this.damageMatters.get(item))
@@ -91,42 +86,18 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 					if (metaHandlers.containsKey(itemMeta))
 						return metaHandlers.get(itemMeta);
 					else
-					{
-						if (Texasjake95Core.isTesting)
-						{
-							// System.out.println("Using vanilla - couldn't find nonDamageable Handler(meta)");
-						}
 						return DEFAULT;
-					}
 				}
 				else
-				{
-					if (Texasjake95Core.isTesting)
-					{
-						// System.out.println("Using vanilla - couldn't find nonDamageable Handler(id)");
-					}
 					return DEFAULT;
-				}
 			}
 			else if (this.damageableHandler.containsKey(item) && this.damageableHandler.get(item) != null)
 				return this.damageableHandler.get(item);
 			else
-			{
-				if (Texasjake95Core.isTesting)
-				{
-					// System.out.println("Using vanilla - couldn't find damageable Handler");
-				}
 				return DEFAULT;
-			}
 		}
 		else
-		{
-			if (Texasjake95Core.isTesting)
-			{
-				// System.out.println("Using vanilla - couldn't find damageMatters");
-			}
 			return DEFAULT;
-		}
 	}
 
 	@Override
@@ -144,21 +115,11 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 	}
 
 	@Override
-	public void registerToolHandler(IToolHandler handler, Item item, int itemMeta, boolean damageMatters)
+	public void registerToolHandler(IToolHandler handler, Item item, int itemMeta, boolean doesDamageMatters)
 	{
-		if (Texasjake95Core.isTesting)
+		this.damageMatters.put(Item.itemRegistry.getNameForObject(item), doesDamageMatters);
+		if (doesDamageMatters)
 		{
-			// System.out.println(String.format("Registering handler for %s:%s damageMatters = %s",
-			// item, itemMeta, damageMatters));
-		}
-		this.damageMatters.put(Item.itemRegistry.getNameForObject(item), damageMatters);
-		if (damageMatters)
-		{
-			if (Texasjake95Core.isTesting)
-			{
-				// System.out.println(String.format("Registering handler for %s:%s as a nondamageable",
-				// item, itemMeta));
-			}
 			HashMap<Integer, IToolHandler> metaHandlers = this.nonDamageableHandler.get(item);
 			if (metaHandlers == null)
 				metaHandlers = new HashMap<Integer, IToolHandler>();
@@ -166,19 +127,12 @@ public class ToolHandlerRegistry implements IToolHandler, IToolRegistry {
 			this.nonDamageableHandler.put(Item.itemRegistry.getNameForObject(item), metaHandlers);
 		}
 		else
-		{
-			if (Texasjake95Core.isTesting)
-			{
-				// System.out.println(String.format("Registering handler for %s:%s as a damageable",
-				// item, itemMeta));
-			}
 			this.damageableHandler.put(Item.itemRegistry.getNameForObject(item), handler);
-		}
 	}
 
 	@Override
-	public void registerToolHandler(IToolHandler handler, ItemStack stack, boolean damageMatters)
+	public void registerToolHandler(IToolHandler handler, ItemStack stack, boolean doesDamageMatters)
 	{
-		this.registerToolHandler(handler, stack.getItem(), stack.getItemDamage(), damageMatters);
+		this.registerToolHandler(handler, stack.getItem(), stack.getItemDamage(), doesDamageMatters);
 	}
 }

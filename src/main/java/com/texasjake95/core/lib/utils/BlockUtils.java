@@ -23,4 +23,8 @@ public class BlockUtils {
 		world.setBlockToAir(x, y, z);
 		return returnList;
 	}
+
+	private BlockUtils()
+	{
+	}
 }

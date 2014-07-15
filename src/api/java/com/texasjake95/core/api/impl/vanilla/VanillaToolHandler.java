@@ -1,4 +1,4 @@
-package com.texasjake95.core.handler;
+package com.texasjake95.core.api.impl.vanilla;
 
 import net.minecraftforge.common.ForgeHooks;
 

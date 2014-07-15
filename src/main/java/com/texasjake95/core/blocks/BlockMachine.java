@@ -97,8 +97,9 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 				return new TileEntityQuarry();
 			case 2:
 				return new FurnaceTest();
+			default:
+				return new TileEntityFarm();
 		}
-		return new TileEntityFarm();
 	}
 
 	@Override
@@ -115,12 +116,13 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 			case 0:
 			case 1:
 				return this.top;
+			default:
+				return this.side;
 		}
-		return this.side;
 	}
 
 	@Override
-	public Item getItemDropped(int p_149650_1_, Random rand, int p_149650_3_)
+	public Item getItemDropped(int meta, Random rand, int fortune)
 	{
 		return Item.getItemFromBlock(this);
 	}
@@ -163,7 +165,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_)
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset)
 	{
 		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
 		if (player.isSneaking())

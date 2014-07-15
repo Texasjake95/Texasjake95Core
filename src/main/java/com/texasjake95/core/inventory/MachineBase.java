@@ -107,9 +107,9 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 	}
 
 	/**
-	 * Returns an integer between 0 and the passed value representing how much
-	 * burn time is left on the current fuel item, where 0 means that the item
-	 * is exhausted and the passed value means that the item is fresh
+	 * Returns an integer between 0 and the passed value representing how much burn time is
+	 * left on the current fuel item, where 0 means that the item is exhausted and the passed
+	 * value means that the item is fresh
 	 */
 	@SideOnly(Side.CLIENT)
 	public int getBurnTimeRemainingScaled(int scale)
@@ -120,8 +120,8 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 	}
 
 	/**
-	 * Returns an integer between 0 and the passed value representing how close
-	 * the current item is to being completely cooked
+	 * Returns an integer between 0 and the passed value representing how close the current
+	 * item is to being completely cooked
 	 */
 	@SideOnly(Side.CLIENT)
 	public int getCookProgressScaled(int scale)
@@ -227,7 +227,7 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer p_70300_1_)
+	public boolean isUseableByPlayer(EntityPlayer player)
 	{
 		return true;
 	}

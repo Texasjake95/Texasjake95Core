@@ -10,25 +10,31 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.Texasjake95Core;
+import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.config.CoreConfig;
-// import com.texasjake95.core.config.CoreConfig;
-import com.texasjake95.core.handler.ToolHandlerRegistry;
 import com.texasjake95.core.proxy.entity.PlayerProxy;
-import com.texasjake95.core.proxy.inventory.PlayerInventoryProxy;
 import com.texasjake95.core.proxy.item.ItemProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
+/**
+ * This class holds the data for {@link AutoSwitchHandler}. <br>
+ * It only holds data relevant in discovering which slot holds the most efficient item against
+ * the block the player is breaking
+ *
+ * @author Texasjake95
+ *
+ */
 public class AutoHandlerData {
 
-	float bestFloat = 0;
-	int bestSlot = 0;
-	Block block;
-	int blockHardness;
-	int blockMeta;
-	int hotBarSize;
-	int lowestHarvestLevel;
-	String tool;
-	int x, y, z;
+	public float bestFloat = 0;
+	public int bestSlot = 0;
+	public Block block;
+	public int blockHardness;
+	public int blockMeta;
+	public int hotBarSize;
+	public int lowestHarvestLevel;
+	public String tool;
+	public int x, y, z;
 
 	public AutoHandlerData()
 	{
@@ -41,13 +47,11 @@ public class AutoHandlerData {
 		this.z = mop.blockZ;
 		this.block = WorldProxy.getBlock(world, this.x, this.y, this.z);
 		this.blockMeta = WorldProxy.getBlockMetadata(world, this.x, this.y, this.z);
-		this.hotBarSize = PlayerInventoryProxy.getHotBarSize();
 		this.tool = this.block.getHarvestTool(this.blockMeta);
-		this.blockHardness = this.block.getHarvestLevel(this.blockMeta);
 		this.lowestHarvestLevel = Integer.MAX_VALUE;
 	}
 
-	public void addSlots(int slot, ArrayList<Integer> bestSlots, ToolHandlerRegistry tools, int currentHarvest, float strVsBlock, ItemStack stack)
+	public void addSlots(int slot, ArrayList<Integer> bestSlots, IToolRegistry tools, int currentHarvest, float strVsBlock, ItemStack stack)
 	{
 		if (tools.canHarvest(this.block, this.blockMeta, stack))
 			if (!CoreConfig.getInstance().useBestTool && currentHarvest == this.lowestHarvestLevel && strVsBlock == this.bestFloat)
@@ -66,7 +70,7 @@ public class AutoHandlerData {
 			}
 	}
 
-	public boolean canToolHarvest(ToolHandlerRegistry tools, ItemStack stack)
+	public boolean canToolHarvest(IToolRegistry tools, ItemStack stack)
 	{
 		return tools.canHarvest(this.block, this.blockMeta, stack);
 	}

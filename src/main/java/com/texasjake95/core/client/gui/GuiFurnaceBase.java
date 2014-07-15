@@ -27,7 +27,7 @@ public class GuiFurnaceBase extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_)
+	protected void drawGuiContainerBackgroundLayer(float renderPartialTicks, int mouseX, int mouseY)
 	{
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(furnaceGuiTextures);
@@ -44,11 +44,10 @@ public class GuiFurnaceBase extends GuiContainer {
 	}
 
 	/**
-	 * Draw the foreground layer for the GuiContainer (everything in front of
-	 * the items)
+	 * Draw the foreground layer for the GuiContainer (everything in front of the items)
 	 */
 	@Override
-	protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_)
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
 		String s = this.furnace.hasCustomInventoryName() ? this.furnace.getInventoryName() : I18n.format(this.furnace.getInventoryName());
 		this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);

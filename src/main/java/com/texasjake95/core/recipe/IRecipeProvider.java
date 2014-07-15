@@ -6,15 +6,15 @@ import net.minecraft.item.ItemStack;
 
 public interface IRecipeProvider {
 
-	public void addRecipe(Block input, ItemStack output, float exp);
+	void addRecipe(Block input, ItemStack output, float exp);
 
-	public void addRecipe(Item input, ItemStack output, float exp);
+	void addRecipe(Item input, ItemStack output, float exp);
 
-	public void addRecipe(ItemStack input, ItemStack output, float exp);
+	void addRecipe(ItemStack input, ItemStack output, float exp);
 
-	public void addRecipe(String input, ItemStack output, float exp);
+	void addRecipe(String input, ItemStack output, float exp);
 
-	public float getEXP(ItemStack stack);
+	float getEXP(ItemStack stack);
 
-	public ItemStack getResult(ItemStack stack);
+	ItemStack getResult(ItemStack stack);
 }

@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 
 public class MessageBlockRenderUpdate implements IMessage, IMessageHandler<MessageBlockRenderUpdate, IMessage> {
 
-	int blockID, x, y, z, progress;;
+	private int blockID, x, y, z, progress;;
 
 	public MessageBlockRenderUpdate()
 	{

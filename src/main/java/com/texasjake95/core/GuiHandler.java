@@ -27,6 +27,8 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiFurnaceBase(player.inventory, furnace.furnace);
 				}
 			}
+			default:
+				break;
 		}
 		return null;
 	}
@@ -45,6 +47,8 @@ public class GuiHandler implements IGuiHandler {
 					return new ContainerFurnaceBase(player.inventory, furnace.furnace);
 				}
 			}
+			default:
+				break;
 		}
 		return null;
 	}

@@ -13,7 +13,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -22,7 +21,6 @@ import net.minecraft.world.WorldServer;
 import com.texasjake95.core.blocks.BlockMachine;
 import com.texasjake95.core.items.CoreItems;
 import com.texasjake95.core.items.ItemBlockMachine;
-import com.texasjake95.core.recipe.RecipeProviders;
 import com.texasjake95.core.tile.FurnaceTest;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityQuarry;
@@ -92,7 +90,9 @@ public class TxCoreCommonProxy {
 	{
 		IRecipe recipe = new ShapedOreRecipe(new ItemStack(machine), new Object[] { "SLS", "FHF", "SLS", 'S', "cobblestone", 'F', Blocks.fence, 'L', "logWood", 'H', Blocks.hopper });
 		CraftingManager.getInstance().getRecipeList().add(recipe);
-		RecipeProviders.furnace.addRecipe(new ItemStack(CoreItems.misc, 1, 0), new ItemStack(Items.iron_ingot, 1, 0), .7f);
-		RecipeProviders.furnace.addRecipe(new ItemStack(CoreItems.misc, 1, 1), new ItemStack(Items.gold_ingot, 1, 0), .7f);
+		// RecipeProviders.furnace.addRecipe(new ItemStack(CoreItems.misc, 1,
+		// 0), new ItemStack(Items.iron_ingot, 1, 0), .7f);
+		// RecipeProviders.furnace.addRecipe(new ItemStack(CoreItems.misc, 1,
+		// 1), new ItemStack(Items.gold_ingot, 1, 0), .7f);
 	}
 }

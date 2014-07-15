@@ -9,4 +9,8 @@ public class BlockProxy {
 	{
 		return block.getMaterial();
 	}
+
+	private BlockProxy()
+	{
+	}
 }

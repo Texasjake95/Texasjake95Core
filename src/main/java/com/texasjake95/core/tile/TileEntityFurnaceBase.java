@@ -140,7 +140,7 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer p_70300_1_)
+	public boolean isUseableByPlayer(EntityPlayer player)
 	{
 		return true;
 	}
