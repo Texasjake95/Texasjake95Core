@@ -46,7 +46,7 @@ git config push.default current
 
 # preform commit
 git add .
-git commit -q -m "Travis-CI Build Push for SHA: Texasjake95/Texasjake95Core@$(getSHA)"
+git commit -q -m "Travis-CI Build Push for SHA: Texasjake95/Texasjake95Core@$TRAVIS_COMMIT"
 
 # push commit
 git push -q
