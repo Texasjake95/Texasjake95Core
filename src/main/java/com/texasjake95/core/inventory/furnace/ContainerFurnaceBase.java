@@ -11,7 +11,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
 
-import com.texasjake95.core.proxy.inventory.PlayerInventoryProxy;
+import com.texasjake95.core.proxy.entity.player.PlayerInventoryProxy;
 
 public class ContainerFurnaceBase extends Container {
 

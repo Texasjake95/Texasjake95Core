@@ -5,3 +5,6 @@ rm -rf maven-repo
 
 # pull the maven repo from git
 git clone https://Texasjake95@github.com/Texasjake95/maven-repo.git ./maven-repo -v
+
+# Create commit log
+git log > commit.log

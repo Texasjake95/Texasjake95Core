@@ -1,12 +1,11 @@
 package com.texasjake95.core.addon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.ShapedRecipeHandler;
+import codechicken.nei.recipe.ShapelessRecipeHandler;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -14,38 +13,13 @@ import net.minecraft.item.crafting.IRecipe;
 
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
-public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
+public class ShapelessDamageRecipeHandler extends ShapelessRecipeHandler {
 
-	public class CachedShapelessDamageRecipe extends CachedRecipe {
-
-		public ArrayList<PositionedStack> ingredients;
-		public PositionedStack result;
-
-		public CachedShapelessDamageRecipe()
-		{
-			this.ingredients = new ArrayList<PositionedStack>();
-		}
-
-		public CachedShapelessDamageRecipe(ItemStack output)
-		{
-			this();
-			this.setResult(output);
-		}
-
-		public CachedShapelessDamageRecipe(List<?> input, ItemStack output)
-		{
-			this(output);
-			this.setIngredients(input);
-		}
-
-		public CachedShapelessDamageRecipe(Object[] input, ItemStack output)
-		{
-			this(Arrays.asList(input), output);
-		}
+	public class CachedShapelessDamageRecipe extends CachedShapelessRecipe {
 
 		public CachedShapelessDamageRecipe(ShapelessDamageRecipe recipe)
 		{
-			this(recipe.getRecipeOutput());
+			super(recipe.getRecipeOutput());
 			this.setIngredients(recipe);
 		}
 
@@ -55,36 +29,12 @@ public class ShapelessDamageRecipeHandler extends ShapedRecipeHandler {
 			return this.getCycledIngredients(ShapelessDamageRecipeHandler.this.cycleticks / 20, this.ingredients);
 		}
 
-		@Override
-		public PositionedStack getResult()
-		{
-			return this.result;
-		}
-
-		public void setIngredients(List<?> items)
-		{
-			this.ingredients.clear();
-			for (int ingred = 0; ingred < items.size(); ingred++)
-			{
-				PositionedStack stack = new PositionedStack(items.get(ingred), 25 + ShapelessDamageRecipeHandler.this.stackorder[ingred][0] * 18, 6 + ShapelessDamageRecipeHandler.this.stackorder[ingred][1] * 18);
-				stack.setMaxSize(1);
-				this.ingredients.add(stack);
-			}
-		}
-
 		public void setIngredients(ShapelessDamageRecipe recipe)
 		{
 			ArrayList<ItemStack> items = recipe.recipeItems;
 			this.setIngredients(items);
 		}
-
-		public void setResult(ItemStack output)
-		{
-			this.result = new PositionedStack(output, 119, 24);
-		}
 	}
-
-	public int[][] stackorder = new int[][] { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { 0, 2 }, { 1, 2 }, { 2, 0 }, { 2, 1 }, { 2, 2 } };
 
 	@Override
 	public String getRecipeName()

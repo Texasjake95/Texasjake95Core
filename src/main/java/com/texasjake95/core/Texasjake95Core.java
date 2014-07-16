@@ -36,9 +36,18 @@ import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 @Mod(modid = CoreInfo.modId, name = CoreInfo.modName, dependencies = "", version = CoreInfo.modVersion, guiFactory = "com.texasjake95.core.config.client.GuiConfigFactory")
 public class Texasjake95Core {
 
+	/**
+	 * The Instance of the Mod.
+	 */
 	@Instance(CoreInfo.modId)
 	public static Texasjake95Core INSTANCE;
+	/**
+	 * A constant that enables printing of debuging information.
+	 */
 	public static final boolean isTesting = false;
+	/**
+	 * The proxy used by the mod.
+	 */
 	@SidedProxy(clientSide = "com.texasjake95.core.client.TxCoreClientProxy", serverSide = "com.texasjake95.core.TxCoreCommonProxy")
 	public static TxCoreCommonProxy proxy;
 

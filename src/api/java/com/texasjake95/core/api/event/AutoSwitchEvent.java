@@ -9,8 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * This is an event that is fired by the auto switcher tick handler to see if there is anything
- * preventing the tool from switching<br>
- * This Event is fired in the {@link MinecraftForge#EVENT_BUS}
+ * preventing the tool from switching.<br>
+ * This Event is fired in the {@link MinecraftForge#EVENT_BUS}<br>
+ * This Event can be canceled
  *
  * @author Texasjake95
  *
@@ -18,6 +19,11 @@ import net.minecraft.entity.player.EntityPlayer;
 @Cancelable
 public class AutoSwitchEvent extends PlayerEvent {
 
+	/**
+	 *
+	 * @param player
+	 *            the player that is having the items switched
+	 */
 	public AutoSwitchEvent(EntityPlayer player)
 	{
 		super(player);

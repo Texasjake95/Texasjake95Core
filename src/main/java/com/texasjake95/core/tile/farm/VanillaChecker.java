@@ -59,4 +59,20 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 	{
 		return false;
 	}
+
+	@Override
+	public void breakBlock(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
+	{
+		if (block == Blocks.cactus || block == Blocks.reeds)
+			for (int i = 2; i >= 1; i--)
+			{
+				world.playAuxSFXAtEntity(null, 2001, x, y + i, z, Block.getIdFromBlock(block) + (meta << 12));
+				world.setBlockToAir(x, y, z);
+			}
+		if (block == Blocks.pumpkin || block == Blocks.melon_block)
+		{
+			world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
+			world.setBlockToAir(x, y, z);
+		}
+	}
 }

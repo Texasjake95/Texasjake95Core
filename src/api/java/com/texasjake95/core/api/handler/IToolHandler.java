@@ -4,6 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.texasjake95.core.api.impl.vanilla.VanillaToolHandler;
+
 /**
  * This interface is used to help the auto switcher determine the if the tool is appropriate
  * for the current block the player is pointing at. <br>
@@ -11,6 +13,7 @@ import net.minecraft.item.ItemStack;
  * This interface can be changed on request, if the request is reasonable and a idea of how the
  * call is fired is provided
  *
+ * @see VanillaToolHandler
  * @author Texasjake95
  *
  */

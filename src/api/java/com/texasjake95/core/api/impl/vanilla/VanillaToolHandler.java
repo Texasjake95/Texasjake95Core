@@ -8,6 +8,12 @@ import net.minecraft.item.ItemStack;
 import com.texasjake95.core.api.handler.IToolHandler;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
+/**
+ * The default implementation of {@link IToolHandler}.
+ *
+ * @author Texasjake95
+ *
+ */
 public class VanillaToolHandler implements IToolHandler {
 
 	@Override

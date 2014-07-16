@@ -9,10 +9,17 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.TxCoreCommonProxy;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.items.ItemToolBase;
 
+/**
+ * {@link Texasjake95Core}'s implementation of {@link IConfigureNEI}.
+ *
+ * @author Texasjake95
+ *
+ */
 public class NEIConfig implements IConfigureNEI {
 
 	@Override

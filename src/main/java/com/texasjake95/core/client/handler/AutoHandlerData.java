@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.config.CoreConfig;
-import com.texasjake95.core.proxy.entity.PlayerProxy;
+import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
 import com.texasjake95.core.proxy.item.ItemProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
@@ -130,7 +130,7 @@ public class AutoHandlerData {
 
 	public float getBreakSpeed(EntityClientPlayerMP player)
 	{
-		return PlayerProxy.getBreakSpeed(player, this.block, true, this.blockMeta, this.x, this.y, this.z);
+		return EntityPlayerProxy.getBreakSpeed(player, this.block, true, this.blockMeta, this.x, this.y, this.z);
 	}
 
 	public int getHarvestLevel(ItemStack stack)

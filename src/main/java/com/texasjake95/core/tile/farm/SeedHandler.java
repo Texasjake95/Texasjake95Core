@@ -111,4 +111,16 @@ public class SeedHandler {
 		seedList.add(seedMeta);
 		seeds.put(seed, seedList);
 	}
+
+	public static void breakBlock(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
+	{
+		IHarvester harvest = harvestRegistry.get(block);
+		if (harvest != null)
+		{
+			harvest.breakBlock(player, world, x, y, z, block, meta);
+			return;
+		}
+		world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
+		world.setBlockToAir(x, y, z);
+	}
 }

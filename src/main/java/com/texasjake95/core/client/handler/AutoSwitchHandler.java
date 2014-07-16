@@ -28,8 +28,9 @@ import com.texasjake95.core.proxy.client.MinecraftProxy;
 import com.texasjake95.core.proxy.client.entity.ClientPlayerProxy;
 import com.texasjake95.core.proxy.client.settings.GameSettingsProxy;
 import com.texasjake95.core.proxy.entity.EntityProxy;
-import com.texasjake95.core.proxy.entity.PlayerProxy;
-import com.texasjake95.core.proxy.inventory.PlayerInventoryProxy;
+import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
+import com.texasjake95.core.proxy.entity.player.PlayerInventoryProxy;
+import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 import com.texasjake95.core.proxy.world.WorldProxy;
 
 // TODO Create Item Handler for to help tools decide if they are appropriate
@@ -97,7 +98,7 @@ public class AutoSwitchHandler extends TickHandler {
 	{
 		if (tickStart)
 		{
-			if (PlayerProxy.isCreative(player))
+			if (EntityPlayerProxy.isCreative(player))
 				return;
 			World world = EntityProxy.getWorld(player);
 			// if (CoreConfig.getInstance().autoSwitch) // Config switch
@@ -122,7 +123,7 @@ public class AutoSwitchHandler extends TickHandler {
 							// Cycle through out all the items
 							for (int i = fakeCurrentItem; i < hotBarSize; i++)
 							{
-								ItemStack stack = PlayerInventoryProxy.getStackInSlot(player, i);
+								ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i);
 								if (tools.canAutoSwtichTo(stack))
 									if (this.data.canToolHarvest(tools, stack))
 									{
@@ -137,7 +138,7 @@ public class AutoSwitchHandler extends TickHandler {
 							// Cycle through out all the items
 							for (int i = 0; i <= fakeCurrentItem; i++)
 							{
-								ItemStack stack = PlayerInventoryProxy.getStackInSlot(player, i);
+								ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i);
 								if (tools.canAutoSwtichTo(stack))
 									if (this.data.canToolHarvest(tools, stack))
 									{
@@ -152,7 +153,7 @@ public class AutoSwitchHandler extends TickHandler {
 							// Collect all slots that match the highest
 							// strVsBlock
 							for (int i = fakeCurrentItem; i < this.data.hotBarSize; i++)
-								if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
+								if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
 								{
 									PlayerInventoryProxy.setCurrentItemSlot(player, i);
 									ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
@@ -163,7 +164,7 @@ public class AutoSwitchHandler extends TickHandler {
 							// Collect all slots that match the highest
 							// strVsBlock
 							for (int i = 0; i <= fakeCurrentItem; i++)
-								if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
+								if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
 								{
 									PlayerInventoryProxy.setCurrentItemSlot(player, i);
 									ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
@@ -178,7 +179,7 @@ public class AutoSwitchHandler extends TickHandler {
 							if (this.data.bestFloat <= 1.0F)
 							{
 								for (int i = fakeCurrentItem; i < hotBarSize; i++)
-									if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
+									if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
 									{
 										PlayerInventoryProxy.setCurrentItemSlot(player, i);
 										ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
@@ -191,7 +192,7 @@ public class AutoSwitchHandler extends TickHandler {
 									}
 								if (this.data.bestFloat != -1.0F)
 									for (int i = 0; i <= fakeCurrentItem; i++)
-										if (tools.canAutoSwtichTo(PlayerInventoryProxy.getStackInSlot(player, i)))
+										if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
 										{
 											PlayerInventoryProxy.setCurrentItemSlot(player, i);
 											ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
@@ -208,7 +209,7 @@ public class AutoSwitchHandler extends TickHandler {
 							if (this.data.bestFloat != -1.0F)
 								for (int slot : bestSlots)
 								{
-									ItemStack stack = PlayerInventoryProxy.getStackInSlot(player, slot);
+									ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), slot);
 									if (stack != null)
 									{
 										double damage = tools.getDurability(stack);
@@ -244,7 +245,7 @@ public class AutoSwitchHandler extends TickHandler {
 		}
 		else
 		{
-			if (PlayerProxy.isCreative(player))
+			if (EntityPlayerProxy.isCreative(player))
 				return;
 			if (!GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())) && this.currentItem > -1 && this.shouldSwitchBack)
 			{

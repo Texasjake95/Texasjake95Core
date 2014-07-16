@@ -2,7 +2,7 @@ package com.texasjake95.core.proxy;
 
 import net.minecraft.block.material.Material;
 
-public class MaterailProxy {
+public class MaterialProxy {
 
 	public static boolean isToolNotRequired(Material material)
 	{

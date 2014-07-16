@@ -148,6 +148,7 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 					tile.getSeedInv().addItemStack(stack);
 				InventoryUtils.addToInventory(tile, stack, ForgeDirection.UNKNOWN);
 			}
+			SeedHandler.breakBlock(player, world, x, y, z, block, meta);
 			ItemIntPair pair = SeedHandler.getSeed(block, meta);
 			if (pair != null)
 			{

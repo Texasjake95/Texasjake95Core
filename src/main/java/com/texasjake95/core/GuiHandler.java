@@ -11,6 +11,12 @@ import com.texasjake95.core.inventory.furnace.ContainerFurnaceBase;
 import com.texasjake95.core.proxy.world.WorldProxy;
 import com.texasjake95.core.tile.TileEntityFurnaceBase;
 
+/**
+ * {@link Texasjake95Core}'s implementation of {@link IGuiHandler}.
+ *
+ * @author Texasjake95
+ *
+ */
 public class GuiHandler implements IGuiHandler {
 
 	@Override

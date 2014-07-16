@@ -11,14 +11,31 @@ import com.texasjake95.core.api.handler.IToolHandler;
 import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.api.impl.vanilla.VanillaToolHandler;
 import com.texasjake95.core.proxy.BlockProxy;
-import com.texasjake95.core.proxy.MaterailProxy;
+import com.texasjake95.core.proxy.MaterialProxy;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
 
-final class ToolHandlerRegistry implements IToolRegistry {
+/**
+ * The Default implementation of {@link IToolRegistry}.
+ *
+ * @author Texasjake95
+ *
+ */
+public final class ToolHandlerRegistry implements IToolRegistry {
 
+	/**
+	 * the default implementation of {@link IToolHandler}.
+	 */
 	private static final IToolHandler DEFAULT = new VanillaToolHandler();
+	/**
+	 * The active instance of ToolHandlerRegistry.
+	 */
 	private static ToolHandlerRegistry instance = null;
 
+	/**
+	 * Create or retrieve the active instance of ToolHandlerRegistry.
+	 *
+	 * @return the active instance of ToolHandlerRegistry
+	 */
 	static ToolHandlerRegistry getInstance()
 	{
 		if (instance == null)
@@ -26,10 +43,22 @@ final class ToolHandlerRegistry implements IToolRegistry {
 		return instance;
 	}
 
-	private HashMap<String, IToolHandler> damageableHandler = new HashMap<String, IToolHandler>();
-	private HashMap<String, Boolean> damageMatters = new HashMap<String, Boolean>();
-	private HashMap<String, HashMap<Integer, IToolHandler>> nonDamageableHandler = new HashMap<String, HashMap<Integer, IToolHandler>>();
+	/**
+	 * The handlers that are damageable.
+	 */
+	private HashMap<Item, IToolHandler> damageableHandler = new HashMap<Item, IToolHandler>();
+	/**
+	 * Does the damage matter for the Item.
+	 */
+	private HashMap<Item, Boolean> damageMatters = new HashMap<Item, Boolean>();
+	/**
+	 * The handlers that are not damageable.
+	 */
+	private HashMap<Item, HashMap<Integer, IToolHandler>> nonDamageableHandler = new HashMap<Item, HashMap<Integer, IToolHandler>>();
 
+	/**
+	 * So no one initializes this again.
+	 */
 	private ToolHandlerRegistry()
 	{
 		this.registerToolHandler(DEFAULT, new ItemStack(Items.diamond_pickaxe), false);
@@ -61,7 +90,7 @@ final class ToolHandlerRegistry implements IToolRegistry {
 	public boolean canHarvest(Block block, int blockMeta, ItemStack stack)
 	{
 		if (stack == null)
-			return MaterailProxy.isToolNotRequired(BlockProxy.getMaterial(block));
+			return MaterialProxy.isToolNotRequired(BlockProxy.getMaterial(block));
 		return this.getHandler(stack).canHarvest(block, blockMeta, stack);
 	}
 
@@ -117,17 +146,17 @@ final class ToolHandlerRegistry implements IToolRegistry {
 	@Override
 	public void registerToolHandler(IToolHandler handler, Item item, int itemMeta, boolean doesDamageMatters)
 	{
-		this.damageMatters.put(Item.itemRegistry.getNameForObject(item), doesDamageMatters);
+		this.damageMatters.put(item, doesDamageMatters);
 		if (doesDamageMatters)
 		{
 			HashMap<Integer, IToolHandler> metaHandlers = this.nonDamageableHandler.get(item);
 			if (metaHandlers == null)
 				metaHandlers = new HashMap<Integer, IToolHandler>();
 			metaHandlers.put(itemMeta, handler);
-			this.nonDamageableHandler.put(Item.itemRegistry.getNameForObject(item), metaHandlers);
+			this.nonDamageableHandler.put(item, metaHandlers);
 		}
 		else
-			this.damageableHandler.put(Item.itemRegistry.getNameForObject(item), handler);
+			this.damageableHandler.put(item, handler);
 	}
 
 	@Override

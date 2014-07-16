@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+contains()
+{
+	result="false"
+	if [[ "$1" =~ "$2" ]]
+	then
+		result="true"
+	else
+		result="false"
+	fi
+	echo "$result"
+	
+}
+
+getSHA()
+{
+	sha=""
+	while read line
+		do
+			if [[ $(contains "$line" "commit") == "true" ]]
+			then
+				sha="${line:7}"
+				break
+			fi
+		done < commit.log
+	echo "$sha"
+}
+
 # run gradle
 ./gradlew uploadArchives -Pfilesmaven="file:maven-repo/" -S
 
@@ -19,7 +46,7 @@ git config push.default current
 
 # preform commit
 git add .
-git commit -q -m "Travis-CI Build Push"
+git commit -q -m "Travis-CI Build Push for SHA: Texasjake95/Texasjake95Core@$(getSHA)"
 
 # push commit
 git push -q
