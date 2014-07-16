@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 public abstract class TileEntityInv extends TileEntityCore implements IInventory {
 
@@ -68,15 +68,15 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 
 	protected IInventory getChestInv(World world, int x, int y, int z, Block block)
 	{
-		IInventory inv = (IInventory) WorldProxy.getTileEntity(world, x, y, z);
-		if (WorldProxy.getBlock(world, x - 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x - 1, y, z), inv);
-		if (WorldProxy.getBlock(world, x + 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x + 1, y, z), inv);
-		if (WorldProxy.getBlock(world, x, y, z - 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z - 1), inv);
-		if (WorldProxy.getBlock(world, x, y, z + 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) WorldProxy.getTileEntity(world, x, y, z + 1), inv);
+		IInventory inv = (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z);
+		if (IBlockAccessProxy.getBlock(world, x - 1, y, z) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x - 1, y, z), inv);
+		if (IBlockAccessProxy.getBlock(world, x + 1, y, z) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x + 1, y, z), inv);
+		if (IBlockAccessProxy.getBlock(world, x, y, z - 1) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z - 1), inv);
+		if (IBlockAccessProxy.getBlock(world, x, y, z + 1) == block)
+			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z + 1), inv);
 		return inv;
 	}
 
@@ -137,10 +137,10 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 	{
 		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
 		{
-			TileEntity tile = WorldProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+			TileEntity tile = IBlockAccessProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 			if (tile instanceof TileEntityChest)
 			{
-				Block chest = WorldProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+				Block chest = IBlockAccessProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 				IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
 				this.pushToInv(temp, d);
 			}

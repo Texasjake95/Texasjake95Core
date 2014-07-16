@@ -14,7 +14,7 @@ import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
 import com.texasjake95.core.proxy.item.ItemProxy;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 /**
  * This class holds the data for {@link AutoSwitchHandler}. <br>
@@ -45,8 +45,8 @@ public class AutoHandlerData {
 		this.x = mop.blockX;
 		this.y = mop.blockY;
 		this.z = mop.blockZ;
-		this.block = WorldProxy.getBlock(world, this.x, this.y, this.z);
-		this.blockMeta = WorldProxy.getBlockMetadata(world, this.x, this.y, this.z);
+		this.block = IBlockAccessProxy.getBlock(world, this.x, this.y, this.z);
+		this.blockMeta = IBlockAccessProxy.getBlockMetadata(world, this.x, this.y, this.z);
 		this.tool = this.block.getHarvestTool(this.blockMeta);
 		this.lowestHarvestLevel = Integer.MAX_VALUE;
 	}

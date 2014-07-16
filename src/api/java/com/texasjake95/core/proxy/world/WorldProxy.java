@@ -2,7 +2,6 @@ package com.texasjake95.core.proxy.world;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -11,85 +10,12 @@ import net.minecraft.world.World;
  * This class is used as a proxy to call code for Minecraft's {@link World} due to the nature
  * of the changing names of methods.<br>
  * The names of the methods in this class should almost never change, that being said the
- * parameters may change
+ * parameters may change to match Minecraft's methods
  *
  * @author Texasjake95
  *
  */
-public class WorldProxy {
-
-	/**
-	 * Get the {@link Block} located at the requested location.
-	 *
-	 * @param world
-	 *            the instance of the {@link World}
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 * @param z
-	 *            z coordinate
-	 * @return the {@link Block} located at the requested location
-	 */
-	public static Block getBlock(World world, int x, int y, int z)
-	{
-		return world.getBlock(x, y, z);
-	}
-
-	/**
-	 * Get the metadata of the {@link Block} located at the requested location.
-	 *
-	 * @param world
-	 *            the instance of the {@link World}
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 * @param z
-	 *            z coordinate
-	 * @return the metadata of the {@link Block} located at the requested location
-	 */
-	public static int getBlockMetadata(World world, int x, int y, int z)
-	{
-		return world.getBlockMetadata(x, y, z);
-	}
-
-	/**
-	 * Get the {@link TileEntity} located at the requested location.
-	 *
-	 * @param world
-	 *            the instance of the {@link World}
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 * @param z
-	 *            z coordinate
-	 * @return the {@link TileEntity} located at the requested location
-	 */
-	public static TileEntity getTileEntity(World world, int x, int y, int z)
-	{
-		return world.getTileEntity(x, y, z);
-	}
-
-	/**
-	 * Returns true if the block at the requested location is empty or is considered an air.
-	 *
-	 * @param world
-	 *            the instance of the {@link World}
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 * @param z
-	 *            z coordinate
-	 * @return true if the {@link Block} located at the requested location is empty or is
-	 *         considered an air block
-	 */
-	public static boolean isAirBlock(World world, int x, int y, int z)
-	{
-		return world.isAirBlock(x, y, z);
-	}
+public class WorldProxy extends IBlockAccessProxy {
 
 	/**
 	 * Used to see if one of the blocks next to you or your block is getting power from a
@@ -144,9 +70,9 @@ public class WorldProxy {
 	 * @param world
 	 *            the instance of the {@link World}
 	 * @param vec1
-	 *            ''
+	 *            TODO
 	 * @param vec2
-	 *            ''
+	 *            TODO
 	 * @return The {@link MovingObjectPosition} where the {@link Vec3}s collided
 	 */
 	public static MovingObjectPosition rayTraceBlocks(World world, Vec3 vec1, Vec3 vec2)

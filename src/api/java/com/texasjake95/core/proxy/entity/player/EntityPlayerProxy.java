@@ -6,9 +6,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.MovingObjectPosition;
 
-import com.texasjake95.core.proxy.entity.EntityProxy;
+import com.texasjake95.core.proxy.entity.EntityLivingProxy;
 
-public class EntityPlayerProxy extends EntityProxy {
+public class EntityPlayerProxy extends EntityLivingProxy {
 
 	public static float getBreakSpeed(EntityPlayer player, Block block, boolean idk, int blockMeta, int x, int y, int z)
 	{

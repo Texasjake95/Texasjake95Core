@@ -22,7 +22,7 @@ import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.pair.BlockIntPair;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.proxy.item.ItemStackProxy;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.tile.Quadrant;
 import com.texasjake95.core.tile.TileEntityFarm;
 
@@ -62,8 +62,8 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 		int offsetZ = d.offsetZ;
 		for (int i = 0; i < 10; i++)
 		{
-			Block block = WorldProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
-			int meta = WorldProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
+			Block block = IBlockAccessProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
+			int meta = IBlockAccessProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
 			if (this.isValidBlock(block, meta))
 			{
 				offsetX += d.offsetX;
@@ -110,9 +110,9 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	@Override
 	protected void handleBlock(World world, int x, int y, int z, TileEntityFarm tile)
 	{
-		Block block = WorldProxy.getBlock(world, x, y, z);
-		int meta = WorldProxy.getBlockMetadata(world, x, y, z);
-		if (WorldProxy.isAirBlock(world, x, y, z))
+		Block block = IBlockAccessProxy.getBlock(world, x, y, z);
+		int meta = IBlockAccessProxy.getBlockMetadata(world, x, y, z);
+		if (IBlockAccessProxy.isAirBlock(world, x, y, z))
 		{
 			HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 			if (columnMap != null)

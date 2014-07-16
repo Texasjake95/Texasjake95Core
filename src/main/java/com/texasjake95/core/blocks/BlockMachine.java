@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.lib.utils.InventoryUtils;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.tile.FurnaceTest;
 import com.texasjake95.core.tile.TileEntityFarm;
 import com.texasjake95.core.tile.TileEntityFurnaceBase;
@@ -52,7 +52,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@SuppressWarnings("rawtypes")
 	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB mask, List list, Entity entity)
 	{
-		switch (WorldProxy.getBlockMetadata(world, x, y, z))
+		switch (IBlockAccessProxy.getBlockMetadata(world, x, y, z))
 		{
 			case 0:
 				this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.5F, 1.0F);
@@ -69,7 +69,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta)
 	{
-		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		TileEntity tile = IBlockAccessProxy.getTileEntity(world, x, y, z);
 		boolean isValid = false;
 		if (tile instanceof IInventory)
 		{
@@ -167,7 +167,7 @@ public class BlockMachine extends Block implements ITileEntityProvider {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float xOffset, float yOffset, float zOffset)
 	{
-		TileEntity tile = WorldProxy.getTileEntity(world, x, y, z);
+		TileEntity tile = IBlockAccessProxy.getTileEntity(world, x, y, z);
 		if (player.isSneaking())
 			return false;
 		if (!world.isRemote)

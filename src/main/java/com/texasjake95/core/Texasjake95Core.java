@@ -25,6 +25,7 @@ import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.chunkloading.TicketHelper;
 import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.lib.MappingHelper;
+import com.texasjake95.core.proxy.entity.EntityLivingProxy;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
@@ -94,6 +95,7 @@ public class Texasjake95Core {
 		proxy.registerRecipes();
 		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
+		EntityLivingProxy.getPostion(null, 0);
 	}
 
 	@EventHandler

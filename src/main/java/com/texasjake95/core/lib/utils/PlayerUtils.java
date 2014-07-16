@@ -40,7 +40,7 @@ public class PlayerUtils {
 	public static boolean canAddToInv(EntityPlayer player, EntityItem item)
 	{
 		EntityItemPickupEvent event = new EntityItemPickupEvent(player, item);
-		if (MinecraftForge.EVENT_BUS.post(event) || (event.hasResult() && event.getResult() == Result.DENY))
+		if (MinecraftForge.EVENT_BUS.post(event) || event.hasResult() && event.getResult() == Result.DENY)
 			return false;
 		if (InventoryUtils.canAddToInv(new InvRange(player.inventory, 36), item.getEntityItem()))
 			return true;

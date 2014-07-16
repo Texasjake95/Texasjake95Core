@@ -33,7 +33,7 @@ import com.texasjake95.core.lib.utils.BlockUtils;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.network.CorePacketHandler;
 import com.texasjake95.core.network.message.MessageBlockRenderUpdate;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.tile.Quadrant;
 import com.texasjake95.core.tile.TileEntityQuarry;
 
@@ -68,12 +68,12 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 	{
 		if (this.height >= tile.yCoord)
 			this.resetHeight = true;
-		Block block = WorldProxy.getBlock(world, x, y, z);
+		Block block = IBlockAccessProxy.getBlock(world, x, y, z);
 		if (block instanceof BlockLiquid || block instanceof IFluidBlock || block == Blocks.air)
 		{
 			this.increase = true;
 			this.breakIndex = 0;
-			block = WorldProxy.getBlock(world, x, y - 1, z);
+			block = IBlockAccessProxy.getBlock(world, x, y - 1, z);
 			if (block == Blocks.bedrock)
 				this.resetHeight = true;
 			return;
@@ -89,7 +89,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			this.breakIndex = 0;
 			CorePacketHandler.INSTANCE.sendToAllAround(new MessageBlockRenderUpdate(block, x, y, z, 10), world.provider.dimensionId, x, y, z, 10D);
 			this.increase = true;
-			int meta = WorldProxy.getBlockMetadata(world, x, y, z);
+			int meta = IBlockAccessProxy.getBlockMetadata(world, x, y, z);
 			EntityPlayer player = Texasjake95Core.proxy.getTXPlayer((WorldServer) world, x, y, z).get();
 			ArrayList<ItemStack> returnList = BlockUtils.getDrops(player, world, x, y, z, block, meta);
 			double d = World.MAX_ENTITY_RADIUS;
@@ -102,7 +102,7 @@ public class QuadrantQuarry extends Quadrant<TileEntityQuarry> {
 			}
 			for (ItemStack stack : returnList)
 				InventoryUtils.addToInventory(tile, stack, ForgeDirection.UNKNOWN);
-			block = WorldProxy.getBlock(world, x, y - 1, z);
+			block = IBlockAccessProxy.getBlock(world, x, y - 1, z);
 			if (block.getBlockHardness(world, x, y - 1, z) == -1)
 				this.resetHeight = true;
 		}

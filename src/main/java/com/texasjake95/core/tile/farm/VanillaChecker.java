@@ -16,9 +16,25 @@ import com.texasjake95.core.api.farm.IHarvester;
 import com.texasjake95.core.api.farm.ISeedProvider;
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.utils.BlockUtils;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider {
+
+	@Override
+	public void breakBlock(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
+	{
+		if (block == Blocks.cactus || block == Blocks.reeds)
+			for (int i = 2; i >= 1; i--)
+			{
+				world.playAuxSFXAtEntity(null, 2001, x, y + i, z, Block.getIdFromBlock(block) + (meta << 12));
+				world.setBlockToAir(x, y, z);
+			}
+		if (block == Blocks.pumpkin || block == Blocks.melon_block)
+		{
+			world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
+			world.setBlockToAir(x, y, z);
+		}
+	}
 
 	@Override
 	public ArrayList<ItemStack> getDrops(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
@@ -27,7 +43,7 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 		if (block == Blocks.cactus || block == Blocks.reeds)
 			for (int i = 2; i >= 1; i--)
 			{
-				if (WorldProxy.isAirBlock(world, x, y + i, z))
+				if (IBlockAccessProxy.isAirBlock(world, x, y + i, z))
 					continue;
 				for (ItemStack stack : BlockUtils.getDrops(player, world, x, y + i, z, block, meta))
 					returnList.add(stack);
@@ -48,7 +64,7 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 	public boolean isGrown(Block block, int meta, World world, int x, int y, int z)
 	{
 		if (block == Blocks.cactus || block == Blocks.reeds)
-			return !WorldProxy.isAirBlock(world, x, y + 1, z);
+			return !IBlockAccessProxy.isAirBlock(world, x, y + 1, z);
 		if (block == Blocks.pumpkin || block == Blocks.melon_block)
 			return true;
 		return false;
@@ -58,21 +74,5 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 	public boolean isSeed(Item item, int meta)
 	{
 		return false;
-	}
-
-	@Override
-	public void breakBlock(EntityPlayer player, World world, int x, int y, int z, Block block, int meta)
-	{
-		if (block == Blocks.cactus || block == Blocks.reeds)
-			for (int i = 2; i >= 1; i--)
-			{
-				world.playAuxSFXAtEntity(null, 2001, x, y + i, z, Block.getIdFromBlock(block) + (meta << 12));
-				world.setBlockToAir(x, y, z);
-			}
-		if (block == Blocks.pumpkin || block == Blocks.melon_block)
-		{
-			world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
-			world.setBlockToAir(x, y, z);
-		}
 	}
 }

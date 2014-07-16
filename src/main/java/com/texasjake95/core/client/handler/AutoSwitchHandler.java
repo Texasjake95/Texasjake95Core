@@ -25,13 +25,13 @@ import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.api.impl.CoreAPI;
 import com.texasjake95.core.lib.handler.event.TickHandler;
 import com.texasjake95.core.proxy.client.MinecraftProxy;
-import com.texasjake95.core.proxy.client.entity.ClientPlayerProxy;
+import com.texasjake95.core.proxy.client.entity.EntityClientPlayerMPProxy;
 import com.texasjake95.core.proxy.client.settings.GameSettingsProxy;
 import com.texasjake95.core.proxy.entity.EntityProxy;
 import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
 import com.texasjake95.core.proxy.entity.player.PlayerInventoryProxy;
 import com.texasjake95.core.proxy.inventory.IInventoryProxy;
-import com.texasjake95.core.proxy.world.WorldProxy;
+import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 // TODO Create Item Handler for to help tools decide if they are appropriate
 // i.e. determine durability % able to harvest block
@@ -112,7 +112,7 @@ public class AutoSwitchHandler extends TickHandler {
 						MovingObjectPosition mop = MinecraftProxy.getObjectMouseOver();
 						if (mop != null)
 						{
-							if (WorldProxy.isAirBlock(world, mop.blockX, mop.blockY, mop.blockZ))
+							if (IBlockAccessProxy.isAirBlock(world, mop.blockX, mop.blockY, mop.blockZ))
 								return;
 							this.data.reset(world, mop);
 							int hotBarSize = PlayerInventoryProxy.getHotBarSize();
@@ -230,7 +230,7 @@ public class AutoSwitchHandler extends TickHandler {
 								System.out.println(this.data.block + ":" + this.data.blockMeta);
 								System.out.println("Setting slot to " + this.data.bestSlot);
 							}
-							ClientPlayerProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
+							EntityClientPlayerMPProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
 							this.data.clear();
 						}
 					}
@@ -251,7 +251,7 @@ public class AutoSwitchHandler extends TickHandler {
 			{
 				this.tickCount = 0;
 				PlayerInventoryProxy.setCurrentItemSlot(player, this.currentItem);
-				ClientPlayerProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
+				EntityClientPlayerMPProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
 				this.currentItem = -1;
 				this.shouldSwitchBack = false;
 			}
