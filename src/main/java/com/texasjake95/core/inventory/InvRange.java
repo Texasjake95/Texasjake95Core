@@ -4,7 +4,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import com.texasjake95.commons.util.Range;
-import com.texasjake95.core.proxy.inventory.IInventoryProxy;
 
 public class InvRange {
 
@@ -37,7 +36,7 @@ public class InvRange {
 
 	public ItemStack getStack(int slot)
 	{
-		return IInventoryProxy.getStackInSlot(this.inv, slot);
+		return this.inv.getStackInSlot(slot);
 	}
 
 	public void setItem(int slot, ItemStack stack)

@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import com.texasjake95.core.network.IPacketHandler;
-import com.texasjake95.core.proxy.world.WorldProxy;
 
 public abstract class TileEntityCore extends TileEntity implements IPacketHandler {
 
@@ -126,7 +125,7 @@ public abstract class TileEntityCore extends TileEntity implements IPacketHandle
 
 	public void updateRedstone()
 	{
-		this.hasRedStone = WorldProxy.isBlockIndirectlyGettingPowered(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		this.hasRedStone = this.worldObj.isBlockIndirectlyGettingPowered(this.xCoord, this.yCoord, this.zCoord);
 	}
 
 	@Override

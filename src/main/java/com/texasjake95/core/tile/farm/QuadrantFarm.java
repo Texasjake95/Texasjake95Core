@@ -21,8 +21,6 @@ import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.pair.BlockIntPair;
 import com.texasjake95.core.lib.utils.InventoryUtils;
-import com.texasjake95.core.proxy.item.ItemStackProxy;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.tile.Quadrant;
 import com.texasjake95.core.tile.TileEntityFarm;
 
@@ -62,8 +60,8 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 		int offsetZ = d.offsetZ;
 		for (int i = 0; i < 10; i++)
 		{
-			Block block = IBlockAccessProxy.getBlock(world, x + offsetX, y + offsetY, z + offsetZ);
-			int meta = IBlockAccessProxy.getBlockMetadata(world, x + offsetX, y + offsetY, z + offsetZ);
+			Block block = world.getBlock(x + offsetX, y + offsetY, z + offsetZ);
+			int meta = world.getBlockMetadata(x + offsetX, y + offsetY, z + offsetZ);
 			if (this.isValidBlock(block, meta))
 			{
 				offsetX += d.offsetX;
@@ -110,9 +108,9 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 	@Override
 	protected void handleBlock(World world, int x, int y, int z, TileEntityFarm tile)
 	{
-		Block block = IBlockAccessProxy.getBlock(world, x, y, z);
-		int meta = IBlockAccessProxy.getBlockMetadata(world, x, y, z);
-		if (IBlockAccessProxy.isAirBlock(world, x, y, z))
+		Block block = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		if (world.isAirBlock(x, y, z))
 		{
 			HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);
 			if (columnMap != null)
@@ -125,7 +123,7 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 					ItemStack stack = tile.getSeedInv().getStack(item);
 					if (stack != null)
 					{
-						ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
+						stack.tryPlaceItemIntoWorld(player, world, x, y - 1, z, 1, 0, 0, 0);
 						columnMap.remove(this.column);
 						if (columnMap.isEmpty())
 							this.seedMap.remove(this.row);
@@ -154,7 +152,7 @@ public class QuadrantFarm extends Quadrant<TileEntityFarm> {
 			{
 				ItemStack stack = tile.getSeedInv().getStack(pair);
 				if (stack != null)
-					ItemStackProxy.tryPlaceItemIntoWorld(stack, player, world, x, y - 1, z, 1, 0, 0, 0);
+					stack.tryPlaceItemIntoWorld(player, world, x, y - 1, z, 1, 0, 0, 0);
 				else
 				{
 					HashMap<Byte, BlockIntPair> columnMap = this.seedMap.get(this.row);

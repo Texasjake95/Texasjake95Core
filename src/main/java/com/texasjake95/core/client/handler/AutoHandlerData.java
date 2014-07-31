@@ -3,7 +3,7 @@ package com.texasjake95.core.client.handler;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
@@ -12,9 +12,6 @@ import net.minecraft.world.World;
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.config.CoreConfig;
-import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
-import com.texasjake95.core.proxy.item.ItemProxy;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 /**
  * This class holds the data for {@link AutoSwitchHandler}. <br>
@@ -45,8 +42,8 @@ public class AutoHandlerData {
 		this.x = mop.blockX;
 		this.y = mop.blockY;
 		this.z = mop.blockZ;
-		this.block = IBlockAccessProxy.getBlock(world, this.x, this.y, this.z);
-		this.blockMeta = IBlockAccessProxy.getBlockMetadata(world, this.x, this.y, this.z);
+		this.block = world.getBlock(this.x, this.y, this.z);
+		this.blockMeta = world.getBlockMetadata(this.x, this.y, this.z);
 		this.tool = this.block.getHarvestTool(this.blockMeta);
 		this.lowestHarvestLevel = Integer.MAX_VALUE;
 	}
@@ -128,14 +125,14 @@ public class AutoHandlerData {
 		this.bestSlot = 0;
 	}
 
-	public float getBreakSpeed(EntityClientPlayerMP player)
+	public float getBreakSpeed(EntityPlayer player)
 	{
-		return EntityPlayerProxy.getBreakSpeed(player, this.block, true, this.blockMeta, this.x, this.y, this.z);
+		return player.getBreakSpeed(this.block, true, this.blockMeta, this.x, this.y, this.z);
 	}
 
 	public int getHarvestLevel(ItemStack stack)
 	{
-		return stack == null ? -1 : ItemProxy.getHarvestLevel(stack, this.tool);
+		return stack == null ? -1 : stack.getItem().getHarvestLevel(stack, this.tool);
 	}
 
 	public void reset(World world, MovingObjectPosition mop)

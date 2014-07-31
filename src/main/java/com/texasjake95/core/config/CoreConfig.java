@@ -17,7 +17,7 @@ public class CoreConfig extends BaseConfig {
 	}
 
 	public boolean autoSwitch = true;
-	public boolean forceTool = true;
+	public boolean forceTool = false;
 	public boolean useBestTool = true;
 
 	public CoreConfig()
@@ -29,15 +29,19 @@ public class CoreConfig extends BaseConfig {
 	public void initProps()
 	{
 		super.initProps();
-		Property autoSwitchProp = this.forgeConfig.get("auto_switch", "Auto Switch Tool", true);
+		//
+		Property autoSwitchProp = this.forgeConfig.get("auto_switch", "Auto Switch Tool", this.autoSwitch);
 		autoSwitchProp = setComment(autoSwitchProp, "Set this to true for the equipped tool to be switched to the most effective tool on the hot bar");
-		this.autoSwitch = autoSwitchProp.getBoolean(true);
-		Property forceToolProp = this.forgeConfig.get("auto_switch", "Force Tool", true);
+		this.autoSwitch = autoSwitchProp.getBoolean(this.autoSwitch);
+		//
+		Property forceToolProp = this.forgeConfig.get("auto_switch", "Force Tool", this.forceTool);
 		forceToolProp = setComment(forceToolProp, "Force tool usage if it is able to mine block");
-		this.forceTool = forceToolProp.getBoolean(true);
-		Property useBestToolProp = this.forgeConfig.get("auto_switch", "Use Best Tool", true);
+		this.forceTool = forceToolProp.getBoolean(this.forceTool);
+		//
+		Property useBestToolProp = this.forgeConfig.get("auto_switch", "Use Best Tool", this.useBestTool);
 		useBestToolProp = setComment(useBestToolProp, "Use the best tool possible");
-		this.useBestTool = useBestToolProp.getBoolean(true);
+		this.useBestTool = useBestToolProp.getBoolean(this.useBestTool);
+		//
 		this.save();
 	}
 

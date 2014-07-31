@@ -23,14 +23,13 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.furnace.FurnaceBase;
 import com.texasjake95.core.lib.utils.InventoryUtils;
-import com.texasjake95.core.proxy.inventory.IInventoryProxy;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.recipe.IRecipeProvider;
 import com.texasjake95.core.recipe.RecipeProviders;
 
 public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInventory {
 
 	public FurnaceBase furnace;
+	private ForgeDirection[] validChest = new ForgeDirection[] { ForgeDirection.WEST, ForgeDirection.EAST, ForgeDirection.NORTH, ForgeDirection.SOUTH };
 
 	public TileEntityFurnaceBase(int slots, int fuelSlots, int ticksToCook)
 	{
@@ -85,15 +84,10 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 
 	protected IInventory getChestInv(World world, int x, int y, int z, Block block)
 	{
-		IInventory inv = (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z);
-		if (IBlockAccessProxy.getBlock(world, x - 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x - 1, y, z), inv);
-		if (IBlockAccessProxy.getBlock(world, x + 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x + 1, y, z), inv);
-		if (IBlockAccessProxy.getBlock(world, x, y, z - 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z - 1), inv);
-		if (IBlockAccessProxy.getBlock(world, x, y, z + 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z + 1), inv);
+		IInventory inv = (IInventory) world.getTileEntity(x, y, z);
+		for (ForgeDirection d : this.validChest)
+			if (world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ) == block)
+				inv = new InventoryLargeChest("container.chestDouble", (IInventory) world.getTileEntity(x + d.offsetX, y + d.offsetY, z + d.offsetZ), inv);
 		return inv;
 	}
 
@@ -174,14 +168,14 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	{
 		for (int invSlot : this.getAccessibleSlotsFromSide(side.getOpposite().getOpposite().ordinal()))
 		{
-			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
+			ItemStack stack = this.getStackInSlot(invSlot);
 			if (this.canExtractItem(invSlot, stack, side.getOpposite().getOpposite().ordinal()))
 			{
 				if (stack == null)
 					continue;
 				if (stack.stackSize == 0)
 				{
-					IInventoryProxy.setInventorySlotContents(this, invSlot, null);
+					this.setInventorySlotContents(invSlot, null);
 					continue;
 				}
 				InventoryUtils.addToInventory(inv, stack, side);
@@ -217,10 +211,10 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 			this.furnace.updateEntity(this.worldObj);
 			for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
 			{
-				TileEntity tile = IBlockAccessProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+				TileEntity tile = this.worldObj.getTileEntity(this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 				if (tile instanceof TileEntityChest)
 				{
-					Block chest = IBlockAccessProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+					Block chest = this.worldObj.getBlock(this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 					IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
 					this.pushToInv(temp, d);
 				}

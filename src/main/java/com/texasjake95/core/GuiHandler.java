@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.client.gui.GuiFurnaceBase;
 import com.texasjake95.core.inventory.furnace.ContainerFurnaceBase;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 import com.texasjake95.core.tile.TileEntityFurnaceBase;
 
 /**
@@ -22,7 +21,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
-		TileEntity tile = IBlockAccessProxy.getTileEntity(world, x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		switch (ID)
 		{
 			case 0:
@@ -42,7 +41,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
-		TileEntity tile = IBlockAccessProxy.getTileEntity(world, x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		switch (ID)
 		{
 			case 0:

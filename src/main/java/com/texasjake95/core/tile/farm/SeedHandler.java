@@ -20,7 +20,6 @@ import com.texasjake95.core.api.farm.IHarvester;
 import com.texasjake95.core.api.farm.ISeedProvider;
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.utils.BlockUtils;
-import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class SeedHandler {
 
@@ -93,12 +92,12 @@ public class SeedHandler {
 	public static boolean isSeed(ItemStack stack)
 	{
 		for (ISeedProvider seed : seedSet)
-			if (seed != null && seed.isSeed(ItemStackProxy.getItem(stack), ItemStackProxy.getMetadata(stack)))
+			if (seed != null && seed.isSeed(stack.getItem(), stack.getItemDamage()))
 				return true;
-		HashSet<Integer> meta = seeds.get(ItemStackProxy.getItem(stack));
+		HashSet<Integer> meta = seeds.get(stack.getItem());
 		if (meta == null)
 			return false;
-		return meta.contains(ItemStackProxy.getMetadata(stack));
+		return meta.contains(stack.getItemDamage());
 	}
 
 	public static void registerSeed(Block block, IGrowthChecker growth, IHarvester harvester, ISeedProvider seed)

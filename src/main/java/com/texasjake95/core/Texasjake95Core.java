@@ -1,5 +1,8 @@
 package com.texasjake95.core;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -17,15 +20,29 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
+
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.chunkloading.TicketHelper;
 import com.texasjake95.core.config.CoreConfig;
+import com.texasjake95.core.data.DataMapWrapper;
+import com.texasjake95.core.data.FMPValueProvider;
+import com.texasjake95.core.data.thread.FluidDiscoveryThread;
+import com.texasjake95.core.data.thread.ItemDiscoveryThread;
+import com.texasjake95.core.data.thread.OreDiscoveryThread;
+import com.texasjake95.core.data.thread.RecipeDiscoveryThread;
+import com.texasjake95.core.data.thread.ValueDumpThread;
 import com.texasjake95.core.lib.MappingHelper;
-import com.texasjake95.core.proxy.entity.EntityLivingProxy;
 import com.texasjake95.core.recipe.ShapelessDamageRecipe;
 
 /**
@@ -55,6 +72,7 @@ public class Texasjake95Core {
 	public Texasjake95Core()
 	{
 		CoreConfig.getInstance();
+		ValueDumpThread.startValueDump();
 	}
 
 	@EventHandler
@@ -78,24 +96,53 @@ public class Texasjake95Core {
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+		Item multiItem = GameRegistry.findItem("ForgeMicroblock", "microblock");
+		DataMapWrapper.addProvider(multiItem, new FMPValueProvider());
+		ItemDiscoveryThread.startItemDiscovery();
+		FluidDiscoveryThread.startFluidDiscovery();
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
+		RecipeDiscoveryThread.startRecipeDiscovery();
+		OreDiscoveryThread.startOreDiscovery();
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		CoreConfig.getInstance().initProps();
+		Iterator<?> iterator = FurnaceRecipes.smelting().getSmeltingList().entrySet().iterator();
+		while (iterator.hasNext())
+		{
+			Object object = iterator.next();
+			if (object instanceof Entry)
+			{
+				Entry<?, ?> entry = (Entry<?, ?>) object;
+				if (entry.getKey() instanceof ItemStack && entry.getValue() instanceof ItemStack)
+				{
+					ItemStack input = (ItemStack) entry.getKey();
+					ItemStack output = (ItemStack) entry.getValue();
+					if (OreDictionary.itemMatches(new ItemStack(Blocks.redstone_ore, 1, OreDictionary.WILDCARD_VALUE), input, true))
+						if (OreDictionary.itemMatches(new ItemStack(Items.redstone, 1, 0), output, true))
+							if (1 == output.stackSize)
+								iterator.remove();
+					if (OreDictionary.itemMatches(new ItemStack(Blocks.lapis_ore, 1, OreDictionary.WILDCARD_VALUE), input, true))
+						if (OreDictionary.itemMatches(new ItemStack(Items.dye, 1, 4), output, true))
+							if (1 == output.stackSize)
+								iterator.remove();
+				}
+			}
+		}
+		FurnaceRecipes.smelting().func_151393_a(Blocks.redstone_ore, new ItemStack(Items.redstone, 4, 0), 4 * FurnaceRecipes.smelting().func_151398_b(new ItemStack(Blocks.redstone_ore)));
+		FurnaceRecipes.smelting().func_151393_a(Blocks.lapis_ore, new ItemStack(Items.dye, 4, 4), 4 * FurnaceRecipes.smelting().func_151398_b(new ItemStack(Blocks.lapis_ore)));
 		RecipeSorter.register("texasjake95:shapelessDamage", ShapelessDamageRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
 		proxy.registerEventHandlers();
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();
 		TicketHelper.registerChunkLoading(INSTANCE, CoreInfo.modId);
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-		EntityLivingProxy.getPostion(null, 0);
 	}
 
 	@EventHandler
@@ -104,12 +151,12 @@ public class Texasjake95Core {
 	}
 
 	@EventHandler
-	public void serverAboutToStart(FMLServerStartedEvent event)
+	public void serverStarted(FMLServerStartedEvent event)
 	{
 	}
 
 	@EventHandler
-	public void serverAboutToStart(FMLServerStartingEvent event)
+	public void serverStarting(FMLServerStartingEvent event)
 	{
 	}
 

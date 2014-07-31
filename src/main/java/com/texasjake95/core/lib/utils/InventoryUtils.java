@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 
 import com.texasjake95.commons.util.Range;
 import com.texasjake95.core.inventory.InvRange;
-import com.texasjake95.core.proxy.world.WorldProxy;
 
 public class InventoryUtils {
 
@@ -114,7 +113,7 @@ public class InventoryUtils {
 				float xChange = rand.nextFloat() * 0.8F + 0.1F;
 				float yChange = rand.nextFloat() * 0.8F + 0.1F;
 				EntityItem entityitem;
-				for (float zChange = rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; WorldProxy.spawnEntityInWorld(world, entityitem))
+				for (float zChange = rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem))
 				{
 					int dropSize = rand.nextInt(21) + 10;
 					if (dropSize > itemstack.stackSize)

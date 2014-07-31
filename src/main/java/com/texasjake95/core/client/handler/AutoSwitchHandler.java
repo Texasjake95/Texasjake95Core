@@ -12,26 +12,23 @@ import cpw.mods.fml.relauncher.Side;
 
 import net.minecraftforge.common.MinecraftForge;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 
 import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.event.AutoSwitchEvent;
 import com.texasjake95.core.api.handler.IToolRegistry;
 import com.texasjake95.core.api.impl.CoreAPI;
+import com.texasjake95.core.config.CoreConfig;
 import com.texasjake95.core.lib.handler.event.TickHandler;
-import com.texasjake95.core.proxy.client.MinecraftProxy;
-import com.texasjake95.core.proxy.client.entity.EntityClientPlayerMPProxy;
-import com.texasjake95.core.proxy.client.settings.GameSettingsProxy;
-import com.texasjake95.core.proxy.entity.EntityProxy;
-import com.texasjake95.core.proxy.entity.player.EntityPlayerProxy;
-import com.texasjake95.core.proxy.entity.player.PlayerInventoryProxy;
-import com.texasjake95.core.proxy.inventory.IInventoryProxy;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 // TODO Create Item Handler for to help tools decide if they are appropriate
 // i.e. determine durability % able to harvest block
@@ -86,6 +83,40 @@ public class AutoSwitchHandler extends TickHandler {
 	 */
 	private int tickCount = 0;
 
+	private void addSlots(int min, int max, EntityPlayer player, IToolRegistry tools, ArrayList<Integer> bestSlots)
+	{
+		for (int i = min; i < this.data.hotBarSize; i++)
+		{
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if (tools.canAutoSwtichTo(stack))
+			{
+				player.inventory.currentItem = i;
+				stack = player.inventory.getCurrentItem();
+				int currentHarvest = this.data.getHarvestLevel(stack);
+				float strVsBlock = this.data.getBreakSpeed(player);
+				this.data.addSlots(i, bestSlots, tools, currentHarvest, strVsBlock, stack);
+			}
+		}
+	}
+
+	private void checkItems(int min, int max, EntityPlayer player, IToolRegistry tools)
+	{
+		for (int i = min; i < max; i++)
+		{
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if (tools.canAutoSwtichTo(stack))
+				if (this.data.canToolHarvest(tools, stack))
+				{
+					player.inventory.currentItem = i;
+					stack = player.inventory.getCurrentItem();
+					int currentHarvest = this.data.getHarvestLevel(stack);
+					float strVsBlock = this.data.getBreakSpeed(player);
+					if (stack != null)
+						this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
+				}
+		}
+	}
+
 	/**
 	 * Handle Tool Auto Switching.
 	 *
@@ -98,110 +129,44 @@ public class AutoSwitchHandler extends TickHandler {
 	{
 		if (tickStart)
 		{
-			if (EntityPlayerProxy.isCreative(player))
+			if (player.capabilities.isCreativeMode)
 				return;
-			World world = EntityProxy.getWorld(player);
 			// if (CoreConfig.getInstance().autoSwitch) // Config switch
-			if (MinecraftProxy.inGameHasFocus())
+			if (Minecraft.getMinecraft().inGameHasFocus)
 				if (checkIfAutoSwitchIsPossible(player))
-					if (GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())))
+					if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack))
 					{
 						this.shouldSwitchBack = false;
 						IToolRegistry tools = CoreAPI.toolRegistry;
 						this.tickCount = 0;
-						MovingObjectPosition mop = MinecraftProxy.getObjectMouseOver();
-						if (mop != null)
+						MovingObjectPosition mop = Minecraft.getMinecraft().objectMouseOver;
+						if (mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
 						{
-							if (IBlockAccessProxy.isAirBlock(world, mop.blockX, mop.blockY, mop.blockZ))
+							World world = player.getEntityWorld();
+							if (world.isAirBlock(mop.blockX, mop.blockY, mop.blockZ))
 								return;
 							this.data.reset(world, mop);
-							int hotBarSize = PlayerInventoryProxy.getHotBarSize();
-							this.currentItem = this.currentItem != -1 ? this.currentItem : PlayerInventoryProxy.getCurrentItemSlot(player);
+							int hotBarSize = InventoryPlayer.getHotbarSize();
+							this.currentItem = this.currentItem != -1 ? this.currentItem : player.inventory.currentItem;
 							ArrayList<Integer> bestSlots = new ArrayList<Integer>();
 							// Temp storage of Item location
-							int fakeCurrentItem = PlayerInventoryProxy.getCurrentItemSlot(player);
+							int fakeCurrentItem = player.inventory.currentItem;
 							// Cycle through out all the items
-							for (int i = fakeCurrentItem; i < hotBarSize; i++)
-							{
-								ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i);
-								if (tools.canAutoSwtichTo(stack))
-									if (this.data.canToolHarvest(tools, stack))
-									{
-										PlayerInventoryProxy.setCurrentItemSlot(player, i);
-										stack = PlayerInventoryProxy.getCurrentItem(player);
-										int currentHarvest = this.data.getHarvestLevel(stack);
-										float strVsBlock = this.data.getBreakSpeed(player);
-										if (stack != null)
-											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
-									}
-							}
+							this.checkItems(fakeCurrentItem, hotBarSize, player, tools);
 							// Cycle through out all the items
-							for (int i = 0; i <= fakeCurrentItem; i++)
+							this.checkItems(0, fakeCurrentItem, player, tools);
+							// Collect all slots that match the highest strVsBlock
+							this.addSlots(fakeCurrentItem, hotBarSize, player, tools, bestSlots);
+							// Collect all slots that match the highest strVsBlock
+							this.addSlots(0, fakeCurrentItem, player, tools, bestSlots);
+							// This checks to see if the players hand is enough to break the
+							// block and if so switch to it or a non damageable item
+							if (!CoreConfig.getInstance().forceTool)
 							{
-								ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i);
-								if (tools.canAutoSwtichTo(stack))
-									if (this.data.canToolHarvest(tools, stack))
-									{
-										PlayerInventoryProxy.setCurrentItemSlot(player, i);
-										stack = PlayerInventoryProxy.getCurrentItem(player);
-										int currentHarvest = this.data.getHarvestLevel(stack);
-										float strVsBlock = this.data.getBreakSpeed(player);
-										if (stack != null)
-											this.data.checkAndUpdate(i, currentHarvest, strVsBlock);
-									}
-							}
-							// Collect all slots that match the highest
-							// strVsBlock
-							for (int i = fakeCurrentItem; i < this.data.hotBarSize; i++)
-								if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
-								{
-									PlayerInventoryProxy.setCurrentItemSlot(player, i);
-									ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
-									int currentHarvest = this.data.getHarvestLevel(stack);
-									float strVsBlock = this.data.getBreakSpeed(player);
-									this.data.addSlots(i, bestSlots, tools, currentHarvest, strVsBlock, stack);
-								}
-							// Collect all slots that match the highest
-							// strVsBlock
-							for (int i = 0; i <= fakeCurrentItem; i++)
-								if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
-								{
-									PlayerInventoryProxy.setCurrentItemSlot(player, i);
-									ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
-									int currentHarvest = this.data.getHarvestLevel(stack);
-									float strVsBlock = this.data.getBreakSpeed(player);
-									this.data.addSlots(i, bestSlots, tools, currentHarvest, strVsBlock, stack);
-								}
-							// This checks to see if the players hand is
-							// enough to break the block and if so switch to
-							// it or a non damageable item
-							// if (!CoreConfig.getInstance().forceTool)
-							if (this.data.bestFloat <= 1.0F)
-							{
-								for (int i = fakeCurrentItem; i < hotBarSize; i++)
-									if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
-									{
-										PlayerInventoryProxy.setCurrentItemSlot(player, i);
-										ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
-										if (stack == null || !tools.isDamageable(stack))
-										{
-											this.data.bestFloat = -1.0F;
-											this.data.bestSlot = i;
-											break;
-										}
-									}
+								if (this.data.bestFloat <= 1.0F)
+									this.findBestItem(fakeCurrentItem, hotBarSize, player, tools);
 								if (this.data.bestFloat != -1.0F)
-									for (int i = 0; i <= fakeCurrentItem; i++)
-										if (tools.canAutoSwtichTo(IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), i)))
-										{
-											PlayerInventoryProxy.setCurrentItemSlot(player, i);
-											ItemStack stack = PlayerInventoryProxy.getCurrentItem(player);
-											if (stack == null || !tools.isDamageable(stack))
-											{
-												this.data.bestSlot = i;
-												break;
-											}
-										}
+									this.findBestItem(0, fakeCurrentItem, player, tools);
 							}
 							double meta = 1.0F;
 							// Test all damages of items that match the best
@@ -209,7 +174,7 @@ public class AutoSwitchHandler extends TickHandler {
 							if (this.data.bestFloat != -1.0F)
 								for (int slot : bestSlots)
 								{
-									ItemStack stack = IInventoryProxy.getStackInSlot(EntityPlayerProxy.getPlayerInventory(player), slot);
+									ItemStack stack = player.inventory.getStackInSlot(slot);
 									if (stack != null)
 									{
 										double damage = tools.getDurability(stack);
@@ -224,13 +189,13 @@ public class AutoSwitchHandler extends TickHandler {
 										}
 									}
 								}
-							PlayerInventoryProxy.setCurrentItemSlot(player, this.data.bestSlot);
+							player.inventory.currentItem = this.data.bestSlot;
 							if (Texasjake95Core.isTesting)
 							{
 								System.out.println(this.data.block + ":" + this.data.blockMeta);
 								System.out.println("Setting slot to " + this.data.bestSlot);
 							}
-							EntityClientPlayerMPProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
+							player.sendQueue.addToSendQueue(new C09PacketHeldItemChange(this.data.bestSlot));
 							this.data.clear();
 						}
 					}
@@ -245,15 +210,34 @@ public class AutoSwitchHandler extends TickHandler {
 		}
 		else
 		{
-			if (EntityPlayerProxy.isCreative(player))
+			if (player.capabilities.isCreativeMode)
 				return;
-			if (!GameSettingsProxy.isKeyDown(GameSettingsProxy.getKeyBindAttack(MinecraftProxy.getGameSettings())) && this.currentItem > -1 && this.shouldSwitchBack)
+			if (!GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindAttack) && this.currentItem != -1 && this.shouldSwitchBack)
 			{
 				this.tickCount = 0;
-				PlayerInventoryProxy.setCurrentItemSlot(player, this.currentItem);
-				EntityClientPlayerMPProxy.sendPacket(player, new C09PacketHeldItemChange(this.data.bestSlot));
+				player.inventory.currentItem = this.currentItem;
+				player.sendQueue.addToSendQueue(new C09PacketHeldItemChange(this.currentItem));
 				this.currentItem = -1;
 				this.shouldSwitchBack = false;
+			}
+		}
+	}
+
+	private void findBestItem(int min, int max, EntityPlayer player, IToolRegistry tools)
+	{
+		for (int i = min; i < max; i++)
+		{
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if (tools.canAutoSwtichTo(stack))
+			{
+				player.inventory.currentItem = i;
+				stack = player.inventory.getCurrentItem();
+				if (stack == null || !tools.isDamageable(stack))
+				{
+					this.data.bestFloat = -1.0F;
+					this.data.bestSlot = i;
+					break;
+				}
 			}
 		}
 	}

@@ -13,11 +13,13 @@ import com.texasjake95.core.lib.item.ItemDataMap;
 
 public class ItemMisc extends Item {
 
-	private static ItemDataMap map = new ItemDataMap();
+	private static ItemDataMap map = new ItemDataMap("TXCOREMISC");
+	public static final int ironDust;
+	public static final int goldDust;
 	static
 	{
-		new ItemData(map, "txironDust", "ironDust", CoreInfo.modId);
-		new ItemData(map, "txgoldDust", "goldDust", CoreInfo.modId);
+		ironDust = map.nameToId.get(new ItemData(map, "txironDust", "ironDust", CoreInfo.modId).unlocName);
+		goldDust = map.nameToId.get(new ItemData(map, "txgoldDust", "goldDust", CoreInfo.modId).unlocName);
 	}
 
 	public ItemMisc()

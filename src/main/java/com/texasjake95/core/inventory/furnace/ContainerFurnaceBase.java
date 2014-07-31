@@ -11,8 +11,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
 
-import com.texasjake95.core.proxy.entity.player.PlayerInventoryProxy;
-
 public class ContainerFurnaceBase extends Container {
 
 	private FurnaceBase furnace;
@@ -95,7 +93,7 @@ public class ContainerFurnaceBase extends Container {
 		int fuelEnd = fuelStart + this.furnace.furnace.getFuel().getSizeInventory();
 		int playerInvStart = fuelEnd;
 		int playerInvEnd = playerInvStart + player.inventory.mainInventory.length;
-		int playerHotbarStart = playerInvEnd - PlayerInventoryProxy.getHotBarSize();
+		int playerHotbarStart = playerInvEnd - InventoryPlayer.getHotbarSize();
 		if (slot != null && slot.getHasStack())
 		{
 			ItemStack itemstack1 = slot.getStack();

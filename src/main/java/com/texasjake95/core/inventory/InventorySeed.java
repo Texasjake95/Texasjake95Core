@@ -26,7 +26,6 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.network.IPacketHandler;
-import com.texasjake95.core.proxy.item.ItemStackProxy;
 
 public class InventorySeed implements IPacketHandler {
 
@@ -104,7 +103,7 @@ public class InventorySeed implements IPacketHandler {
 
 	private String key(ItemStack stack)
 	{
-		return this.key(ItemStackProxy.getItem(stack), ItemStackProxy.getMetadata(stack));
+		return this.key(stack.getItem(), stack.getItemDamage());
 	}
 
 	public void load(NBTTagCompound data)

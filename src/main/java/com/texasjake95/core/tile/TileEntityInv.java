@@ -22,12 +22,11 @@ import net.minecraft.world.World;
 
 import com.texasjake95.core.inventory.InventoryBase;
 import com.texasjake95.core.lib.utils.InventoryUtils;
-import com.texasjake95.core.proxy.inventory.IInventoryProxy;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 public abstract class TileEntityInv extends TileEntityCore implements IInventory {
 
 	private InventoryBase inv;
+	private ForgeDirection[] validChest = new ForgeDirection[] { ForgeDirection.WEST, ForgeDirection.EAST, ForgeDirection.NORTH, ForgeDirection.SOUTH };
 
 	public TileEntityInv(int size)
 	{
@@ -57,9 +56,9 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 
 	protected boolean empty()
 	{
-		for (int invSlot = 0; invSlot < IInventoryProxy.getSizeInventory(this); invSlot++)
+		for (int invSlot = 0; invSlot < this.getSizeInventory(); invSlot++)
 		{
-			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
+			ItemStack stack = this.getStackInSlot(invSlot);
 			if (stack != null)
 				return false;
 		}
@@ -68,15 +67,10 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 
 	protected IInventory getChestInv(World world, int x, int y, int z, Block block)
 	{
-		IInventory inv = (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z);
-		if (IBlockAccessProxy.getBlock(world, x - 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x - 1, y, z), inv);
-		if (IBlockAccessProxy.getBlock(world, x + 1, y, z) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x + 1, y, z), inv);
-		if (IBlockAccessProxy.getBlock(world, x, y, z - 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z - 1), inv);
-		if (IBlockAccessProxy.getBlock(world, x, y, z + 1) == block)
-			inv = new InventoryLargeChest("container.chestDouble", (IInventory) IBlockAccessProxy.getTileEntity(world, x, y, z + 1), inv);
+		IInventory inv = (IInventory) world.getTileEntity(x, y, z);
+		for (ForgeDirection d : this.validChest)
+			if (world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ) == block)
+				inv = new InventoryLargeChest("container.chestDouble", (IInventory) world.getTileEntity(x + d.offsetX, y + d.offsetY, z + d.offsetZ), inv);
 		return inv;
 	}
 
@@ -137,10 +131,10 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 	{
 		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
 		{
-			TileEntity tile = IBlockAccessProxy.getTileEntity(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+			TileEntity tile = this.worldObj.getTileEntity(this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 			if (tile instanceof TileEntityChest)
 			{
-				Block chest = IBlockAccessProxy.getBlock(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
+				Block chest = this.worldObj.getBlock(this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ);
 				IInventory temp = this.getChestInv(this.worldObj, this.xCoord + d.offsetX, this.yCoord + d.offsetY, this.zCoord + d.offsetZ, chest);
 				this.pushToInv(temp, d);
 			}
@@ -152,19 +146,24 @@ public abstract class TileEntityInv extends TileEntityCore implements IInventory
 		}
 	}
 
-	private void pushToInv(IInventory inv, ForgeDirection side)
+	protected void pushToInv(IInventory inv, ForgeDirection side)
 	{
-		for (int invSlot = 0; invSlot < IInventoryProxy.getSizeInventory(this); invSlot++)
+		for (int invSlot = 0; invSlot < this.getSizeInventory(); invSlot++)
 		{
-			ItemStack stack = IInventoryProxy.getStackInSlot(this, invSlot);
+			ItemStack stack = this.getStackInSlot(invSlot);
 			if (stack == null)
 				continue;
 			if (stack.stackSize == 0)
 			{
-				IInventoryProxy.setInventorySlotContents(this, invSlot, null);
+				this.setInventorySlotContents(invSlot, null);
 				continue;
 			}
 			InventoryUtils.addToInventory(inv, stack, side);
+			if (stack.stackSize == 0)
+			{
+				this.setInventorySlotContents(invSlot, null);
+				continue;
+			}
 		}
 	}
 

@@ -7,9 +7,11 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemStack;
 
 import com.texasjake95.core.api.CoreInfo;
 import com.texasjake95.core.items.multi.MultiPickAxe;
@@ -80,7 +82,7 @@ public class CoreItems {
 	public static Item woodenShord;
 	public static Item woodenSwaxe;
 	public static Item woodenSwaxel;
-	// public static Item misc;
+	public static Item misc;
 	private static final ToolMaterial diamond4 = create(ToolMaterial.EMERALD, 4);
 	private static final ToolMaterial diamond3 = create(ToolMaterial.EMERALD, 3);
 	private static final ToolMaterial diamond2 = create(ToolMaterial.EMERALD, 2);
@@ -194,8 +196,10 @@ public class CoreItems {
 		woodenSwaxe = getItem("Wooden Swaxe");
 		woodenSwaxel = getItem("Wooden Swaxel");
 		MultiItemMap.initItemMaps();
-		// misc = new ItemMisc();
-		// GameRegistry.registerItem(misc, "TXMisc");
+		misc = new ItemMisc();
+		GameRegistry.registerItem(misc, "TXMisc");
+		OreDictionary.registerOre("dustIron", new ItemStack(misc, 1, ItemMisc.ironDust));
+		OreDictionary.registerOre("dustGold", new ItemStack(misc, 1, ItemMisc.goldDust));
 	}
 
 	private static Item multi(int tool)
@@ -266,9 +270,5 @@ public class CoreItems {
 	private static ToolMaterial tool4(int index)
 	{
 		return toolMaterials4.get(index);
-	}
-
-	private CoreItems()
-	{
 	}
 }

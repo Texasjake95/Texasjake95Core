@@ -16,7 +16,6 @@ import com.texasjake95.core.api.farm.IHarvester;
 import com.texasjake95.core.api.farm.ISeedProvider;
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.lib.utils.BlockUtils;
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
 
 public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider {
 
@@ -43,7 +42,7 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 		if (block == Blocks.cactus || block == Blocks.reeds)
 			for (int i = 2; i >= 1; i--)
 			{
-				if (IBlockAccessProxy.isAirBlock(world, x, y + i, z))
+				if (world.isAirBlock(x, y + i, z))
 					continue;
 				for (ItemStack stack : BlockUtils.getDrops(player, world, x, y + i, z, block, meta))
 					returnList.add(stack);
@@ -64,7 +63,7 @@ public class VanillaChecker implements IGrowthChecker, IHarvester, ISeedProvider
 	public boolean isGrown(Block block, int meta, World world, int x, int y, int z)
 	{
 		if (block == Blocks.cactus || block == Blocks.reeds)
-			return !IBlockAccessProxy.isAirBlock(world, x, y + 1, z);
+			return !world.isAirBlock(x, y + 1, z);
 		if (block == Blocks.pumpkin || block == Blocks.melon_block)
 			return true;
 		return false;

@@ -10,8 +10,6 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import com.texasjake95.core.proxy.world.IBlockAccessProxy;
-
 public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallback {
 
 	private final String modID;
@@ -29,7 +27,7 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			int loaderX = ticket.getModData().getInteger("loaderX");
 			int loaderY = ticket.getModData().getInteger("loaderY");
 			int loaderZ = ticket.getModData().getInteger("loaderZ");
-			TileEntity tile = IBlockAccessProxy.getTileEntity(world, loaderX, loaderY, loaderZ);
+			TileEntity tile = world.getTileEntity(loaderX, loaderY, loaderZ);
 			if (tile instanceof IChunkLoader)
 			{
 				IChunkLoader loader = (IChunkLoader) tile;
@@ -48,7 +46,7 @@ public class ChunkloadCallback implements ForgeChunkManager.OrderedLoadingCallba
 			int loaderX = ticket.getModData().getInteger("loaderX");
 			int loaderY = ticket.getModData().getInteger("loaderY");
 			int loaderZ = ticket.getModData().getInteger("loaderZ");
-			TileEntity tile = IBlockAccessProxy.getTileEntity(world, loaderX, loaderY, loaderZ);
+			TileEntity tile = world.getTileEntity(loaderX, loaderY, loaderZ);
 			if (tile instanceof IChunkLoader)
 			{
 				IChunkLoader loader = (IChunkLoader) tile;

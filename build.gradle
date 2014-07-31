@@ -50,7 +50,9 @@ minecraft { replace '${version}', "$mod_version.$buildNumber" }
 dependencies {
 
 	compile group: "com.texasjake95", name: "Texasjake95Commons", version: "$commons_version", classifier:""
-
+	compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
+	compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:src"
+	
 	//compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
 
 	//compile "codechicken:ForgeMultipart:${minecraft_version}-${fmp_version}:dev"
@@ -58,7 +60,7 @@ dependencies {
 
 depAdd.addNEI("compile")
 depAdd.addIronChests("mod",true)
-
+eclipseSetup.addEclipseSetup( "ForgeMultipart-${minecraft_version}-${fmp_version}","dev","src","default","default")
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 

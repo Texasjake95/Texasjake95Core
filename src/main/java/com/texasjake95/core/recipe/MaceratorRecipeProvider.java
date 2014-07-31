@@ -1,28 +1,29 @@
 package com.texasjake95.core.recipe;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Maps;
-
-import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.texasjake95.core.WrappedStack;
+import com.texasjake95.core.data.DataMapWrapper;
+import com.texasjake95.core.items.CoreItems;
+import com.texasjake95.core.items.ItemMisc;
+
 public class MaceratorRecipeProvider implements IRecipeProvider {
 
-	private HashMap<Object, ItemStack> recipes = Maps.newHashMap();
-	private HashMap<Object, Float> expOutput = Maps.newHashMap();
+	private HashMap<WrappedStack, ItemStack> recipes = Maps.newHashMap();
+	private HashMap<WrappedStack, Float> expOutput = Maps.newHashMap();
 
 	public MaceratorRecipeProvider()
 	{
-		// this.addRecipe("oreIron", new ItemStack(CoreItems.misc, 2, 0), 0);
-		// this.addRecipe("oreGold", new ItemStack(CoreItems.misc, 2, 1), 0);
+		this.addRecipe("oreIron", new ItemStack(CoreItems.misc, 2, ItemMisc.ironDust), 0);
+		this.addRecipe("oreGold", new ItemStack(CoreItems.misc, 2, ItemMisc.goldDust), 0);
 	}
 
 	@Override
@@ -45,61 +46,48 @@ public class MaceratorRecipeProvider implements IRecipeProvider {
 
 	private void addRecipe(Object input, ItemStack output, float exp)
 	{
-		this.recipes.put(input, output);
-		this.expOutput.put(input, exp);
+		if (WrappedStack.canWrap(input))
+		{
+			WrappedStack stack = new WrappedStack(input);
+			DataMapWrapper.addWrapper(new WrappedStack(output, true), stack);
+			this.recipes.put(stack, output);
+			this.expOutput.put(stack, exp);
+		}
 	}
 
 	@Override
 	public void addRecipe(String input, ItemStack output, float exp)
 	{
-		ArrayList<ItemStack> stacks = OreDictionary.getOres(input);
-		System.out.println(input + ": " + stacks.size());
-		this.addRecipe(stacks, output, exp);
+		this.addRecipe(new WrappedStack(input), output, exp);
 	}
 
 	@Override
 	public float getEXP(ItemStack stack)
 	{
-		return 0;
+		Iterator<Entry<WrappedStack, Float>> iterator = this.expOutput.entrySet().iterator();
+		Entry<WrappedStack, Float> entry;
+		do
+		{
+			if (!iterator.hasNext())
+				return 0;
+			entry = iterator.next();
+		}
+		while (!entry.getKey().contains(stack));
+		return entry.getValue();
 	}
 
 	@Override
 	public ItemStack getResult(ItemStack stack)
 	{
-		Iterator<Entry<Object, ItemStack>> iterator = this.recipes.entrySet().iterator();
-		Entry<Object, ItemStack> entry;
+		Iterator<Entry<WrappedStack, ItemStack>> iterator = this.recipes.entrySet().iterator();
+		Entry<WrappedStack, ItemStack> entry;
 		do
 		{
 			if (!iterator.hasNext())
 				return null;
 			entry = iterator.next();
 		}
-		while (!this.objectMatches(stack, entry.getKey()));
+		while (!entry.getKey().contains(stack));
 		return entry.getValue();
-	}
-
-	@SuppressWarnings("rawtypes")
-	private boolean objectMatches(ItemStack stack, Object object)
-	{
-		if (object instanceof List)
-		{
-			List list = (List) object;
-			Iterator iterator = list.iterator();
-			ItemStack temp;
-			do
-			{
-				if (!iterator.hasNext())
-					return false;
-				temp = (ItemStack) iterator.next();
-			}
-			while (!this.objectMatches(stack, temp));
-			return true;
-		}
-		else if (object instanceof ItemStack)
-		{
-			ItemStack stack2 = (ItemStack) object;
-			return stack2.getItem() == stack.getItem() && (stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == stack.getItemDamage());
-		}
-		return false;
 	}
 }
