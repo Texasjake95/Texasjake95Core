@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.api.farm.ItemIntPair;
 import com.texasjake95.core.network.IPacketHandler;
 
@@ -123,9 +124,9 @@ public class InventorySeed implements IPacketHandler {
 		{
 			ItemStack stack = entry.getValue();
 			if (stack == null)
-				System.out.println("null");
+				Texasjake95Core.txLogger.debug("null");
 			else
-				System.out.println(stack.getItem().getUnlocalizedName() + ":" + stack.getItemDamage() + ":" + stack.stackSize);
+				Texasjake95Core.txLogger.debug(stack.getItem().getUnlocalizedName() + ":" + stack.getItemDamage() + ":" + stack.stackSize);
 		}
 	}
 

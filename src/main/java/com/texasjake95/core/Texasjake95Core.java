@@ -3,6 +3,8 @@ package com.texasjake95.core;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.Logger;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -30,6 +32,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
 import com.texasjake95.core.api.CoreInfo;
@@ -59,6 +62,7 @@ public class Texasjake95Core {
 	 */
 	@Instance(CoreInfo.modId)
 	public static Texasjake95Core INSTANCE;
+	public static Logger txLogger;
 	/**
 	 * A constant that enables printing of debuging information.
 	 */
@@ -72,7 +76,6 @@ public class Texasjake95Core {
 	public Texasjake95Core()
 	{
 		CoreConfig.getInstance();
-		ValueDumpThread.startValueDump();
 	}
 
 	@EventHandler
@@ -97,7 +100,8 @@ public class Texasjake95Core {
 	public void init(FMLInitializationEvent event)
 	{
 		Item multiItem = GameRegistry.findItem("ForgeMicroblock", "microblock");
-		DataMapWrapper.addProvider(multiItem, new FMPValueProvider());
+		if (multiItem != null)
+			DataMapWrapper.addProvider(multiItem, new FMPValueProvider(multiItem));
 		ItemDiscoveryThread.startItemDiscovery();
 		FluidDiscoveryThread.startFluidDiscovery();
 	}
@@ -112,6 +116,8 @@ public class Texasjake95Core {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		txLogger = event.getModLog();
+		ValueDumpThread.startValueDump();
 		CoreConfig.getInstance().initProps();
 		Iterator<?> iterator = FurnaceRecipes.smelting().getSmeltingList().entrySet().iterator();
 		while (iterator.hasNext())
@@ -138,6 +144,8 @@ public class Texasjake95Core {
 		FurnaceRecipes.smelting().func_151393_a(Blocks.redstone_ore, new ItemStack(Items.redstone, 4, 0), 4 * FurnaceRecipes.smelting().func_151398_b(new ItemStack(Blocks.redstone_ore)));
 		FurnaceRecipes.smelting().func_151393_a(Blocks.lapis_ore, new ItemStack(Items.dye, 4, 4), 4 * FurnaceRecipes.smelting().func_151398_b(new ItemStack(Blocks.lapis_ore)));
 		RecipeSorter.register("texasjake95:shapelessDamage", ShapelessDamageRecipe.class, Category.SHAPELESS, "after:minecraft:shaped after:minecraft:shapeless");
+		CraftingManager.getInstance().addShapelessRecipe(new ItemStack(Blocks.ice, 9), Blocks.packed_ice);
+		CraftingManager.getInstance().addShapelessRecipe(new ItemStack(Blocks.packed_ice), Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice);
 		proxy.registerEventHandlers();
 		proxy.initItemsAndBlocks();
 		proxy.registerRecipes();

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 
 import com.texasjake95.commons.util.pair.ObjectPair;
 import com.texasjake95.core.OreStack;
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.WrappedStack;
 import com.texasjake95.core.data.DataMapWrapper;
 import com.texasjake95.core.data.RecipeWrapper;
@@ -112,7 +113,7 @@ public class OreDiscoveryThread implements Runnable {
 		}
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Ore Discovery initialized after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Ore Discovery initialized after %s ms", duration));
 		trueInit = true;
 		if (DynamicEnergyValueInitThread.canInit())
 			DataMapWrapper.finishSetup();

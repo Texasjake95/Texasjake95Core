@@ -1,5 +1,6 @@
 package com.texasjake95.core.data.thread;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.data.DataMapWrapper;
 
 public class DynamicEnergyValueInitThread implements Runnable {
@@ -57,7 +58,7 @@ public class DynamicEnergyValueInitThread implements Runnable {
 		DataMapWrapper.resolveValues();
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Data system initialized after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Data system initialized after %s ms", duration));
 		trueInit = true;
 		ConfigRemapThread.resovleValues();
 	}

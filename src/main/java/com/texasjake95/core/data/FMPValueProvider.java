@@ -1,8 +1,8 @@
 package com.texasjake95.core.data;
 
 import gnu.trove.map.hash.TCustomHashMap;
-import codechicken.microblock.ItemMicroPart;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import test.DefaultHashingStrategy;
@@ -12,7 +12,18 @@ import com.texasjake95.core.WrappedStack;
 
 public class FMPValueProvider implements IValueProvider {
 
+	public static ItemStack getStack(ItemStack stack)
+	{
+		return null;
+	}
+
 	TCustomHashMap<WrappedStack, FloatValue> valueMap = new TCustomHashMap<WrappedStack, FloatValue>(new DefaultHashingStrategy<WrappedStack>());
+	private final Item multiItem;
+
+	public FMPValueProvider(Item multiItem)
+	{
+		this.multiItem = multiItem;
+	}
 
 	public float getDivide(ItemStack stack)
 	{
@@ -50,18 +61,22 @@ public class FMPValueProvider implements IValueProvider {
 	@Override
 	public float getValue(ItemStack stack)
 	{
-		if (stack.getItem() instanceof ItemMicroPart)
+		if (stack.getItem() == this.multiItem)
 		{
 			WrappedNBTStack wrappedStack = new WrappedNBTStack(stack);
 			if (!this.valueMap.contains(wrappedStack) || !this.valueMap.get(wrappedStack).isValid())
 			{
-				System.out.println("Value does not exist for " + wrappedStack);
-				ItemStack part = ItemMicroPart.getMaterial(stack).getItem();
-				FloatValue value = DataMapWrapper.getValueNoScale(part);
-				if (value != null && value.isValid())
-					value = new FloatValue(value.value / this.getDivide(stack));
-				if (value != null && value.isValid())
-					this.valueMap.put(wrappedStack, value);
+				ItemStack part = getStack(stack);
+				if (part != null)
+				{
+					FloatValue value = DataMapWrapper.getValueNoScale(part);
+					if (value != null && value.isValid())
+						value = new FloatValue(value.value / this.getDivide(stack));
+					if (value != null && value.isValid())
+						this.valueMap.put(wrappedStack, value);
+					if (value != null)
+						return value.value;
+				}
 			}
 			else
 				return this.valueMap.get(wrappedStack).value;

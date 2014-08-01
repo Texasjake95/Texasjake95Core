@@ -180,20 +180,20 @@ public class AutoSwitchHandler extends TickHandler {
 										double damage = tools.getDurability(stack);
 										meta = meta > damage ? damage : meta;
 										if (Texasjake95Core.isTesting)
-											System.out.println(meta);
+											Texasjake95Core.txLogger.debug(meta);
 										if (meta == damage)
 										{
 											this.data.bestSlot = slot;
 											if (Texasjake95Core.isTesting)
-												System.out.println(this.data.bestSlot + ":" + meta);
+												Texasjake95Core.txLogger.debug(this.data.bestSlot + ":" + meta);
 										}
 									}
 								}
 							player.inventory.currentItem = this.data.bestSlot;
 							if (Texasjake95Core.isTesting)
 							{
-								System.out.println(this.data.block + ":" + this.data.blockMeta);
-								System.out.println("Setting slot to " + this.data.bestSlot);
+								Texasjake95Core.txLogger.debug(this.data.block + ":" + this.data.blockMeta);
+								Texasjake95Core.txLogger.debug("Setting slot to " + this.data.bestSlot);
 							}
 							player.sendQueue.addToSendQueue(new C09PacketHeldItemChange(this.data.bestSlot));
 							this.data.clear();

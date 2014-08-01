@@ -255,13 +255,6 @@ public abstract class MachineBase implements IInventory, IPacketHandler {
 		this.furnace.openInventory();
 	}
 
-	private void print(int[] g)
-	{
-		for (int i : g)
-			System.out.println(i);
-		System.out.println();
-	}
-
 	@Override
 	public void readFromPacket(ByteBufInputStream data, ByteBuf byteBuf, Class<? extends IMessage> clazz) throws IOException
 	{

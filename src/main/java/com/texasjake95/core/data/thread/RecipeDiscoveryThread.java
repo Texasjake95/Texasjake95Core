@@ -8,6 +8,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.WrappedStack;
 import com.texasjake95.core.data.DataMapWrapper;
 import com.texasjake95.core.data.RecipeWrapper;
@@ -82,7 +83,7 @@ public class RecipeDiscoveryThread implements Runnable {
 		RecipeDiscoveryThread.isWaiting = false;
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Recipe Discovery finished after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Recipe Discovery finished after %s ms", duration));
 		trueInit = true;
 		if (DynamicEnergyValueInitThread.canInit())
 			DataMapWrapper.finishSetup();

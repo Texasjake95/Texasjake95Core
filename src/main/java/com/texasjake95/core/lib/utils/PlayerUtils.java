@@ -15,6 +15,7 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.inventory.InvRange;
 
 public class PlayerUtils {
@@ -80,7 +81,7 @@ public class PlayerUtils {
 			{
 				WorldServer ws = player.mcServer.worldServerForDimension(dimension);
 				ChunkCoordinates coords = ws.getSpawnPoint();
-				System.out.printf("Teleporting to %d, %d, %d -- %d\n", coords.posX, coords.posY, coords.posZ, dimension);
+				Texasjake95Core.txLogger.debug("Teleporting to %d, %d, %d -- %d\n", coords.posX, coords.posY, coords.posZ, dimension);
 				teleportPlayerTo(entityPlayer, coords.posX, coords.posY, coords.posZ, dimension);
 			}
 		}

@@ -12,6 +12,7 @@ import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.WrappedStack;
 import com.texasjake95.core.data.DataMapWrapper;
 import com.texasjake95.core.data.RecipeWrapper;
@@ -109,7 +110,7 @@ public class PotionDiscoveryThread implements Runnable {
 		addPotions(ItemDiscoveryThread.getIngredents());
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Potion Discovery initialized after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Potion Discovery initialized after %s ms", duration));
 		trueInit = true;
 		if (DynamicEnergyValueInitThread.canInit())
 			DataMapWrapper.finishSetup();

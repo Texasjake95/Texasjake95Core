@@ -21,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.inventory.furnace.FurnaceBase;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 import com.texasjake95.core.recipe.IRecipeProvider;
@@ -160,8 +161,8 @@ public class TileEntityFurnaceBase extends TileEntityCore implements ISidedInven
 	public void printInv()
 	{
 		for (int slot = 0; slot < this.getSizeInventory(); slot++)
-			System.out.println(this.getStackInSlot(slot));
-		System.out.println();
+			Texasjake95Core.txLogger.debug(this.getStackInSlot(slot));
+		Texasjake95Core.txLogger.debug("");
 	}
 
 	private void pushToInv(IInventory inv, ForgeDirection side)

@@ -6,6 +6,7 @@ import gnu.trove.strategy.HashingStrategy;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +37,7 @@ public class DataMap<NODE extends Comparable<NODE>, HANDLER extends IValueHandle
 
 		VALUE determineValue();
 
-		List<NODE> getConnectedNodes();
+		Collection<NODE> getConnectedNodes();
 	}
 
 	public enum RemovalType

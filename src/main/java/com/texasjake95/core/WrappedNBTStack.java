@@ -46,6 +46,7 @@ public class WrappedNBTStack extends WrappedStack {
 	@Override
 	public int hashCode()
 	{
+		int hashCode = super.hashCode();
 		switch (this.type)
 		{
 			case FLUIDSTACK:
@@ -53,7 +54,7 @@ public class WrappedNBTStack extends WrappedStack {
 			case ITEMSTACK:
 				ItemStack stack = (ItemStack) this.getEffectiveStack();
 				if (stack.hasTagCompound())
-					return super.hashCode() * 7 + ((ItemStack) this.getEffectiveStack()).getTagCompound().hashCode();
+					hashCode = hashCode * 7 + ((ItemStack) this.getEffectiveStack()).getTagCompound().hashCode();
 				break;
 			case NONE:
 				break;
@@ -62,6 +63,6 @@ public class WrappedNBTStack extends WrappedStack {
 			default:
 				break;
 		}
-		return super.hashCode();
+		return hashCode;
 	}
 }

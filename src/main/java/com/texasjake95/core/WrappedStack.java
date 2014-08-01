@@ -13,19 +13,56 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+/**
+ * Used to unify OreStack, FluidStacks, and ItemStacks for comparison to one another.
+ *
+ * @author Texasjake95
+ *
+ */
 public class WrappedStack implements Comparable<WrappedStack> {
 
+	/**
+	 * Used to state what type of kind of object is wrapped in a {@link WrappedStack}.
+	 *
+	 * @author Texasjake95
+	 *
+	 */
 	public enum WrappedType
 	{
+		/**
+		 * States that an {@link ItemStack} has been wrapped.
+		 */
 		ITEMSTACK,
+		/**
+		 * States that an {@link OreStack} has been wrapped.
+		 */
 		ORESTACK,
+		/**
+		 * States that an {@link FluidStack} has been wrapped.
+		 */
 		FLUIDSTACK,
+		/**
+		 * States that an invalid object has been wrapped.
+		 */
 		NONE;
 	}
 
+	/**
+	 * Comparator used for ItemStacks.
+	 */
 	public static final Comparator<ItemStack> itemStackCompare = new ItemStackComparator();
+	/**
+	 * Comparator used for FluidStacks.
+	 */
 	private static final Comparator<FluidStack> fluidStackCompare = new FluidStackComparator();
 
+	/**
+	 * Can the provided object be wrapped.
+	 *
+	 * @param object
+	 *            the object to wrap
+	 * @return true, if the object can be wrapped
+	 */
 	public static boolean canWrap(Object object)
 	{
 		if (object instanceof Block)
@@ -53,14 +90,29 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		return false;
 	}
 
+	/**
+	 * Is the WrappedStack valid.
+	 */
 	public boolean isValid = true;
+	/**
+	 * The type of object wrapped.
+	 */
 	public WrappedType type = WrappedType.NONE;
-	private ItemStack itemStack;
-	private OreStack oreStack;
-	private FluidStack fluidStack;
+	/**
+	 * The wrapped object.
+	 */
+	private Object wrappedStack;
+	/**
+	 * Does the stack size of the wrapped object matter.
+	 */
 	private boolean stackSizeMatters = false;
-	public static boolean equals = false;
 
+	/**
+	 * Wrap the passed object.
+	 *
+	 * @param object
+	 *            the object to wrap
+	 */
 	public WrappedStack(Object object)
 	{
 		if (!canWrap(object))
@@ -111,11 +163,19 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			this.type = WrappedType.NONE;
 	}
 
+	/**
+	 * Wrap the passed object and state if the size of the object matters.
+	 *
+	 * @param object
+	 *            the object to wrap
+	 * @param stackSizeMatters
+	 *            does the stack size of the object matter
+	 */
 	public WrappedStack(Object object, boolean stackSizeMatters)
 	{
 		this(object);
 		if (this.isValid)
-			this.stackSizeMatters = true;
+			this.stackSizeMatters = stackSizeMatters;
 	}
 
 	@Override
@@ -128,19 +188,26 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			switch (this.type)
 			{
 				case FLUIDSTACK:
-					return fluidStackCompare.compare(this.fluidStack, o.fluidStack);
+					return fluidStackCompare.compare((FluidStack) this.wrappedStack, (FluidStack) o.wrappedStack);
 				case ITEMSTACK:
-					return itemStackCompare.compare(this.itemStack, o.itemStack);
+					return itemStackCompare.compare((ItemStack) this.wrappedStack, (ItemStack) o.wrappedStack);
 				case NONE:
 					return 0;
 				case ORESTACK:
-					return this.oreStack.compareTo(o.oreStack);
+					return ((OreStack) this.wrappedStack).compareTo((OreStack) o.wrappedStack);
 				default:
 					return 0;
 			}
 		return compare;
 	}
 
+	/**
+	 * Is the wrapped object comparable to the passed object.
+	 *
+	 * @param object
+	 *            the object to check for.
+	 * @return true, if the object is comparable
+	 */
 	public boolean contains(Object object)
 	{
 		if (object instanceof WrappedStack)
@@ -168,7 +235,7 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		{
 			case FLUIDSTACK:
 				FluidStack fluidStack = (FluidStack) object;
-				return fluidStack.getFluid().getID() == this.fluidStack.getFluid().getID();
+				return fluidStack.getFluid().getID() == ((FluidStack) this.wrappedStack).getFluid().getID();
 			case ITEMSTACK:
 				break;
 			// ItemStack stack = (ItemStack) object;
@@ -190,12 +257,12 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		{
 			case ITEMSTACK:
 				ItemStack stack = (ItemStack) object;
-				return OreDictionary.itemMatches(this.itemStack, stack, false) || OreDictionary.itemMatches(stack, this.itemStack, false);
+				return OreDictionary.itemMatches((ItemStack) this.wrappedStack, stack, false) || OreDictionary.itemMatches(stack, (ItemStack) this.wrappedStack, false);
 			case NONE:
 				break;
 			case ORESTACK:
 				OreStack oreStack = (OreStack) object;
-				return oreStack.hasItemStack(this.itemStack);
+				return oreStack.hasItemStack((ItemStack) this.wrappedStack);
 			case FLUIDSTACK:
 				break;
 			// return FluidContainerRegistry.containsFluid((ItemStack)
@@ -213,12 +280,12 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		{
 			case ITEMSTACK:
 				ItemStack stack = (ItemStack) object;
-				return this.oreStack.hasItemStack(stack);
+				return ((OreStack) this.wrappedStack).hasItemStack(stack);
 			case NONE:
 				break;
 			case ORESTACK:
 				OreStack oreStack = (OreStack) object;
-				return this.oreStack.areEqual(oreStack);
+				return ((OreStack) this.wrappedStack).areEqual(oreStack);
 			case FLUIDSTACK:
 				break;
 			default:
@@ -246,35 +313,18 @@ public class WrappedStack implements Comparable<WrappedStack> {
 	{
 		if (!(object instanceof WrappedStack))
 			return false;
-		if (equals)
-		{
-			if (!(canWrap(object) || object instanceof WrappedStack) || object == null || !this.isValid)
-				return false;
-			ItemStack stack = this.createItemStack(object);
-			if (stack != null)
-				return this.contains(stack);
-			OreStack oreStack = object instanceof OreStack ? (OreStack) object : null;
-			if (oreStack != null)
-				return this.contains(oreStack);
-			FluidStack fluidStack = object instanceof FluidStack ? (FluidStack) object : object instanceof Fluid ? new FluidStack((Fluid) object, 1) : null;
-			if (fluidStack != null)
-				return this.contains(fluidStack);
-			WrappedStack wrapped = (WrappedStack) object;
-			Object wrappedStack = wrapped.getEffectiveStack();
-			return wrappedStack != null && this.contains(wrappedStack);
-		}
 		WrappedStack wrapped = (WrappedStack) object;
 		if (this.type != wrapped.type || this.type == WrappedType.NONE || wrapped.type == WrappedType.NONE)
 			return false;
 		switch (this.type)
 		{
 			case FLUIDSTACK:
-				FluidStack thisFluidStack = this.fluidStack;
-				FluidStack wrappedFluidStack = wrapped.fluidStack;
+				FluidStack thisFluidStack = (FluidStack) this.wrappedStack;
+				FluidStack wrappedFluidStack = (FluidStack) wrapped.wrappedStack;
 				return thisFluidStack.getFluid().getID() == wrappedFluidStack.getFluid().getID();
 			case ITEMSTACK:
-				ItemStack thisItemStack = this.itemStack;
-				ItemStack wrappedItemStack = wrapped.itemStack;
+				ItemStack thisItemStack = (ItemStack) this.wrappedStack;
+				ItemStack wrappedItemStack = (ItemStack) wrapped.wrappedStack;
 				if (thisItemStack.getItem() == wrappedItemStack.getItem())
 					if (thisItemStack.getItem().isDamageable() && wrappedItemStack.getItem().isDamageable())
 						return true;
@@ -282,8 +332,8 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			case NONE:
 				break;
 			case ORESTACK:
-				OreStack thisOreStack = this.oreStack;
-				OreStack wrappedOreStack = wrapped.oreStack;
+				OreStack thisOreStack = (OreStack) this.wrappedStack;
+				OreStack wrappedOreStack = (OreStack) wrapped.wrappedStack;
 				return thisOreStack.areEqual(wrappedOreStack) || wrappedOreStack.areEqual(thisOreStack);
 			default:
 				break;
@@ -293,20 +343,7 @@ public class WrappedStack implements Comparable<WrappedStack> {
 
 	public Object getEffectiveStack()
 	{
-		switch (this.type)
-		{
-			case ITEMSTACK:
-				return this.itemStack;
-			case NONE:
-				break;
-			case ORESTACK:
-				return this.oreStack;
-			case FLUIDSTACK:
-				return this.fluidStack;
-			default:
-				break;
-		}
-		return null;
+		return this.wrappedStack;
 	}
 
 	public int getStackSize()
@@ -317,13 +354,13 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			switch (this.type)
 			{
 				case FLUIDSTACK:
-					return this.fluidStack.amount;
+					return ((FluidStack) this.wrappedStack).amount;
 				case ITEMSTACK:
-					return this.itemStack.stackSize;
+					return ((ItemStack) this.wrappedStack).stackSize;
 				case NONE:
 					break;
 				case ORESTACK:
-					return this.oreStack.getStackSize();
+					return ((OreStack) this.wrappedStack).getStackSize();
 				default:
 					break;
 			}
@@ -338,17 +375,15 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			switch (this.type)
 			{
 				case ITEMSTACK:
-					hashcode = 7 * hashcode + GameRegistry.findUniqueIdentifierFor(this.itemStack.getItem()).hashCode();
-					if (!this.itemStack.getItem().isDamageable())
-						hashcode = 7 * hashcode + this.itemStack.getItemDamage();
+					hashcode = 7 * hashcode + GameRegistry.findUniqueIdentifierFor(((ItemStack) this.wrappedStack).getItem()).hashCode();
+					if (!((ItemStack) this.wrappedStack).getItem().isDamageable())
+						hashcode = 7 * hashcode + ((ItemStack) this.wrappedStack).getItemDamage();
 					break;
 				case NONE:
 					break;
 				case ORESTACK:
-					hashcode = 7 * hashcode + this.oreStack.hashCode();
-					break;
 				case FLUIDSTACK:
-					hashcode = 7 * hashcode + this.fluidStack.hashCode();
+					hashcode = 7 * hashcode + this.wrappedStack.hashCode();
 					break;
 				default:
 					break;
@@ -363,7 +398,7 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			this.isValid = false;
 			return;
 		}
-		this.fluidStack = object.copy();
+		this.wrappedStack = object.copy();
 	}
 
 	private void processItemStack(ItemStack stack)
@@ -373,13 +408,13 @@ public class WrappedStack implements Comparable<WrappedStack> {
 			this.isValid = false;
 			return;
 		}
-		this.itemStack = stack.copy();
+		this.wrappedStack = stack.copy();
 	}
 
 	private void processOreStack(OreStack object)
 	{
 		if (object.isValid())
-			this.oreStack = object;
+			this.wrappedStack = object;
 		else
 			this.isValid = false;
 	}
@@ -444,15 +479,15 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		switch (this.type)
 		{
 			case ITEMSTACK:
-				sb.append(GameRegistry.findUniqueIdentifierFor(this.itemStack.getItem()) + ":" + this.itemStack.getItemDamage());
+				sb.append(GameRegistry.findUniqueIdentifierFor(((ItemStack) this.wrappedStack).getItem()) + ":" + ((ItemStack) this.wrappedStack).getItemDamage());
 				break;
 			case NONE:
 				break;
 			case ORESTACK:
-				sb.append(this.oreStack);
+				sb.append(this.wrappedStack);
 				break;
 			case FLUIDSTACK:
-				sb.append(this.fluidStack);
+				sb.append(this.wrappedStack);
 				break;
 			default:
 				break;
@@ -465,9 +500,9 @@ public class WrappedStack implements Comparable<WrappedStack> {
 		switch (this.type)
 		{
 			case FLUIDSTACK:
-				return this.fluidStack.getFluid().getLocalizedName(this.fluidStack);
+				return ((FluidStack) this.wrappedStack).getFluid().getLocalizedName((FluidStack) this.wrappedStack);
 			case ITEMSTACK:
-				return this.itemStack.getDisplayName();
+				return ((ItemStack) this.wrappedStack).getDisplayName();
 			case NONE:
 				break;
 			case ORESTACK:

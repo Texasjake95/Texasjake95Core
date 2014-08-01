@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 import com.texasjake95.commons.helpers.Checker;
 import com.texasjake95.core.SuctionMap;
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.WrappedStack;
 import com.texasjake95.core.lib.utils.InventoryUtils;
 
@@ -55,12 +56,12 @@ public class TilePipe extends TileEntityInv implements IPipe {
 		while (iterator.hasNext())
 		{
 			Entry<WrappedStack, Integer> entry = iterator.next();
-			System.out.println(String.format("%s : %s", entry.getKey(), entry.getValue()));
+			Texasjake95Core.txLogger.debug(String.format("%s : %s", entry.getKey(), entry.getValue()));
 		}
-		System.out.println("Inventory");
+		Texasjake95Core.txLogger.debug("Inventory");
 		for (int i = 0; i < this.getSizeInventory(); i++)
 			if (this.getStackInSlot(i) != null)
-				System.out.println(this.getStackInSlot(i));
+				Texasjake95Core.txLogger.debug(this.getStackInSlot(i));
 	}
 
 	@Override

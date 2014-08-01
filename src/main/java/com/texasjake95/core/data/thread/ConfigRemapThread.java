@@ -1,5 +1,6 @@
 package com.texasjake95.core.data.thread;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.data.DataMapWrapper;
 import com.texasjake95.core.data.handler.DefaultValueHandler;
 
@@ -61,7 +62,7 @@ public class ConfigRemapThread implements Runnable {
 		DataMapWrapper.transplantValues();
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Config Remap finished after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Config Remap finished after %s ms", duration));
 		trueInit = true;
 	}
 }

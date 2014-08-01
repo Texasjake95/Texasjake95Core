@@ -12,6 +12,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.WrappedStack;
 import com.texasjake95.core.data.DataMapWrapper;
 
@@ -72,13 +73,13 @@ public class ItemDiscoveryThread implements Runnable {
 				}
 				catch (Exception e)
 				{
-					System.out.println(e.getClass() + ": When trying to get sub items for " + obj);
+					Texasjake95Core.txLogger.error(e.getClass() + ": When trying to get sub items for " + obj);
 					e.printStackTrace(System.out);
 					continue;
 				}
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Item Discovery finished after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Item Discovery finished after %s ms", duration));
 		PotionDiscoveryThread.init();
 		trueInit = true;
 		if (DynamicEnergyValueInitThread.canInit())

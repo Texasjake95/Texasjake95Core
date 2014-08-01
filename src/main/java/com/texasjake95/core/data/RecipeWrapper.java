@@ -1,9 +1,11 @@
 package com.texasjake95.core.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -186,9 +188,9 @@ public class RecipeWrapper implements IValueHandler<WrappedStack, RecipeWrapper,
 	}
 
 	@Override
-	public List<WrappedStack> getConnectedNodes()
+	public Collection<WrappedStack> getConnectedNodes()
 	{
-		return this.inputs;
+		return ImmutableList.copyOf(this.inputs);
 	}
 
 	@Override

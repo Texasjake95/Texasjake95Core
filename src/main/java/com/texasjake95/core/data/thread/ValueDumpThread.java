@@ -1,5 +1,6 @@
 package com.texasjake95.core.data.thread;
 
+import com.texasjake95.core.Texasjake95Core;
 import com.texasjake95.core.data.DataMapWrapper;
 import com.texasjake95.core.data.handler.DefaultValueHandler;
 
@@ -64,7 +65,7 @@ public class ValueDumpThread implements Runnable {
 		}
 		long duration = System.currentTimeMillis() - startTime;
 		if (duration > 10)
-			System.out.println(String.format("Values Dumpped after %s ms", duration));
+			Texasjake95Core.txLogger.info(String.format("Values Dumpped after %s ms", duration));
 		if (DynamicEnergyValueInitThread.canInit())
 			DataMapWrapper.finishSetup();
 	}
